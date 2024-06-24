@@ -1,15 +1,127 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Form, Tabs, Tab, Button} from 'react-bootstrap';
 import Layout from './Layouts/LayoutInner';
 import OrderIcon from '../assets/images/order-icon.png';
 
 import BG from '../assets/images/market-left-bg.png';
 import BGGrad from '../assets/images/bg-grad.png';
+import usdcLogo from '../assets/images/usdc-logo.png'
+import elementLogo from '../assets/images/elem-original.png';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
+import BigInt from 'BigInt';
+import { ethers } from 'ethers';
+import { CarbonFinanceAbi, CarbonFinanceAddress, ERC20MockAbi, ERC20MockAddress, cftokenAbi, cftokenAddress } from '../abi';
 
 const MoneyMarket = () => {
-    React.useEffect(() => {
-        window.scrollTo(0, 0);
-    });
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
+
+    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const provider = new ethers.providers.JsonRpcProvider(url);
+
+    // const [provider, setProvider] = useState("");
+    const [allowance, setAllowance] = useState("");
+    const [busdBalance, setbusdBalance] = useState(0);
+    const [depositAmount, setDepositAmount] = useState();
+    const [withdrawAmount, setWithdrawAmount] = useState();
+    const [userDeposit, setUserDeposit] = useState("");
+    const [userDebt, setUserDebt] = useState("");
+    const [totalDeposited, setTotalDeposited] = useState("");
+    const [totalELEM, setTotalELEM] = useState("");
+    const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
+
+    const fun = async() => {
+        const erc20Contract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, provider);
+        const carbonContract = new ethers.Contract(CarbonFinanceAddress,CarbonFinanceAbi, provider);
+        const cfContract = new ethers.Contract(cftokenAddress,cftokenAbi, provider);
+        let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, CarbonFinanceAddress), 0); 
+        setAllowance(allowance1);
+        let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
+        setbusdBalance(balance1);
+        let userDeposit1 = ethers.utils.formatUnits( await carbonContract.getCdpTotalDeposited(address), 0);
+        setUserDeposit(userDeposit1);
+        let userDebt1 = ethers.utils.formatUnits( await carbonContract.getCdpTotalDebt(address), 0);
+        setUserDebt(userDebt1);
+        let totalDeposited1 = ethers.utils.formatUnits( await carbonContract.totalDeposited(), 0);
+        setTotalDeposited(totalDeposited1);
+        let totalCF = ethers.utils.formatUnits( await cfContract.totalSupply(), 0);
+        setTotalELEM(totalCF);
+        let borrowPercent = (totalCF/(totalDeposited1/ 2))*100;
+        setTotalBorrowPercent(borrowPercent);
+        
+        console.log("allowance:", allowance1, balance1, userDeposit1, userDebt1);
+    }
+
+    useEffect(() => {
+        fun();
+    }, [address, isConnected]);
+
+    const approve = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const carbonContract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, signer);
+            if (typeof depositAmount !== 'string') {
+                depositAmount = depositAmount.toString();
+            }
+            
+            // Convert the deposit amount to wei
+            let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
+            let tx = await carbonContract.approve(address, amountInWei);
+            await tx.wait();
+            await fun();
+        }catch(e){
+            console.error(e);
+        }
+       
+    }
+
+    const deposit = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
+            if (typeof depositAmount !== 'string') {
+                depositAmount = depositAmount.toString();
+            }
+            
+            // Convert the deposit amount to wei
+            let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
+            let tx = await carbonContract.deposit(amountInWei);
+            await tx.wait();
+            setDepositAmount("");
+            await fun();
+            
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    const withdraw = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
+            if (typeof withdrawAmount !== 'string') {
+                withdrawAmount = withdrawAmount.toString();
+            }
+            
+            // Convert the deposit amount to wei
+            let amountInWei = ethers.utils.parseUnits(withdrawAmount, 18);
+            let tx = await carbonContract.withdraw(amountInWei);
+            await tx.wait();
+            setWithdrawAmount("");
+            await fun();
+            
+        }catch(e){
+            console.error(e);
+        }
+    }
+
+    // React.useEffect(() => {
+    //     window.scrollTo(0, 0);
+    // });
     return (
         <Layout>
             <div className="page-content">
@@ -26,10 +138,12 @@ const MoneyMarket = () => {
                         <Col md={8} lg={8} xl={6} className='mb-xl-0 mb-4'>
                             <div className="money-market-card h-100">
                                 <div className="money-market-card-order-header d-flex align-items-center">
-                                    <img src={OrderIcon} alt="OrderIcon" />
+                                    <img src={usdcLogo} alt="elementLogo" style={{"height": "75px", "width": "75px"}} />
                                     <div className='ps-3'>
-                                        <div className="h3 mb-0">Lend ETH</div>
-                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">ETH</div></span> <span className='d-flex align-items-center'>Oracle: <div className="h6 mb-0">Chainink</div></span></p>
+                                        <div className="h3 mb-0">Lend USDC</div>
+                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">USDC</div></span> 
+                                        {/* <span className='d-flex align-items-center'>Oracle: <div className="h6 mb-0">Chainink</div></span> */}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -37,16 +151,16 @@ const MoneyMarket = () => {
                                     <div className="row mb-30">
                                         <div className="col-4">
                                             <p className='mb-0' style={{color: '#969696'}}>Lent</p>
-                                            <h4 className='mb-0 text-normal font-semi-bold' style={{color: '#FF0099'}}>0 ETH</h4>
-                                            <h5 className='mb-0'>$0.00</h5>
+                                            <h4 className='mb-0 text-normal font-semi-bold' style={{color: '#FF0099'}}>{userDeposit ? (userDeposit/1e18).toFixed(2) : "0.00"} USDC</h4>
+                                            {/* <h5 className='mb-0'>$0.00</h5> */}
                                         </div>
                                         <div className="col-4">
                                             <p className='mb-0' style={{color: '#969696'}}>Borrowed</p>
-                                            <h5 className='mb-0'>78.52%</h5>
+                                            <h5 className='mb-0'>{userDebt ? (userDebt/1e18).toFixed(2) : "0.00"} ELEM</h5>
                                         </div>
                                         <div className="col-4">
                                             <p className='mb-0' style={{color: '#969696'}}>Supply APR</p>
-                                            <h5 className='mb-0'>89.20%</h5>
+                                            <h5 className='mb-0'>8.47%</h5>
                                         </div>
                                     </div>
 
@@ -56,9 +170,9 @@ const MoneyMarket = () => {
                                         id="noanim-tab-example"
                                         className='tabs-dark'
                                     >
-                                        <Tab eventKey="deposite" title="Deposit ETH">
+                                        <Tab eventKey="deposite" title="Deposit USDC">
                                             <div className="pt-4">
-                                                <div className="h3 mb-4 pb-2">Deposit ETH</div>
+                                                <div className="h3 mb-4 pb-2">Deposit USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -70,18 +184,20 @@ const MoneyMarket = () => {
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>Wallet</Button>
 
-                                                    <span className='ms-auto'>Balance 0</span>
+                                                    <span className='ms-auto'>Balance {busdBalance? parseFloat(busdBalance/1e18).toFixed(2) : "0.00"}</span>
                                                 </div>
 
                                                 <Form>
-                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' />
-                                                    <Button variant='grad' className='w-100'>Approve ETH</Button>
+                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
+                                                    {(allowance/1e18) >= depositAmount ? 
+                                                    <Button variant='grad' className='w-100' onClick={deposit}>Deposit</Button> :
+                                                    <Button variant='grad' className='w-100' onClick={approve}>Approve</Button>}
                                                 </Form>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="withdraw" title="Withdraw ETH">
+                                        <Tab eventKey="withdraw" title="Withdraw USDC">
                                         <div className="pt-4">
-                                                <div className="h3 mb-4 pb-2">Withdraw ETH</div>
+                                                <div className="h3 mb-4 pb-2">Withdraw USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -93,12 +209,12 @@ const MoneyMarket = () => {
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>Wallet</Button>
 
-                                                    <span className='ms-auto'>Balance 0</span>
+                                                    <span className='ms-auto'>Balance {userDeposit? parseFloat(userDeposit/1e18).toFixed(2) : "0.00"}</span>
                                                 </div>
 
                                                 <Form>
-                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' />
-                                                    <Button variant='grad' className='w-100'>Approve ETH</Button>
+                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={withdrawAmount} onChange={(e)=>{setWithdrawAmount(e.target.value)}}/>
+                                                    <Button variant='grad' className='w-100' onClick={withdraw} >Withdraw</Button>
                                                 </Form>
                                             </div>
                                         </Tab>
@@ -113,30 +229,30 @@ const MoneyMarket = () => {
                                     <h4 className="mb-20 font-bold card-left-title font-normal">Market</h4>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>APR</span>
-                                        <strong>89.20%</strong>
+                                        <strong>8.47%</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Total</span>
-                                        <strong>1,850 ETH</strong>
+                                        <strong>{totalDeposited ? parseFloat(totalDeposited/1e18).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Available</span>
-                                        <strong>397.4 ETH</strong>
+                                        <strong>{totalDeposited ? parseFloat((totalDeposited - (2 * totalELEM))/1e18).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Borrowed</span>
-                                        <strong>78.52%</strong>
+                                        <strong>{totalBorrowPercent? parseFloat(totalBorrowPercent).toFixed(2) : "0.00"}%</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Collateral</span>
-                                        <strong>44.13 ETH</strong>
+                                        <strong>{totalDeposited ? parseFloat(totalDeposited/1e18).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Health</span>
-                                        <strong>276%</strong>
+                                        <strong>{totalBorrowPercent? parseFloat(100 - totalBorrowPercent).toFixed(2) : "0.00"}%</strong>
                                     </div>
 
-                                    <div className="pt-4 pb-5">
+                                    {/* <div className="pt-4 pb-5">
                                         <Button variant='grad'>Update Price</Button>
                                     </div>
 
@@ -144,7 +260,7 @@ const MoneyMarket = () => {
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Name</span>
                                         <strong>Chainlink</strong>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </Col>

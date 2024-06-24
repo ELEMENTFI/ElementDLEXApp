@@ -33,20 +33,20 @@ const HomeBannerBanking = () => {
                 </Row>
 
                 <div className="pt-4">
-                <Link to="/dashboard" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Stablecoin Hub</Link>
+                {/* <Link to="/dashboard" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Stablecoin Hub</Link> */}
                 <Link to="/elemcurrency" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>ELEM Currency</Link>
                 <Link to="/swap" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>AMM DEX</Link>
                 <Link to="/lending" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Money Market</Link>
-                <Link to="/launchpad" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Launchpad</Link>
-                <Link to="/farm" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Yield Farming</Link>
+                {/* <Link to="/launchpad" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Launchpad</Link> */}
+                {/* <Link to="/farm" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>Yield Farming</Link> */}
                 <a href="https://elementnft.vercel.app/" target="_blank" rel="noreferrer" className='m-md-2 mb-3 btn btn-lg btn-sm-full d-md-none btn-grad'>NFT Market</a>
-                    <Link to="/dashboard" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Stablecoin Hub</Link>
+                    {/* <Link to="/dashboard" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Stablecoin Hub</Link> */}
                     <Link to="/elemcurrency" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>ELEM Currency</Link>
                     <Link to="/swap" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>AMM DEX</Link>
                     <Link to="/lending" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Money Market</Link>
-                    <Link to="/launchpad" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Launchpad</Link>
-                    <Link to="/farm" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Yield Farming</Link>
-                    <a href="https://elementnft.vercel.app/" target="_blank" rel="noreferrer" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>NFT Market</a>
+                    {/* <Link to="/launchpad" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Launchpad</Link> */}
+                    {/* <Link to="/farm" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>Yield Farming</Link> */}
+                    {/* <a href="https://elementnft.vercel.app/" target="_blank" rel="noreferrer" className='m-md-2 mb-3 btn btn-lg btn-mob-full d-none d-md-inline-block btn-grad'>NFT Market</a> */}
                 </div>
             </Container>
         </div>
