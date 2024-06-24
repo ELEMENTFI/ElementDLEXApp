@@ -10,11 +10,18 @@ import Logo from '../../assets/images/logo.png';
 import colorLogo from '../../assets/images/sidebar-logo.png'
 import url from "../../configurl"
 import MyAlgoConnect from '@randlabs/myalgo-connect';
+import { ethers } from 'ethers';
+import { ConnectWallet } from '../../generalFunctions';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
 const myAlgoWallet = new MyAlgoConnect({ disableLedgerNano: false });
 const algosdk = require("algosdk");
 
+
 function Header() {
     const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
 
     const [assetCount, setAssetCount] = useState("");
     const [algoBalance, setAlgoBalance] = useState("");
@@ -72,6 +79,23 @@ function Header() {
         setAlgoBalance(accountInfo['amount']);
       }
 
+      const connectWalletSei = async() => {
+
+        await ConnectWallet();
+                // A Web3Provider wraps a standard Web3 provider, which is
+        // what MetaMask injects as window.ethereum into each page
+        // const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+        // // MetaMask requires requesting permission to connect users accounts
+        // await provider.send("eth_requestAccounts", []);
+
+        // // The MetaMask plugin also allows signing transactions to
+        // // send ether and pay to change state within the blockchain.
+        // // For this, you need the account signer...
+        // const signer = provider.getSigner()
+
+      }
+
 
 
     return (
@@ -99,7 +123,7 @@ function Header() {
                             <div className="navbar-controls ms-lg-auto order-xl-2 d-flex align-items-center">
                             <>
                             { showButton ? 
-                                <button className='btn me-0 btn-grad' onClick={()=>connectWallet()}>Connect Wallet</button>
+                                <button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>{ address? <>{(address).substring(0, 4)}...{(address).substring((address).length -4, (address).length)}</> :" Connect Wallet"}</button>
                                 : <>
                                {/* <button className='btn me-2 btn-grad' > {parseFloat(wb).toFixed(2)}&nbsp;ETH </button> */}
 
@@ -109,7 +133,7 @@ function Header() {
                                 <Dropdown >
                                     <Dropdown.Toggle variant="grad" className='dropdown-noarrow' id="dropdown-basic">
                                     {/* {(localStorage.getItem("walletAddress")).substring(0, 4)}...{(localStorage.getItem("walletAddress")).substring((localStorage.getItem("walletAddress")).length -4, (localStorage.getItem("walletAddress")).length)} */}
-                                    {(localStorage.getItem("walletAddress")).substring(0, 4)}...{(localStorage.getItem("walletAddress")).substring((localStorage.getItem("walletAddress")).length -4, (localStorage.getItem("walletAddress")).length)}
+                                    {(address).substring(0, 4)}...{(address).substring((address).length -4, (address).length)}
 
                                     </Dropdown.Toggle>
 

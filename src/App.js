@@ -32,10 +32,48 @@ import MoneyMarket from './components/MoneyMarket';
 import MoneyMarketV2 from './components/MoneyMarketV2';
 import MoneyMarketOrder from './components/MoneyMarketOrder';
 import MoneyMarketOrderV2 from './components/MoneyMarketOrderV2';
+import { useWeb3ModalAccount, createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { ethers } from 'ethers';
+
+
+const projectId = 'a0566b417a74c151a64e8e2f9c911652'
+
+
+
+const metadata = {
+  name: 'My Website',
+  description: 'My Website description',
+  url: 'https://mywebsite.com',
+  icons: ['https://avatars.mywebsite.com/']
+}
+const testnet = {
+  chainId: 1328,
+  name: 'Sei Testnet',
+  currency: 'SEI',
+  explorerUrl: 'https://seitrace.com',
+  rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+}
+
+createWeb3Modal({
+  ethersConfig: defaultConfig({ 
+    metadata,
+    defaultChainId: 1328,
+    enableEIP6963: true,
+    enableInjected: true,
+    enableCoinbase: true,
+    rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+  }),
+  chains: [testnet],
+  projectId
+});
 
 function App() {
+  const { address, chainId, isConnected } = useWeb3ModalAccount();
+  console.log("app.js",address, chainId);
   return (
+   
     <Router>
+       
       <Switch>
         <Route path="/borrow-card">
           <MoneyMarketOrderV2 />
@@ -120,6 +158,8 @@ function App() {
           <Home />
         </Route> */}
       </Switch>
+      
+     
     </Router>
   );
 }

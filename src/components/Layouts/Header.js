@@ -22,6 +22,9 @@ import { createtxhash,gettxhistory } from '../apicallfunction';
 import { postusertx,postuserstatus } from '../apicallfunction';
 import { asset3id,priceOfCoin2,readingLocalstate,assetName,asset1id,asset2id,priceOfCoin1,walletAsset,walletAssetDetails,asset1WithId,asset2WithId,readingLocalstateWithAppid ,escrowdata,usdcbalance,rewardasset1,rewardasset2} from '../formula';
 import moonbeam from "../../assets/images/moonbeam.png";
+import { ethers } from 'ethers';
+import { ConnectWallet, ChangeNetwork } from '../../generalFunctions';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
 const myAlgoWallet = new MyAlgoConnect({ disableLedgerNano: false });
 
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -37,6 +40,9 @@ let indexerClient = new algosdk.Indexer(token, baseServer, port);
 let appID_global = 57691024;
 
 function Header() {
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
     
     const [show, setShow] = React.useState(false);
     const handleClose = () => setShow(false);
@@ -475,6 +481,27 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
             setclosevalue(true);
         }
 
+        const connectWalletSei = async() => {
+            await ConnectWallet();
+            // A Web3Provider wraps a standard Web3 provider, which is
+    // what MetaMask injects as window.ethereum into each page
+    // const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+    // // MetaMask requires requesting permission to connect users accounts
+    // await provider.send("eth_requestAccounts", []);
+
+    // // The MetaMask plugin also allows signing transactions to
+    // // send ether and pay to change state within the blockchain.
+    // // For this, you need the account signer...
+    // const signer = provider.getSigner()
+    // console.log(signer, signer._address);
+
+  }
+
+  const changeNetwork = async() => {
+    await ChangeNetwork(walletProvider);
+  }
+
     return (
         <>
             <header className="header">
@@ -500,13 +527,13 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                 </Navbar.Toggle>
                             </div>
                             <div className="navbar-controls order-xl-2 d-flex align-items-center">
-                                <button className='btn me-2 btn-grad px-3'>
+                                {/* <button className='btn me-2 btn-grad px-3'> */}
                                     {/* <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi m-0 bi-plus-circle" viewBox="0 0 16 16">
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                                     </svg> */}
-                                    <img src={moonbeam} fill="currentColor"/>
-                                </button>
+                                    {/* <img src={moonbeam} fill="currentColor"/>
+                                </button> */}
 
                                 {/* <Dropdown>
                                     <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -526,7 +553,11 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                     
 
                                 { showButton ? 
-                                <button className='btn me-0 btn-grad' onClick={()=>connectWallet()}>Connect Wallet</button>
+                                isConnected ? 
+                                <>{chainId === 1328 ? <button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>{ address? <>{(address).substring(0, 4)}...{(address).substring((address).length -4, (address).length)}</> :" Connect Wallet"}</button> : 
+                                <button className='btn me-0 btn-grad' onClick={()=>changeNetwork()}>Wrong Chain</button>}</> :
+                                <><button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>Connect wallet</button></> 
+                                
                                 : <>
                                {/* <button className='btn me-2 btn-grad' > {parseFloat(wb).toFixed(2)}&nbsp;ETH </button> */}
 
@@ -642,13 +673,13 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                             </div>
 
                             <Nav className="mx-auto navbar-nav-inner">
-                                <Link className='nav-link' to="/swap" activeClassName="active">Swap</Link>
-                                <Link className='nav-link' to="/pool" activeClassName="active">Pool</Link>
-                                <Link className='nav-link' to="/farm" activeClassName="active">Farm</Link>
+                                <Link className='nav-link' to="/swap" activeClassName="active">Swap<Badge>Upcoming</Badge></Link>
+                                <Link className='nav-link' to="/pool" activeClassName="active" onClick={e => e.preventDefault()}>Pool<Badge>Upcoming</Badge></Link>
+                                <Link className='nav-link' to="/farm" activeClassName="active" onClick={e => e.preventDefault()}>Farm<Badge>Upcoming</Badge></Link>
                                 {/* <Link className='nav-link' to="/vaults" activeClassName="active">Vaults</Link>*/}
                                 {/* <Link className='nav-link' to="/stake" activeClassName="active">Stake</Link>  */}
-                                <Link className='nav-link' to="/launchpad" activeClassName="active">Launchpad</Link>
-                                <Link className='nav-link' to="/dashboard" activeClassName="active">Stablecoin Hub</Link>
+                                {/* <Link className='nav-link' to="/launchpad" activeClassName="active">Launchpad</Link>
+                                <Link className='nav-link' to="/dashboard" activeClassName="active">Stablecoin Hub</Link> */}
                                 {/* <Link className='nav-link' to="/analytics" activeClassName="active">Credit <Badge>Upcoming</Badge></Link> */}
                                 {/* <Link className='nav-link' to="/moneymarket" activeClassName="active">Money Market</Link> */}
                                 <Dropdown>
@@ -661,7 +692,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                             <Dropdown.Item style={{backgroundColor:"#0d0a19"}} href="/borrow">Borrow</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                <Link className='nav-link' to="/analytics" activeClassName="active">Analytics</Link>
+                                <Link className='nav-link' to="/analytics" activeClassName="active" onClick={e => e.preventDefault()}>Analytics<Badge>Upcoming</Badge></Link>
                                 <Link className='nav-link disabled' to="/bridge" activeClassName="active"  >Bridge<Badge>Upcoming</Badge></Link>
                             </Nav>
                         </Navbar.Collapse>

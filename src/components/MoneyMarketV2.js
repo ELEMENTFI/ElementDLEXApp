@@ -5,7 +5,9 @@ import Layout from './Layouts/LayoutInner';
 import Icon1 from '../assets/images/icon1.png';
 import Icon2 from '../assets/images/icon2.png';
 import tauLogo from '../assets/images/tau-original.png'
+import usdcLogo from '../assets/images/usdc-logo.png'
 import elemLogo from '../assets/images/elem-original.png'
+import colorLogo from '../assets/images/element logo.png'
 
 import BG from '../assets/images/bg-v2.png';
 
@@ -49,7 +51,7 @@ const MoneyMarket = () => {
                                                 <div className="table-group-th">Markets</div>
                                                 <div className="table-group-th">Lending</div>
                                                 <div className="table-group-th">Collateral</div>
-                                                <div className="table-group-th">Oracle</div>
+                                                {/* <div className="table-group-th">Oracle</div> */}
                                                 <div className="table-group-th">APR
                                                     {/* <Dropdown>
                                                         <Dropdown.Toggle variant="reset" id="dropdown-basic">
@@ -73,14 +75,14 @@ const MoneyMarket = () => {
                                             <div className="table-group-tr">
                                                 <div className="table-group-td">
                                                     <div className="d-flex align-items-center td-cell">
-                                                        <img src={tauLogo} alt='icon' />
-                                                        <img src={elemLogo} alt='icon' />
+                                                        <img src={usdcLogo} alt='icon' />
+                                                        <img src={colorLogo} alt='icon' />
                                                     </div>
                                                 </div>
-                                                <div className="table-group-td text-uppercase" style={{color:"white"}}>ETH</div>
-                                                <div className="table-group-td text-uppercase" style={{color:"white"}}>ETH</div>
-                                                <div className="table-group-td" style={{color:"white"}}>Chainlink</div>
-                                                <div className="table-group-td" style={{color:"white"}}>89.20%</div>
+                                                <div className="table-group-td text-uppercase" style={{color:"white"}}>ELEM</div>
+                                                <div className="table-group-td text-uppercase" style={{color:"white"}}>USDC</div>
+                                                {/* <div className="table-group-td" style={{color:"white"}}>Chainlink</div> */}
+                                                <div className="table-group-td" style={{color:"white"}}>8.47%</div>
                                                 <div className="table-group-td" style={{color:"white"}}>78.52%</div>
                                                 <div className="table-group-td text-end" style={{color:"white"}}>
                                                     <p>1,850 ETH <br />$51,245</p>
