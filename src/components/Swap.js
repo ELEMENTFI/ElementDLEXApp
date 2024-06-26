@@ -20,6 +20,10 @@ import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 import { useLocation } from "react-router-dom";
 import algosdk from "algosdk";
 import {amount_out_with_slippage,asset1_price,assert3Reserve,assert1Reserve,assert2Reserve,readingLocalstate,escrowdatacompile,checkassetin,escrowdata,asset2_price, find_balance_escrow,find_balance,priceOfCoin1,priceOfCoin2} from './formula';
+import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react'; 
+import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, PancakeRouterV2ABI, PancakePairV2ABI, ERC20ABI, WSEIAddress } from '../abi';
+import { ethers } from 'ethers';
+
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
 let appID_global = 57691024;
@@ -683,6 +687,26 @@ function SwapPage(props) {
   React.useEffect(() => {
     window.scrollTo(0, 0);
 });
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
+
+    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const provider = new ethers.providers.JsonRpcProvider(url);
+
+    const [ swapamount1, setSwapamount1 ] = useState("");
+    const [ swapamount2, setSwapamount2 ] = useState("");
+    const [ slippage, setSlippage ] = useState(0.01);
+    const [allowance, setAllowance] = useState("");
+    const [ token1, setToken1 ] = useState("");
+    const [ token2, setToken2 ] = useState("");
+    const [ tokenName1, setTokenName1 ] = useState("");
+    const [ tokenName2, setTokenName2 ] = useState("");
+    const [ tokenDecimals1, setTokenDecimals1 ] = useState(18);
+    const [ tokenDecimals2, setTokenDecimals2 ] = useState(18);
+    const [ tokenbal1, setTokenbal1 ] = useState(0.0);
+    const [ tokenbal2, setTokenbal2 ] = useState(0.0);
+    const [ ethbal, setEthbal ] = useState(0.0);
 
   const location = useLocation();
   const [a, setdisplay] = useState([]);
@@ -1546,6 +1570,7 @@ else{
 
   const feesAmount =(f) =>{
     setfees(f);
+    setSlippage(f);
     handleCloseModal();
   }
   const setpChange =() =>{
@@ -1561,7 +1586,17 @@ else{
 const changetokens =()=>{
   setSwapv(!swapv)
   setsamount1(0)
-  setsamount2(0)
+  setsamount2(0);
+  const tokenbuff = token1;
+  const tokenbuff2 = tokenName1;
+  const tokenbuff3 = tokenDecimals1;
+  setToken1(token2);
+  setToken2(tokenbuff);
+  setTokenName1(tokenName2);
+  setTokenName2(tokenbuff2);
+  setTokenDecimals1(tokenDecimals2);
+  setTokenDecimals2(tokenbuff3);
+
   // let a = tk1;
   // let b = tk2;
   // // sett1(a) 
@@ -1611,6 +1646,113 @@ toast.success(`Transaction Success ${response.txId}`);
     // console.error(err);
   }
 }
+
+const approveSei = async() => {
+  try{
+      console.log("approve starts...");
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const erc20Contract = new ethers.Contract(token1, ERC20ABI, signer);
+      // const cfContract = new ethers.Contract(cftokenAddress, cftokenAbi, signer);
+      let tx;
+      
+          tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((swapamount1).toString(), 18));
+      
+      await tx.wait();
+      await fun();
+  }catch(e){
+      console.error(e);
+  }
+ 
+}
+
+
+  const swapSei = async() => {
+      try{
+        const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+        const signer =  ethersProvider.getSigner();
+        const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+        const currentEpoch = Math.floor(Date.now() / 1000); // current epoch in seconds
+        const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
+        if (typeof swapamount1 !== 'string') {
+          swapamount1 = swapamount1.toString();
+        }
+        
+        // Convert the deposit amount to wei
+        let amountInWei = ethers.utils.parseUnits(swapamount1, tokenDecimals1);
+        let amountInWei2 = ethers.utils.parseUnits((swapamount2).toString(), tokenDecimals2);
+        let amountInWei2Slipped = ethers.utils.parseUnits((swapamount2 - (swapamount2 * (slippage/100))).toString(), tokenDecimals2);
+        console.log("chack", amountInWei2, amountInWei2Slipped);
+
+        let tx;
+        if(tokenName1 === "ETH"){
+          tx = await swapContract.swapExactETHForTokens(amountInWei2, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
+        } else if (tokenName2 === "ETH") {
+          tx = await swapContract.swapExactTokensForETH(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
+        } else {
+          tx = await swapContract.swapExactTokensForTokens(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
+        }
+        
+        await tx.wait();
+        setSwapamount1("");
+        // await fun();
+        
+    }catch(e){
+        console.error(e);
+    }
+  }
+
+  const handleSwapamount1 = async(e) => {
+    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+    const signer =  ethersProvider.getSigner();
+    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+    setSwapamount1(e);
+    let swapAmount22 = await swapContract.getAmountsOut(ethers.utils.parseUnits((e).toString(), tokenDecimals1), [token1,token2]);
+    let swapbuff = ethers.utils.formatUnits(swapAmount22[1]._hex, 0)
+    setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
+    console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
+  };
+
+  const handleSwapamount2 = async(e) => {
+    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
+    setSwapamount2(e);
+    let swapAmount11 = await swapContract.getAmountsIn(ethers.utils.parseUnits((e).toString(), tokenDecimals2), [token1,token2]);
+    let swapbuff = ethers.utils.formatUnits(swapAmount11[1]._hex, 0)
+    setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)));
+    console.log("SwapAmount2:", e, swapAmount11, parseFloat(swapbuff/(10**tokenDecimals1)));
+  };
+
+  const fun = async() => {
+    try{
+      console.log("check use");
+      const eth = await provider.getBalance(address);
+      setEthbal(eth);
+
+      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
+      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
+
+      if(token1 !== WSEIAddress){
+        let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
+        setAllowance(allowance1);
+        console.log("allow",allowance1);
+      }
+      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+      setTokenbal1(tokenbal1);
+      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+      setTokenbal2(tokenbal2);
+      console.log("allow",tokenbal1,tokenbal2,ethbal);
+      // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
+      // setbusdBalance(balance1);
+    } catch(e) {
+      console.error(e);
+    }
+    
+}
+
+  useEffect(() => {
+    fun();
+    console.log("tokens:", token1, token2, tokenDecimals1, tokenDecimals2);
+  },[address, isConnected, token1, token2]);
 
     return (
         <Layout>
@@ -1673,7 +1815,8 @@ toast.success(`Transaction Success ${response.txId}`);
                                 <div className="d-flex mb-1 justify-content-end">
                                 <Row className='align-items-center mb-2'>
                                   <Col>
-                                <button className='btn btn-grad' onClick={()=>appOptIn()}>App Opt-In</button>
+                                {/* <button className='btn btn-grad' onClick={()=>appOptIn()}>App Opt-In</button> */}
+                                <button className='btn btn-grad'>{slippage}%</button>
                                 </Col>
                                 <Col>
                                     <Button variant='reset' onClick={handleShowModal}>
@@ -1718,19 +1861,22 @@ toast.success(`Transaction Success ${response.txId}`);
   <>
    <div className="balance-card d-flex align-items-center justify-content-between">
 
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} />
-  <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId1)=>(setAssetId1(AssetId1))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}}></FilterDropdown>
+  {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} /> */}
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
+  <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId1)=>(setAssetId1(AssetId1))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}></FilterDropdown>
   </div>
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) }
+    {/* {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) } */}
+    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
 
     </>
 ):(<>
 <div className="balance-card d-flex align-items-center justify-content-between">
- <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} />
- <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}}/>
+ {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} /> */}
+ <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
+ <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}/>
  </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    <small>Balance:{(id2Token=== NaN||id2Token ===undefined||id2Token===null)?'0.0':parseFloat(id2Token/1000000).toFixed(2)  } </small>
+                                    <small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4)  } </small>
     
 </>)} 
  
@@ -1738,7 +1884,9 @@ toast.success(`Transaction Success ${response.txId}`);
 ):(<>
  <div className="balance-card d-flex align-items-center justify-content-between">
 
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1duplicate((event.target.value)* 1000000)} />
+  {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1duplicate((event.target.value)* 1000000)} /> */}
+
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
 
   <Button variant='filter'  >
             {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="">
@@ -1755,7 +1903,7 @@ toast.success(`Transaction Success ${response.txId}`);
          
         </Button>
         </div>
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0':parseFloat(id1Token/1000000).toFixed(2) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
 
 </>)}                                        
   </div>
@@ -1783,24 +1931,27 @@ toast.success(`Transaction Success ${response.txId}`);
     {swapv ? (
   <>
    <div className="balance-card d-flex align-items-center justify-content-between">
-  <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} />
-  <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}}/>
+  {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} /> */}
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
+  <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}/>
   </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    <small>Balance:{(id2Token=== NaN||id2Token ===undefined||id2Token===null)?'0.0': parseFloat(id2Token/1000000).toFixed(2) } </small>
+                                    <small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small>
                                     
  </>
 ):(<>
  <div className="balance-card d-flex align-items-center justify-content-between">
- <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} />
- <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId2)=>(setAssetId1(AssetId2))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}}></FilterDropdown>
+ {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} /> */}
+ <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
+ <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId2)=>(setAssetId1(AssetId2))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}></FilterDropdown>
   </div>
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
 
     </>)} </>
 ):(<>
  <div className="balance-card d-flex align-items-center justify-content-between">
-  <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2duplicate((event.target.value)* 1000000)} />
+  {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2duplicate((event.target.value)* 1000000)} /> */}
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
 
   <Button variant='filter'  >
             {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="">
@@ -1818,7 +1969,7 @@ toast.success(`Transaction Success ${response.txId}`);
         </Button>
         </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    <small>Balance:{(id2Token=== NaN||id2Token ===undefined||id2Token===null)?'0.0': parseFloat(id2Token/1000000).toFixed(2)  } </small>
+                                    <small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4)  } </small>
                                     
 </>)}
                                     {/* </>) } */}
@@ -1865,10 +2016,17 @@ toast.success(`Transaction Success ${response.txId}`);
                                 {sufficient ? (<>
                                   <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' >INSUFFICIENT LIQUIDITY</Button>
                                 </>):(<>
-                                  {(swapopt === true ) ? (<>
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>optinassert()}> Asset Opt-In </Button>
+                                  {/* {(swapopt === true ) ? (<>
+                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {assn1? assn1 : ""}</Button>
                                 </>):(<>
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button>
+                                    
+                                </>)} */}
+                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4") ? (<>
+                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
+                                </>):(<>
+                                    {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
+                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>ZERO FEE EXCHANGE</Button>
                                 </>)}
                                 </>)}
                                 </center>
@@ -1897,7 +2055,7 @@ toast.success(`Transaction Success ${response.txId}`);
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        {ass1 ? ass1 : "ETH"}
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>):(<>
                                       {logovalue2 ? (<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns={logovalue1}>
@@ -1917,7 +2075,7 @@ toast.success(`Transaction Success ${response.txId}`);
 </svg>
                                         </>)}
 
-                                        {ass ? ass : "ETH"}
+                                        <span style={{"color":"white"}}>{ass ? ass : "ETH"}</span>
                                     </>)}
                                        
                                      </Breadcrumb.Item>
@@ -1942,7 +2100,7 @@ toast.success(`Transaction Success ${response.txId}`);
 
                                         </>)}
 
-                                        {ass ? ass : "ETH"}
+                                        <span style={{"color":"white"}}>{ass ? ass : "ETH"}</span>
                                     </>):(<>
                                       {logovalue1 ? (<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns={logovalue1}>
@@ -1960,7 +2118,7 @@ toast.success(`Transaction Success ${response.txId}`);
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        {ass1 ? ass1 : "ETH"}
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>)}
                                    
                                     </Breadcrumb.Item>
