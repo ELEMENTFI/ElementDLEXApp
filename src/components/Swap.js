@@ -10,6 +10,7 @@ import FilterDropdown from './Snippets/FilterDropdown';
 import FilterDropdown2 from './Snippets/FilterDropdown2';
 import logo from '../assets/images/logoasset.png';
 import taulogo from '../assets/images/tau-original.png';
+import questionlogo from '../assets/images/question_logo3.png'
 // const animatedComponents = makeAnimated();
 import { useState } from "react";
 import { useEffect } from "react";
@@ -774,7 +775,8 @@ console.log("Assetid1",AssetId1,AssetId2)
     //   // sets1(a.avalue);
     //   // sets2(a.bvalue);
     // }
-    useEffect(async() =>{
+    useEffect(() =>{
+      const asyncFn = async () => {
       if(location.state === null || location.state === undefined || location.state ===""){
         setdvalue(true);
       }
@@ -796,6 +798,8 @@ console.log("Assetid1",AssetId1,AssetId2)
 
     console.log("pagesi",v); 
       }
+    }
+    asyncFn();
 
     },[])
    
@@ -1674,20 +1678,17 @@ const approveSei = async() => {
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
         const currentEpoch = Math.floor(Date.now() / 1000); // current epoch in seconds
         const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
-        if (typeof swapamount1 !== 'string') {
-          swapamount1 = swapamount1.toString();
-        }
         
         // Convert the deposit amount to wei
-        let amountInWei = ethers.utils.parseUnits(swapamount1, tokenDecimals1);
+        let amountInWei = ethers.utils.parseUnits((swapamount1).toString(), tokenDecimals1);
         let amountInWei2 = ethers.utils.parseUnits((swapamount2).toString(), tokenDecimals2);
         let amountInWei2Slipped = ethers.utils.parseUnits((swapamount2 - (swapamount2 * (slippage/100))).toString(), tokenDecimals2);
         console.log("chack", amountInWei2, amountInWei2Slipped);
 
         let tx;
-        if(tokenName1 === "ETH"){
+        if(tokenName1 === "ETH" || tokenName1 === "SEI"){
           tx = await swapContract.swapExactETHForTokens(amountInWei2, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
-        } else if (tokenName2 === "ETH") {
+        } else if (tokenName2 === "ETH" || tokenName2 === "SEI") {
           tx = await swapContract.swapExactTokensForETH(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
         } else {
           tx = await swapContract.swapExactTokensForTokens(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
@@ -1695,7 +1696,8 @@ const approveSei = async() => {
         
         await tx.wait();
         setSwapamount1("");
-        // await fun();
+        setSwapamount2("");
+        await fun();
         
     }catch(e){
         console.error(e);
@@ -1717,7 +1719,7 @@ const approveSei = async() => {
     const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
     setSwapamount2(e);
     let swapAmount11 = await swapContract.getAmountsIn(ethers.utils.parseUnits((e).toString(), tokenDecimals2), [token1,token2]);
-    let swapbuff = ethers.utils.formatUnits(swapAmount11[1]._hex, 0)
+    let swapbuff = ethers.utils.formatUnits(swapAmount11[0]._hex, 0)
     setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)));
     console.log("SwapAmount2:", e, swapAmount11, parseFloat(swapbuff/(10**tokenDecimals1)));
   };
@@ -1740,7 +1742,7 @@ const approveSei = async() => {
       setTokenbal1(tokenbal1);
       let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
       setTokenbal2(tokenbal2);
-      console.log("allow",tokenbal1,tokenbal2,ethbal);
+      console.log("allow1",tokenbal1,tokenbal2,eth);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
     } catch(e) {
@@ -1862,17 +1864,17 @@ const approveSei = async() => {
    <div className="balance-card d-flex align-items-center justify-content-between">
 
   {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} /> */}
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1? swapamount1 : ""} onChange={(e) => handleSwapamount1(e.target.value)} />
   <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId1)=>(setAssetId1(AssetId1))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}></FilterDropdown>
   </div>
     {/* {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) } */}
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
 
     </>
 ):(<>
 <div className="balance-card d-flex align-items-center justify-content-between">
  {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} /> */}
- <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
+ <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1? swapamount1 : ""} onChange={(e) => handleSwapamount1(e.target.value)} />
  <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}/>
  </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
@@ -1886,7 +1888,7 @@ const approveSei = async() => {
 
   {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1duplicate((event.target.value)* 1000000)} /> */}
 
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1} onChange={(e) => handleSwapamount1(e.target.value)} />
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount1? swapamount1 : ""} onChange={(e) => handleSwapamount1(e.target.value)} />
 
   <Button variant='filter'  >
             {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="">
@@ -1894,7 +1896,7 @@ const approveSei = async() => {
                 <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
             </svg> */}
            
-           {a.name1 === "ETH"?(<>
+           {a.name1 === "ETH" || a.name1 === "SEI"?(<>
             <img  width="31" height="30" src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"}/>
            </>):(<>
             <img  width="31" height="30" src={logo}/>
@@ -1903,7 +1905,7 @@ const approveSei = async() => {
          
         </Button>
         </div>
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
 
 </>)}                                        
   </div>
@@ -1919,7 +1921,7 @@ const approveSei = async() => {
 
 <div className="mb-2">
     <label className='d-flex align-items-center justify-content-between'>To 
-    {(tk2 == "ETH")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
       (tk2 == "USDC")?(<><small>Price:${pc2 > 0 ? parseFloat(pc2).toFixed(2) :  (pr2 > 0)?pr2:'0.0'} {tk1.toUpperCase()}</small></>):(<></>) }
 
 
@@ -1932,33 +1934,34 @@ const approveSei = async() => {
   <>
    <div className="balance-card d-flex align-items-center justify-content-between">
   {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2((event.target.value)* 1000000)} /> */}
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2? swapamount2 : ""} onChange={(e) => handleSwapamount2(e.target.value)} disabled={true}/>
   <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}/>
   </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    <small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small>
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+                                    
                                     
  </>
 ):(<>
  <div className="balance-card d-flex align-items-center justify-content-between">
  {/* <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={((parseInt(samount1)/1000000 == NaN)||(samount1 == 0)) ? '' : parseInt(samount1)/1000000 } onChange={event => setvalueA1((event.target.value)* 1000000)} /> */}
- <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
+ <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2? swapamount2 : ""} onChange={(e) => handleSwapamount2(e.target.value)} disabled={true} />
  <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId2)=>(setAssetId1(AssetId2))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}></FilterDropdown>
   </div>
-    {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
 
     </>)} </>
 ):(<>
  <div className="balance-card d-flex align-items-center justify-content-between">
   {/* <input type='number' className='m-0 form-control p-0 border-0 text-white' placeholder="0.0" autoComplete='off' value={((parseInt(samount2)/1000000 == NaN)||(samount2 == 0))  ? '' :(parseInt(samount2)/1000000)} onChange={event => setvalueA2duplicate((event.target.value)* 1000000)} /> */}
-  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2} onChange={(e) => handleSwapamount2(e.target.value)} />
+  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2? swapamount2 : ""} onChange={(e) => handleSwapamount2(e.target.value)} disabled={true}/>
 
   <Button variant='filter'  >
             {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="">
                 <rect width="30.1212" height="30" rx="15" fill="#FA84B5"/>
                 <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
             </svg> */}
-           {a.name2 === "ETH"?(<>
+           {a.name2 === "ETH" || a.name2 === "SEI"?(<>
             <img  width="31" height="30" src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"}/>
            </>):(<>
             <img  width="31" height="30" src={logo}/>
@@ -1969,7 +1972,7 @@ const approveSei = async() => {
         </Button>
         </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    <small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4)  } </small>
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small></>) }
                                     
 </>)}
                                     {/* </>) } */}
@@ -2045,7 +2048,7 @@ const approveSei = async() => {
                                             <rect width="30.1212" height="30" rx="15" fill="White"/>
                                             <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
                                         </svg> */}
-                                        <img width="31" height="30"  src={logovalue1}/>
+                                        <img width="32" height="32"  src={logovalue1}/>
 
                                         </>):(<>
                                           <svg width="35" height="35" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2062,7 +2065,7 @@ const approveSei = async() => {
                                             <rect width="30.1212" height="30" rx="15" fill="White"/>
                                             <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
                                         </svg> */}
-                                        <img width="31" height="30"  src={logovalue2}/>
+                                        <img width="32" height="32"  src={logovalue2}/>
 
                                         </>):(<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2086,18 +2089,18 @@ const approveSei = async() => {
                                             <rect width="30.1212" height="30" rx="15" fill="White"/>
                                             <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
                                         </svg> */}
-                                        <img width="31" height="30"  src={logovalue2}/>
+                                        <img width="35" height="35"  src={logovalue2}/>
 
                                         </>):(<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <rect width="30.1212" height="30" rx="15" fill="White"/>
                                             <path d="M21.943 11.2538C21.4418 12.1245 20.965 12.8983 20.5494 13.6964C20.4394 13.914 20.3905 14.2284 20.4516 14.4582C21.1117 16.9612 21.7963 19.4642 22.4686 21.9671C22.5053 22.1122 22.542 22.2694 22.5909 22.4871C21.8452 22.4871 21.1728 22.5113 20.4883 22.4629C20.366 22.4508 20.1826 22.2211 20.146 22.0518C19.6937 20.4678 19.278 18.8837 18.8379 17.2997C18.8013 17.1788 18.7646 17.0579 18.7035 16.8644C18.5446 17.1304 18.4223 17.3239 18.3001 17.5295C17.4077 19.0651 16.5031 20.5887 15.6107 22.1364C15.464 22.3904 15.3051 22.4992 14.9994 22.4871C14.2904 22.4629 13.5814 22.475 12.7746 22.475C12.8968 22.2453 12.9824 22.076 13.0802 21.9067C14.596 19.307 16.0997 16.7193 17.6277 14.1317C17.7989 13.8415 17.8478 13.5997 17.75 13.2732C17.5055 12.463 17.2977 11.6287 17.0409 10.6976C16.9065 10.9274 16.8087 11.0725 16.7231 11.2176C14.6083 14.833 12.5056 18.4364 10.403 22.0639C10.2197 22.3904 10.0118 22.5113 9.63289 22.4992C8.96054 22.4629 8.27597 22.4871 7.53027 22.4871C7.64029 22.2694 7.72587 22.1122 7.81144 21.9671C10.5375 17.2997 13.2636 12.6444 15.9652 7.97698C16.173 7.61423 16.393 7.46913 16.8087 7.50541C17.2488 7.54168 17.6888 7.52959 18.1289 7.50541C18.4345 7.49331 18.5812 7.57796 18.6668 7.90443C18.9113 8.88387 19.2047 9.8633 19.4614 10.8427C19.5347 11.145 19.6692 11.2659 19.9871 11.2538C20.5983 11.2297 21.2217 11.2538 21.943 11.2538Z" fill="black"/>
                                         </svg> */}
-<svg width="35" height="35" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="19.5" cy="19.5" r="19.5" fill="#CACACA"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.35 19.5754L19.4468 7.8L26.5434 19.5754L19.4468 23.7702L19.4468 23.7702L12.35 19.5754ZM19.4468 30.9217L12.35 20.9212L19.4468 25.1139L26.5478 20.9212L19.4468 30.9217Z" fill="#1C1D1F"/>
-</svg>
-
+                                              <svg width="35" height="35" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <circle cx="19.5" cy="19.5" r="19.5" fill="#CACACA"/>
+                                              <path fill-rule="evenodd" clip-rule="evenodd" d="M12.35 19.5754L19.4468 7.8L26.5434 19.5754L19.4468 23.7702L19.4468 23.7702L12.35 19.5754ZM19.4468 30.9217L12.35 20.9212L19.4468 25.1139L26.5478 20.9212L19.4468 30.9217Z" fill="#1C1D1F"/>
+                                              </svg>
+                                             {/* <img width="31" height="30"  src={questionlogo}/> */}
                                         </>)}
 
                                         <span style={{"color":"white"}}>{ass ? ass : "ETH"}</span>
