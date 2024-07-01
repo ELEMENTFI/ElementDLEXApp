@@ -674,7 +674,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
 
                             <Nav className="mx-auto navbar-nav-inner">
                                 <Link className='nav-link' to="/swap" activeClassName="active">Swap</Link>
-                                <Link className='nav-link' to="/pool" activeClassName="active" onClick={e => e.preventDefault()}>Pool<Badge>Upcoming</Badge></Link>
+                                <Link className='nav-link' to="/pool" activeClassName="active">Pool</Link>
                                 <Link className='nav-link' to="/farm" activeClassName="active" onClick={e => e.preventDefault()}>Farm<Badge>Upcoming</Badge></Link>
                                 {/* <Link className='nav-link' to="/vaults" activeClassName="active">Vaults</Link>*/}
                                 {/* <Link className='nav-link' to="/stake" activeClassName="active">Stake</Link>  */}

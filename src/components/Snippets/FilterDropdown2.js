@@ -10,6 +10,7 @@ import taulogo from '../../assets/images/tau-original.png';
 import elemlogo from '../../assets/images/elem-original.png';
 import usdtimg from '../../assets/images/usdtimg.png';
 import ethlogo from '../../assets/images/Ethereum-icon.svg';
+import seilogo from '../../assets/images/sei-logo.png';
 import questionlogo from '../../assets/images/question_logo1.png'
 import warninglogo from '../../assets/images/warning_logo1.png'
 import {ERC20ABI} from '../../abi';
@@ -907,7 +908,7 @@ const FilterDropdown2 = ({setassetid2,setMax,setMax1,setMax2,setMax3,setk1,setTo
             // console.log(seemore.assets)
             let s =[];
             s=[
-                {index:0,image:ethlogo,name:"ETH", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:18},
+                {index:0,image:seilogo,name:"ETH", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:18},
                 {index:10458941,image:usdclogo,name:"USDC", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:6},
                 // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
                 {index:71116238,image:elemlogo,name:"ELEM", contract: "0xaB7eEc703836a34105c62595c346b23D4964A2a9", decimals:18},
