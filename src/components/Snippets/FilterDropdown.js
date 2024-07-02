@@ -7,7 +7,7 @@ import { axios } from 'axios';
 import {walletAsset,walletAssetDetails,find_balance} from "../formula";
 import usdclogo from '../../assets/images/usdc-logo.png';
 import taulogo from '../../assets/images/tau-original.png';
-import elemlogo from '../../assets/images/elem-original.png';
+import elemlogo from '../../assets/images/element logo.png';
 import usdtimg from '../../assets/images/usdtimg.png';
 import ethlogo from '../../assets/images/Ethereum-icon.svg'
 import seilogo from '../../assets/images/sei-logo.png';
@@ -149,7 +149,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
         // console.log(seemore.assets)
         let s =[];
         s=[
-            {index:0,image:seilogo,name:"ETH", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:18},
+            {index:0,image:seilogo,name:"ETH", contract: "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA", decimals:18},
             {index:10458941,image:usdclogo,name:"USDC", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:6},
             // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
             {index:71116238,image:elemlogo,name:"ELEM", contract: "0xaB7eEc703836a34105c62595c346b23D4964A2a9", decimals:18},

@@ -1600,7 +1600,7 @@ const changetokens =()=>{
   setTokenName2(tokenbuff2);
   setTokenDecimals1(tokenDecimals2);
   setTokenDecimals2(tokenbuff3);
-
+  handleSwapamount1(swapamount2);
   // let a = tk1;
   // let b = tk2;
   // // sett1(a) 
@@ -2025,7 +2025,7 @@ const approveSei = async() => {
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button>
                                     
                                 </>)} */}
-                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4") ? (<>
+                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA") ? (<>
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
