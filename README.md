@@ -1,2 +1,2 @@
 # ElementDLEXApp
-ElementDLEX App Page
+ElementDLEX App Page UI
