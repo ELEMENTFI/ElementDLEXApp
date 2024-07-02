@@ -2417,8 +2417,8 @@ const approvePair = async() => {
     let amountInWei = formatAmount(amount1, decimals1, 1);
     let amountInWei2 = formatAmount(amount2, decimals2, 2);
     console.log("event pre: ", amount1, amount2);
-    let amountInWei2Slipped = formatAmount(parseFloat(amount2 - (amount2 * (slippage / 100))).toFixed(decimals2), decimals2, 3);
-    console.log("check", amountInWei2, amountInWei2Slipped);
+    // let amountInWei2Slipped = formatAmount(parseFloat(amount2 - (amount2 * (slippage / 100))).toFixed(decimals2), decimals2, 3);
+    console.log("check", amountInWei, amountInWei2);
 
         let tx;
         if(name1 === "ETH" || name1 === "WSEI" || name1 === "SEI"){
@@ -2660,57 +2660,225 @@ const poolsei = async() => {
   
 }
 
-const fun1 = async() => {
+// const fun1 = async () => {
+//   try {
+//     const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
+//     let userPairs1 = await routerContract.getUserPairs(address);
+//     console.log("userPairs:", userPairs1);
+//     let pairBuff = [];
+
+//     // Use Promise.all to wait for all the async map operations to complete
+//     await Promise.all(userPairs1.map(async (x, i) => {
+//       console.log("Processing pair address:", x);
+//       // if (!ethers.utils.isAddress(x) || (x).toLowerCase() == ("0xb2A315326a6CD7F7449f3B641F6CEaAd6dCE3cC7").toLowerCase()) {
+//       //   console.error(`Invalid pair address: ${x}`);
+//       //   return;
+//       // }
+
+//       const pairContract = new ethers.Contract(x, PancakePairV2ABI, provider);
+//       let liqbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
+//       let [reserve11, reserve22,] = await pairContract.getReserves();
+
+//       let token11 = await pairContract.token0();
+//       let token22 = await pairContract.token1();
+//       if (!ethers.utils.isAddress(token11) || !ethers.utils.isAddress(token22)) {
+//         console.error(`Invalid token addresses: ${token11}, ${token22}`);
+//         return;
+//       }
+
+//       const erc20Contract1 = new ethers.Contract(token11, ERC20ABI, provider);
+//       const erc20Contract2 = new ethers.Contract(token22, ERC20ABI, provider);
+//       let assetName1 = await erc20Contract1.symbol();
+//       let assetName2 = await erc20Contract2.symbol();
+//       let decimals1 = await erc20Contract1.decimals();
+//       let decimals2 = await erc20Contract2.decimals();
+//       console.log("token:", i, x);
+      
+//       let swapPrice = await routerContract.quote(ethers.utils.parseUnits("1", decimals1), reserve11, reserve22);
+//       console.log("token2:", i, x);
+//       let priceinT1 = ethers.utils.formatUnits(swapPrice, decimals2);
+//       let tokenbal1;
+//       let tokenbal2;
+
+//       if ((token11).toLowerCase() !== (WSEIAddress).toLowerCase()) {
+//         tokenbal1 = await erc20Contract1.balanceOf(address);
+//       } else {
+//         tokenbal1 = await provider.getBalance();
+//         console.log("bal",tokenbal1);
+//       }
+
+//       if ((token22).toLowerCase() !== (WSEIAddress).toLowerCase()) {
+//         tokenbal2 = await erc20Contract2.balanceOf(address);
+//       } else {
+//         tokenbal2 = await provider.getBalance();
+//       }
+
+//       console.log("token3:", i, x);
+//       pairBuff.push({
+//         pair: x,
+//         asset1Name: assetName1,
+//         asset2Name: assetName2,
+//         reserve1: ethers.utils.formatUnits(reserve11, decimals1),
+//         reserve2: ethers.utils.formatUnits(reserve22, decimals2),
+//         price: priceinT1,
+//         tokenAddress1: token11,
+//         tokenAddress2: token22,
+//         tokenDecimals1: decimals1,
+//         tokenDecimals2: decimals2,
+//         tokenBal1: ethers.utils.formatUnits(tokenbal1, decimals1),
+//         tokenBal2: ethers.utils.formatUnits(tokenbal2, decimals2),
+//         liquidity: liqbal1
+//       });
+//       console.log("address", x);
+//     }));
+
+//     setUserPairs(pairBuff);
+//     console.log("all pairs:", pairBuff, userPairs);
+//   } catch (e) {
+//     console.error("error1:", e);
+//   }
+// }
+
+const fun1 = async () => {
   try {
     const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
     let userPairs1 = await routerContract.getUserPairs(address);
+    console.log("userPairs:", userPairs1);
     let pairBuff = [];
 
-    // Use Promise.all to wait for all the async map operations to complete
     await Promise.all(userPairs1.map(async (x, i) => {
-      if (!ethers.utils.isAddress(x) || (x).toLowerCase() == ("0xb2A315326a6CD7F7449f3B641F6CEaAd6dCE3cC7").toLowerCase()) {
-        console.error(`Invalid address: ${x}`);
+      console.log("Processing pair address:", x);
+
+      const pairContract = new ethers.Contract(x, PancakePairV2ABI, provider);
+      
+      let liqbal1;
+      let reserves;
+      let token11;
+      let token22;
+
+      try {
+        liqbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
+      } catch (e) {
+        console.error(`Error fetching balance of pair ${x}:`, e);
         return;
       }
-      const pairContract = new ethers.Contract(x, PancakePairV2ABI, provider);
-      let liqbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
-      let [reserve11, reserve22, ] = await pairContract.getReserves();
 
-      let token11 = await pairContract.token0();
-      let token22 = await pairContract.token1();
+      try {
+        reserves = await pairContract.getReserves();
+      } catch (e) {
+        console.error(`Error fetching reserves of pair ${x}:`, e);
+        return;
+      }
+
+      try {
+        token11 = await pairContract.token0();
+      } catch (e) {
+        console.error(`Error fetching token0 of pair ${x}:`, e);
+        return;
+      }
+
+      try {
+        token22 = await pairContract.token1();
+      } catch (e) {
+        console.error(`Error fetching token1 of pair ${x}:`, e);
+        return;
+      }
+
+      if (!ethers.utils.isAddress(token11) || !ethers.utils.isAddress(token22)) {
+        console.error(`Invalid token addresses: ${token11}, ${token22}`);
+        return;
+      }
+
       const erc20Contract1 = new ethers.Contract(token11, ERC20ABI, provider);
       const erc20Contract2 = new ethers.Contract(token22, ERC20ABI, provider);
-      let assetName1 = await erc20Contract1.symbol();
-      let assetName2 = await erc20Contract2.symbol();
-      let decimals1 = await erc20Contract1.decimals();
-      let decimals2 = await erc20Contract2.decimals();
-      let swapPrice = await routerContract.quote(ethers.utils.parseUnits((1).toString(), decimals1), reserve11, reserve22);
+      let assetName1;
+      let assetName2;
+      let decimals1;
+      let decimals2;
+
+      try {
+        assetName1 = await erc20Contract1.symbol();
+      } catch (e) {
+        console.error(`Error fetching symbol for token ${token11}:`, e);
+        return;
+      }
+
+      try {
+        assetName2 = await erc20Contract2.symbol();
+      } catch (e) {
+        console.error(`Error fetching symbol for token ${token22}:`, e);
+        return;
+      }
+
+      try {
+        decimals1 = await erc20Contract1.decimals();
+      } catch (e) {
+        console.error(`Error fetching decimals for token ${token11}:`, e);
+        return;
+      }
+
+      try {
+        decimals2 = await erc20Contract2.decimals();
+      } catch (e) {
+        console.error(`Error fetching decimals for token ${token22}:`, e);
+        return;
+      }
+
+      console.log("token:", i, x);
+
+      let swapPrice;
+      try {
+        swapPrice = await routerContract.quote(ethers.utils.parseUnits("1", decimals1), reserves[0], reserves[1]);
+      } catch (e) {
+        console.error(`Error fetching swap price for pair ${x}:`, e);
+        return;
+      }
+
+      console.log("token2:", i, x);
       let priceinT1 = ethers.utils.formatUnits(swapPrice, decimals2);
       let tokenbal1;
       let tokenbal2;
-      if(token11 !== WSEIAddress) {
-        tokenbal1 = await erc20Contract1.balanceOf(address);
-      } else {
-        tokenbal1 = await provider.getBalance();
+
+      try {
+        if ((token11).toLowerCase() === (WSEIAddress).toLowerCase()) {
+          tokenbal1 = ethbal;
+          console.log("baleth");
+        } else {
+          tokenbal1 = await erc20Contract1.balanceOf(address);
+          
+        }
+      } catch (e) {
+        console.error(`Error fetching balance for token ${token11}:`, e);
+        return;
       }
-      if(token22 !== WSEIAddress) {
-        tokenbal2 = await erc20Contract2.balanceOf(address);
-      } else {
-        tokenbal2 = await provider.getBalance();
+
+      try {
+        if ((token22).toLowerCase() === (WSEIAddress).toLowerCase()) {
+          tokenbal2 = ethbal;
+        } else {
+          tokenbal2 = await erc20Contract2.balanceOf(address);
+          
+        }
+      } catch (e) {
+        console.error(`Error fetching balance for token ${token22}:`, e);
+        return;
       }
+
+      console.log("token3:", i, x);
+
       pairBuff.push({
         pair: x,
         asset1Name: assetName1,
         asset2Name: assetName2,
-        reserve1: ethers.utils.formatUnits(reserve11,decimals1),
-        reserve2: ethers.utils.formatUnits(reserve22,decimals2),
+        reserve1: ethers.utils.formatUnits(reserves[0], decimals1),
+        reserve2: ethers.utils.formatUnits(reserves[1], decimals2),
         price: priceinT1,
         tokenAddress1: token11,
         tokenAddress2: token22,
         tokenDecimals1: decimals1,
         tokenDecimals2: decimals2,
-        tokenBal1: ethers.utils.formatUnits(tokenbal1,decimals1),
-        tokenBal2: ethers.utils.formatUnits(tokenbal2,decimals2),
+        tokenBal1: ethers.utils.formatUnits(tokenbal1, decimals1),
+        tokenBal2: ethers.utils.formatUnits(tokenbal2, decimals2),
         liquidity: liqbal1
       });
       console.log("address", x);
@@ -2718,11 +2886,11 @@ const fun1 = async() => {
 
     setUserPairs(pairBuff);
     console.log("all pairs:", pairBuff, userPairs);
-  } catch(e) {
+  } catch (e) {
     console.error("error1:", e);
-    // await fun1();
   }
-}
+};
+
 
   const fun3 = async() => {
     if(address){
@@ -2757,9 +2925,9 @@ const fun1 = async() => {
     fun3();
   },[rstate, address, isConnected, remove]);
 
-  useEffect(() => {
-    fun1();
-  },[address, isConnected]);
+  // useEffect(() => {
+  //   fun1();
+  // },[address, isConnected]);
 
   useEffect(() => {
     fun();
@@ -2986,9 +3154,9 @@ const fun1 = async() => {
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>mint(appID_global)}>CREATE LIQUIDITY</Button>
                                         </>)
                                         } */}
-                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && tokenName1 !== "ETH")?(<>
+                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WSEI" && tokenName1 !== "SEI"))?(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</Button>
-                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && tokenName2 !== "ETH")?(<>
+                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WSEI" && tokenName2 !== "SEI"))?(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</Button>
                                         </>):(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</Button>
@@ -3145,7 +3313,7 @@ const fun1 = async() => {
                                 <Col md={9} lg={8}>
                                     <div className="mb-2">
                                         <label className='d-flex align-items-center justify-content-between'>From <small>Balance: { !(rstate?.tokenBal1) ?'0.0' :  parseFloat(rstate?.tokenBal1).toFixed(3) } {rstate?.asset1Name}</small></label>
-
+                                        {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WSEI")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                           
                                             <input type='number' className='m-0 form-control p-0 border-0 text-white'  value={liqamount1 ? liqamount1 : ""} onChange={e => handleLiqamount1(e.target.value)}  placeholder="0.0" autoComplete='off'/>
@@ -3189,9 +3357,9 @@ const fun1 = async() => {
                                     </p>
 
                                     {/* <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>mint1call(appID_global,samount1,samount2,rstate?.asset1Name,rstate?.asset2Name)}>ADD LIQUIDITY</Button> */}
-                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "WSEI" || rstate?.asset1Name !== "SEI"))?(<>
+                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</Button>
-                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "WSEI" || rstate?.asset2Name !== "SEI"))?(<>
+                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</Button>
                                         </>):(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</Button>
