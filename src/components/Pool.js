@@ -33,6 +33,7 @@ import { assert1Reserve,assert2Reserve,assert3Reserve,asset1_price,rewardasset3,
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react'; 
 import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, PancakeRouterV2ABI, PancakePairV2ABI, ERC20ABI, WSEIAddress } from '../abi';
 import { ethers } from 'ethers';
+import { Sidebar } from './Snippets/sidebar';
 
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -739,6 +740,7 @@ function PoolPage() {
     const [ liquidbal, setliquidbal ] = useState(0.0);
     const [ userPairs, setUserPairs ] = useState([]);
     const[loader, setLoader] = useState(false);
+    
 
     const [show, setShow] = React.useState(false);
     const [liquidity, setLiquidity] = React.useState(false);
@@ -2936,23 +2938,27 @@ const fun1 = async () => {
     
     return (
         <Layout>
+          
             <div className="page-content">
+              
                 <Container fluid="sm">
+                
                     <div className="card-base text-center mb-30 card-pool card-dark">
-                        <Button className='card-close' variant='reset'>
+                        {/* <Button className='card-close' variant='reset'>
                             <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g opacity="1">
                                 <path d="M17.5004 32.0832C9.44597 32.0832 2.91699 25.5542 2.91699 17.4998C2.91699 9.44546 9.44597 2.9165 17.5004 2.9165C25.5548 2.9165 32.0837 9.44546 32.0837 17.4998C32.0837 25.5542 25.5548 32.0832 17.5004 32.0832ZM17.5004 29.1665C20.5946 29.1665 23.562 27.9373 25.75 25.7494C27.9379 23.5615 29.1671 20.594 29.1671 17.4998C29.1671 14.4056 27.9379 11.4382 25.75 9.25026C23.562 7.06233 20.5946 5.83317 17.5004 5.83317C14.4062 5.83317 11.4387 7.06233 9.25076 9.25026C7.06283 11.4382 5.83367 14.4056 5.83367 17.4998C5.83367 20.594 7.06283 23.5615 9.25076 25.7494C11.4387 27.9373 14.4062 29.1665 17.5004 29.1665ZM17.5004 15.4378L21.6245 11.3121L23.6881 13.3757L19.5625 17.4998L23.6881 21.624L21.6245 23.6875L17.5004 19.5619L13.3762 23.6875L11.3126 21.624L15.4383 17.4998L11.3126 13.3757L13.3762 11.3121L17.5004 15.4378Z" fill="white"/>
                                 </g>
                             </svg>
-                        </Button>
-                        <h3>LIQUIDITY PROVIDER REWARDS</h3>
+                        </Button> */}
+                        <h3><b>LIQUIDITY PROVIDER REWARDS</b></h3><br/>
                         <p>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
                     </div>
 
                     <div className="card-base text-center card-pool card-dark">
                         <h3 >My Liquidity Positions</h3>
-                        <ButtonLoad loading={loader} onClick={()=>poolsei()} className='btn btn-grad btn-xl' >Liquidty</ButtonLoad>
+                        {/* <ButtonLoad loading={loader} onClick={()=>poolsei()} className='btn btn-grad btn-xl'>Liquidty</ButtonLoad> */}
+                        <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' style={{ width: 'auto' }} onClick={()=>poolsei()}>Liquidty</ButtonLoad>
                     </div>
                 </Container>
             </div>
@@ -2974,7 +2980,7 @@ const fun1 = async () => {
                         <div className="text-center">
                             <Row className='justify-content-center mb-100'>
                                 <Col md={9}>
-                                    <h3>LIQUIDITY PROVIDER REWARDS</h3>
+                                    <h3>LIQUIDITY PROVIDER REWARDS</h3><br/>
                                     <p>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
 
                                     <Link to="/" className='btn-link-purple text-underline'>Learn more about providing liquidity</Link>
@@ -3362,7 +3368,7 @@ const fun1 = async () => {
                                         </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</Button>
                                         </>):(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</Button>
+                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</Button>
                                         </>)
                                         }
 
