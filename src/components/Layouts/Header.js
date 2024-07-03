@@ -926,7 +926,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                         <Col md={12} className="align-items-center">
                         <h1>Groundbreaking Exchange, Lending, and Borrowing</h1><br/>
                         <p>
-                        ELEMENT DLEX introduces a groundbreaking platform for exchange, lending, and borrowing. Activate your unused capital with our innovative, oracle-free borrowing, lending, and exchange services. Our robust DeFi ecosystem integrations ensure seamless and secure transactions.Experience the power of an integrated DeFi platform that combines Automated Market Maker (AMM) and lending functionalities. Our oracle-free design provides unmatched security, while the simple user interface makes it easy to navigate. Additionally, we offer permissionless market creation, empowering users to create and manage their own markets with ease.
+                        The first of its kind decentralized Lending Exchange (DLEX) platform dedicated to optimizing capital efficiency. As a pioneering and innovative solution, Element DLEX revolutionizes lending and exchange by maximizing returns and minimizing risk exposure.
                         </p>
                         </Col>
                     </Row>
