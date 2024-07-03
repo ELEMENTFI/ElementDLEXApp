@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.footer-cartoon {
+    transition: all .5s linear;
+    position: fixed;
+    cursor: pointer;
+    width: 160px;
+    z-index: 999;
+    right: 10px;
+    bottom: 0;
+}
+
+.modal-dashboard .modal-header closeButton {
+    color: red !important;
+  }
+  

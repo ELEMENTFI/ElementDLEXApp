@@ -25,6 +25,9 @@ import moonbeam from "../../assets/images/moonbeam.png";
 import { ethers } from 'ethers';
 import { ConnectWallet, ChangeNetwork } from '../../generalFunctions';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Cartoon from '../../assets/images/cartoon_light.png';
+
 const myAlgoWallet = new MyAlgoConnect({ disableLedgerNano: false });
 
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -39,7 +42,7 @@ let indexerClient = new algosdk.Indexer(token, baseServer, port);
 
 let appID_global = 57691024;
 
-function Header() {
+function Header({isOpen}) {
 
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
@@ -69,6 +72,24 @@ function Header() {
     const [details, setDetails] = useState(null);
     // const[tok1,settok1] = useState([]);
     // const[tok2,settok2] = useState([]); 
+
+    const [show1, setShow1] = useState(false);
+
+    const [Cartoonshow, setCartoonShow] = useState(false);
+    const handle = () => {setCartoonShow(!Cartoonshow); localStorage.setItem(`elemCartn`, true);};
+
+    const handleClose1 = () => {setShow1(false); localStorage.setItem(`elemCartn`, true);}
+
+    useEffect(() => {
+        if(!localStorage.getItem(`elemCartn`)){
+            setTimeout(() => {
+                setCartoonShow(true);
+            }, 1000);
+            setTimeout(() => {
+                setShow1(true);
+            }, 2000);
+        }
+    }, [address,isConnected])
 
     const connectWallet = async () => {
        try {
@@ -507,9 +528,16 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
             <header className="header">
                 <Navbar expand="xl" className='p-0'>
                     <Container fluid="lg">
-                        <Navbar.Brand href="/">
-                            <img src={colorLogo} width='15%' height='15%' alt="logo" />
-                            </Navbar.Brand>
+                        {!isOpen && 
+                        <Navbar.Brand href="/" className="d-flex align-items-center">
+                        <div className="flex items-center gap-3">
+                            <img src={colorLogo} alt="logo" width={50} />
+                            <p className="text-white font-bold text-xl tablet:text-2xl">
+                                ELEMENT
+                            </p>
+                            </div>
+                            {/* <img src={colorLogo} width='15%' height='15%' alt="logo" /> ELEMENT */}
+                            </Navbar.Brand>}
                         <Navbar.Toggle aria-controls="basic-navbar-nav">
                             <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.9214 18.6127V20.6127H5.92139V18.6127H16.9214ZM21.9214 11.6127V13.6127H3.92139V11.6127H21.9214ZM19.9214 4.61267V6.61267H8.92139V4.61267H19.9214Z" fill="white"/>
@@ -517,7 +545,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                         </Navbar.Toggle>
                         <Navbar.Collapse id="basic-navbar-nav">
                             <div className="d-flex mb-4 d-xl-none align-items-center justify-content-between">
-                                <Navbar.Brand href="/"><img src={colorLogo} alt="logo" /></Navbar.Brand>
+                                <Navbar.Brand href="/" className="mr-auto"><img src={colorLogo} alt="logo" /> ELEMENT</Navbar.Brand>
 
                                 <Navbar.Toggle aria-controls="basic-navbar-nav">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#fff" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -673,9 +701,9 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                             </div>
 
                             <Nav className="mx-auto navbar-nav-inner">
-                                <Link className='nav-link' to="/swap" activeClassName="active">Swap</Link>
-                                <Link className='nav-link' to="/pool" activeClassName="active">Pool</Link>
-                                <Link className='nav-link' to="/farm" activeClassName="active" onClick={e => e.preventDefault()}>Farm<Badge>Upcoming</Badge></Link>
+                                <Link className='nav-link' to="/swap" activeClassName="active">Swap</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link' to="/pool" activeClassName="active">Pool</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link' to="/farm" activeClassName="active" onClick={e => e.preventDefault()}>Farm<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 {/* <Link className='nav-link' to="/vaults" activeClassName="active">Vaults</Link>*/}
                                 {/* <Link className='nav-link' to="/stake" activeClassName="active">Stake</Link>  */}
                                 {/* <Link className='nav-link' to="/launchpad" activeClassName="active">Launchpad</Link>
@@ -691,9 +719,9 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                             <Dropdown.Item style={{backgroundColor:"#0d0a19"}} href="/lending">Lending</Dropdown.Item>
                                             <Dropdown.Item style={{backgroundColor:"#0d0a19"}} href="/borrow">Borrow</Dropdown.Item>
                                         </Dropdown.Menu>
-                                    </Dropdown>
-                                <Link className='nav-link' to="/analytics" activeClassName="active" onClick={e => e.preventDefault()}>Analytics<Badge>Upcoming</Badge></Link>
-                                <Link className='nav-link disabled' to="/bridge" activeClassName="active"  >Bridge<Badge>Upcoming</Badge></Link>
+                                    </Dropdown>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link' to="/analytics" activeClassName="active" onClick={e => e.preventDefault()}>Analytics<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link disabled' to="/bridge" activeClassName="active"  >Bridge<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -873,6 +901,67 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                     
                 </Modal.Body>
             </Modal>
+            <Modal show={show1} size="lg" centered className='modal-dashboard' onHide={handleClose1}>
+                
+                <Modal.Header className='align-items-start'>
+                    
+                    <Modal.Title>
+                        
+                    <h2 className='m-0'>Welcome to ELEMENT DLEX</h2>
+                    
+                    </Modal.Title>
+                    <Button className='modal-close' onClick={handleClose1} variant='reset' style={{marginRight:'17px', marginTop:'18px'}}>
+                    <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="1">
+                            <path d="M17.5004 32.0832C9.44597 32.0832 2.91699 25.5542 2.91699 17.4998C2.91699 9.44546 9.44597 2.9165 17.5004 2.9165C25.5548 2.9165 32.0837 9.44546 32.0837 17.4998C32.0837 25.5542 25.5548 32.0832 17.5004 32.0832ZM17.5004 29.1665C20.5946 29.1665 23.562 27.9373 25.75 25.7494C27.9379 23.5615 29.1671 20.594 29.1671 17.4998C29.1671 14.4056 27.9379 11.4382 25.75 9.25026C23.562 7.06233 20.5946 5.83317 17.5004 5.83317C14.4062 5.83317 11.4387 7.06233 9.25076 9.25026C7.06283 11.4382 5.83367 14.4056 5.83367 17.4998C5.83367 20.594 7.06283 23.5615 9.25076 25.7494C11.4387 27.9373 14.4062 29.1665 17.5004 29.1665ZM17.5004 15.4378L21.6245 11.3121L23.6881 13.3757L19.5625 17.4998L23.6881 21.624L21.6245 23.6875L17.5004 19.5619L13.3762 23.6875L11.3126 21.624L15.4383 17.4998L11.3126 13.3757L13.3762 11.3121L17.5004 15.4378Z" fill="white"/>
+                            </g>
+                        </svg>
+                    </Button>
+                </Modal.Header>
+                <Modal.Body>
+                
+
+                    <div className="text-center">
+                    <Row className='mb-3 align-items-center'>
+                        <Col md={12} className="align-items-center">
+                        <h1>Groundbreaking Exchange, Lending, and Borrowing</h1><br/>
+                        <p>
+                        ELEMENT DLEX introduces a groundbreaking platform for exchange, lending, and borrowing. Activate your unused capital with our innovative, oracle-free borrowing, lending, and exchange services. Our robust DeFi ecosystem integrations ensure seamless and secure transactions.Experience the power of an integrated DeFi platform that combines Automated Market Maker (AMM) and lending functionalities. Our oracle-free design provides unmatched security, while the simple user interface makes it easy to navigate. Additionally, we offer permissionless market creation, empowering users to create and manage their own markets with ease.
+                        </p>
+                        </Col>
+                    </Row>
+                    <Row className='text-center'>
+                        <Col sm="4" className='py-sm-2 py-1'>
+                        <a href="https://twitter.com/ElementDeFi" target="_blank" rel="noopener noreferrer">
+                            <button className="btn btn-grad btn-min px-5">Twitter</button>
+                        </a>
+                        </Col>
+                        <Col sm="4" className='py-sm-2 py-1'>
+                        <a href="https://t.me/ElementDeFi" target="_blank" rel="noopener noreferrer">
+                            <button className="btn btn-grad btn-min px-5">Telegram</button>
+                        </a>
+                        </Col>
+                        <Col sm="4" className='py-sm-2 py-1'>
+                        <a href="https://github.com/ELEMENTFI" target="_blank" rel="noopener noreferrer">
+                            <button className="btn btn-grad btn-min px-5">Github</button>
+                        </a>
+                        </Col>
+                    </Row>
+                    </div>
+                    <hr className='mb-3' />
+                    <Row className='align-items-center text-sm-start text-center'>
+                    <Col sm={11}>
+                        <div>Copyright © 2024 Element DLEX</div>
+                    </Col>
+                    <Col sm={1} className="d-none d-md-block text-end">
+                        <img src={colorLogo} alt="image" className='img-fluid' style={{marginRight:"0", padding:"0"}}width={50}/> 
+                    </Col>
+                    </Row>
+                </Modal.Body>
+                </Modal>
+                {Cartoonshow && <img src={Cartoon} onClick={handle} alt="Cartoon" className={`footer-cartoon ${Cartoonshow ? '' : 'c-hide'}`} />
+}
+ 
         </>
     );
 }

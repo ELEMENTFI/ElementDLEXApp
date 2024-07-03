@@ -1,0 +1,39 @@
+.sidebarOpen {
+    width: 80px;
+    transition: width 0.2s;
+  }
+  
+  .sidebarClose {
+    width: 0px;
+    transition: width 0.2s;
+  }
+  
+  .arrowPositionOpen {
+    left: 56px;
+    transition: left 0.2s;
+  }
+  
+  .arrowPositionClose {
+    left: -15px;
+    transition: left 0.2s;
+  }
+  
+
+  #wrapper {
+    display: flex;
+}
+
+.content {
+    flex-grow: 1;
+    transition: margin-left 0.2s;
+    margin-left: 80px; /* Default width of sidebar when open */
+}
+
+.contentClose {
+    margin-left: 0;
+}
+
+.circle-blue {
+    position: absolute;
+    /* Add other styles as needed */
+}

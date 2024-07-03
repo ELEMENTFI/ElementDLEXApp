@@ -138,9 +138,9 @@ const MoneyMarket = () => {
                         <Col md={8} lg={8} xl={6} className='mb-xl-0 mb-4'>
                             <div className="money-market-card h-100">
                                 <div className="money-market-card-order-header d-flex align-items-center">
-                                    <img src={usdcLogo} alt="elementLogo" style={{"height": "75px", "width": "75px"}} />
+                                    <img src={usdcLogo} alt="elementLogo" style={{"height": "65px", "width": "65px"}} />
                                     <div className='ps-3'>
-                                        <div className="h3 mb-0">Lend USDC</div>
+                                        <div className="h4 mb-2">Lend USDC</div>
                                         <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">USDC</div></span> 
                                         {/* <span className='d-flex align-items-center'>Oracle: <div className="h6 mb-0">Chainink</div></span> */}
                                         </p>
@@ -172,7 +172,7 @@ const MoneyMarket = () => {
                                     >
                                         <Tab eventKey="deposite" title="Deposit USDC">
                                             <div className="pt-4">
-                                                <div className="h3 mb-4 pb-2">Deposit USDC</div>
+                                                <div className="h4 mb-4 pb-2">Deposit USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -197,7 +197,7 @@ const MoneyMarket = () => {
                                         </Tab>
                                         <Tab eventKey="withdraw" title="Withdraw USDC">
                                         <div className="pt-4">
-                                                <div className="h3 mb-4 pb-2">Withdraw USDC</div>
+                                                <div className="h4 mb-4 pb-2">Withdraw USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
