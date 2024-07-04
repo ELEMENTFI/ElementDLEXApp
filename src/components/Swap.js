@@ -869,7 +869,7 @@ console.log("Assetid1",AssetId1,AssetId2)
     // setpc2(pk2);
     setUsdcPrice(pk2);
   //console.log("pk2",pk2);
-    if(tk1 == "Algo" || tk1 === "ETH"){
+    if(tk1 == "Algo" || tk1 === "ETH" || tk1 === "SEI"){
       setpc1(pk1);
     }
     if(tk2 == "USDC" || tk2 === "usdc"){
@@ -1734,7 +1734,7 @@ const approveSei = async() => {
 
       const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
       const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
-
+      
       if(token1 !== WSEIAddress){
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance(allowance1);
@@ -1850,7 +1850,7 @@ const approveSei = async() => {
                                 <div className="mb-0">
                                   
                                     <label className='d-flex align-items-center justify-content-between'>From
-                                    {(tk1 == "ETH")||(tk1 == "Algo") ? (<><small>Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):
+                                    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo") ? (<><small>Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):
                                     (tk1 == "USDC")?(<><small>Price:${pc2 > 0 ? parseFloat(pc2).toFixed(2) :  (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):(<></>) }
                                             
                                      </label>

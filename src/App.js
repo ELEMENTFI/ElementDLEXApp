@@ -8,7 +8,7 @@ import {
 import ElementProtocol from './components/HomePage';
 import HomeV2 from './components/HomePageV2';
 import HomePageBanking from './components/HomePageBanking';
-import Swap from './components/Swap';
+import SwapPage from './components/Swap';
 import Stake from './components/Stake';
 import Stakebox from './components/Stakebox';
 import FarmStaking from './components/FarmStaking';
@@ -32,6 +32,7 @@ import MoneyMarket from './components/MoneyMarket';
 import MoneyMarketV2 from './components/MoneyMarketV2';
 import MoneyMarketOrder from './components/MoneyMarketOrder';
 import MoneyMarketOrderV2 from './components/MoneyMarketOrderV2';
+import AccountVerifier from "./components/AccountVerifier";
 import { useWeb3ModalAccount, createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 import { ethers } from 'ethers';
 
@@ -129,6 +130,9 @@ function App() {
         <Route path="/pool">
           <Pool />
         </Route>
+        <Route path="/swap">
+          <SwapPage />
+        </Route>
         <Route path="/launchpad">
           <Launchpad />
         </Route>
@@ -152,7 +156,7 @@ function App() {
           <HomeV2 />
         </Route>
         <Route path="/">
-          <Swap />
+          <AccountVerifier />
         </Route>
         {/* <Route path="/">
           <Home />
