@@ -16,8 +16,11 @@ import {postusertx,postuserdetail} from '../apicallfunction';
 import { Button, Col, Container, Modal, Row, Breadcrumb } from 'react-bootstrap';
 import { createtxhash ,updatepairhistory,getmethod} from '../apicallfunction';
 import { priceOfCoin1,priceOfCoin2,find_balance,checkassetin,find_balance_escrow,convert1,convert2,readingLocalstate,assetName,decodLocalState } from '../formula';
+import { PancakeFactoryV2ABI, PancakeFactoryV2Address, PancakeRouterV2ABI, PancakeRouterV2Address, ERC20ABI, PancakePairV2ABI } from '../../abi';
 
 import { assert2Reserve, assert1Reserve } from '../formula';
+import { getLiqlistFirebase } from '../../firebasefunctions';
+import { ethers } from 'ethers';
 // import AlgodClient from 'algosdk/dist/types/src/client/v2/algod/algod';
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
 const myAlgoWallet = new MyAlgoConnect();
@@ -678,6 +681,10 @@ check_fees:
     return`;
 const TopLiquidity = () => {
     let history=useHistory();
+
+    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const provider = new ethers.providers.JsonRpcProvider(url);
+
     const [dt,setdt] = useState([]);
     const[ar1,setar1] = useState([]);
     const[ar2,setar2] = useState([]);
@@ -717,6 +724,7 @@ const TopLiquidity = () => {
     const[samount1,setsAmount1] = useState("");
     const[samount2,setsAmount2] = useState("");
     const[rstate,setrstate]= useState([]);
+    const[liqList, setLiqList]=useState([]);
     let appID_global = 57691024;
 
     let currentPosts;
@@ -727,7 +735,7 @@ const TopLiquidity = () => {
     // console.log("bva",b.slice(0,3))
     currentPosts = b.slice(startingpage, indexOfLastPost);
   // console.log("current",currentPosts,indexOfLastPost);
-useEffect(() =>{readvaliemethod()},[])
+// useEffect(() =>{readvaliemethod()},[])
 const readvaliemethod=async()=>{
  let k = await getmethod(1,2);
  console.log("K",k)
@@ -1266,6 +1274,46 @@ let tvl = s1 + s2;
         
     
   };
+
+  const fun = async() => {
+    let liqlist1 = [];
+    let liquidityList = await getLiqlistFirebase();
+    const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, provider);
+    const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
+    await Promise.all(liquidityList.map(async(x,i) => {
+      const pairContract = new ethers.Contract(x.lpaddress, PancakePairV2ABI, provider);
+      const liquiditySupply = ethers.utils.formatUnits(await pairContract.totalSupply(), 18);
+      let [reserve11, reserve22, ] = await pairContract.getReserves();
+      liqlist1.push({...x, liquidity:liquiditySupply, volume: 10, 
+        reserve1: ethers.utils.formatUnits(reserve11, x.decimals1), 
+        reserve2: ethers.utils.formatUnits(reserve22, x.decimals2),
+        dateNew:  convertEpochToTimeAgo(x.date)});
+    }));
+    
+    setLiqList(liqlist1);
+    console.log(liqlist1);
+  }
+
+  const convertEpochToTimeAgo = (epoch) => {
+    const milliseconds = new Date().getTime() - epoch * 1000;
+    const timeUnits = [
+        { unit: 'day', value: 24 * 60 * 60 },
+        { unit: 'hour', value: 60 * 60 },
+        { unit: 'minute', value: 60 },
+        { unit: 'second', value: 1 }
+    ];
+
+    for (const { unit, value } of timeUnits) {
+        const count = Math.floor(milliseconds / (1000 * value));
+        if (count > 0) return `${count} ${unit}${count !== 1 ? 's' : ''} ago`;
+    }
+
+    return 'just now';
+};
+
+  // useState(() => {
+  //   fun();
+  // },[liqList.length]);
   
 
     return (
@@ -1362,162 +1410,61 @@ let tvl = s1 + s2;
             <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
 
             <div className="table-group-outer table-group-lg">
-                <div className="table-group-head">
-                    <div className="table-group-tr">
-                        <div className="table-group-th">NAME</div>
-                        {/* <div className="table-group-th"></div> */}
-                        <div className="table-group-th">
-                            <Dropdown>
-                                <Dropdown.Toggle variant="reset" id="dropdown-basic">
-                                    LIQUIDITY
-                                </Dropdown.Toggle>
-
-                                {/* <Dropdown.Menu>
-                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                </Dropdown.Menu> */}
-                            </Dropdown>
-                        </div>
-                       
-                        <div className="table-group-th">VOLUME</div>
-                        <div className="table-group-th">FEES </div>
-                        {/* <div className="table-group-th">FEES (24H)</div> */}
-                        <div className="table-group-th">POOL</div>
-                        <div className="table-group-th"></div>
-                        {/* <div className="table-group-th text-end">fees (yearly)</div> */}
-                    </div>
-                </div>
-               
-
-                    {currentPosts ===null || currentPosts ==="" || currentPosts ===undefined || currentPosts.length == 0?(<>
-                      
-                        <div className="table-group-body text-gray-AA">
-               {/* Loading ....  */}
-               <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>pass(4)}>VIEW</Button>
-
-               {/* <img src="https://c.tenor.com/FBeNVFjn-EkAAAAS/ben-redblock-loading.gif"/> */}
-               <div className="table-group-body text-gray-AA" onClick={()=> buttonclick()
-               }>
-
-           
-                    </div>
-</div>
-                    </>):(<>
-                    
-                        {currentPosts.map((pageSize)=>{
-                        //    if(i<pageSize)
-// console.log("pagesize",pageSize)
-                            return(<>
-                            <div className="table-group-body text-gray-AA" >
-<div className="table-group-tr">
-<div className="table-group-td">
-    <div className="d-flex align-items-center td-cell">
-        <img src={elem} alt='icon' />
-        <img src={tau} alt='icon' />
-        <span>{pageSize.asset1name}/{pageSize.asset2name}</span>
+  <div className="table-group-head">
+    <div className="table-group-tr">
+      <div className="table-group-th">NAME</div>
+      <div className="table-group-th">
+        <Dropdown>
+          <Dropdown.Toggle variant="reset" id="dropdown-basic">
+            LIQUIDITY
+          </Dropdown.Toggle>
+        </Dropdown>
+      </div>
+      <div className="table-group-th">VOLUME</div>
+      <div className="table-group-th">POOL</div>
+      <div className="table-group-th">CREATOR</div>
+      <div className="table-group-th">DATE</div>
     </div>
-</div>
-{/* <div className="table-group-td"></div> */}
+  </div>
 
-<div className="table-group-td">{parseFloat(pageSize.tvl/1000000).toFixed(3)}</div>
-<div className="table-group-td">{parseFloat(pageSize.volume/1000000).toFixed(3)}</div>
-<div className="table-group-td">{parseFloat(pageSize.fees/1000000).toFixed(3) > 0.000001 ?  parseFloat(pageSize.fees/1000000).toFixed(3):'0.0' }</div>
-{/* <div className="table-group-td">{parseFloat(pageSize.feesdays/1000000).toFixed(3)}</div> */}
-<div className="table-group-td">{(pageSize.asset3name)}</div>
-<div className="table-group-td">
-    <div className="d-flex align-items-center">
-    <Button variant='arrow' className="btn btn-grad" onClick={()=>pass(pageSize)} >
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-    </svg>
-    </Button>
-    <Button variant='arrow' className="btn btn-grad" onClick={()=>buttonclick(pageSize)}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
-    </svg>
-    </Button>
+  {liqList === null || liqList === "" || liqList === undefined || liqList.length == 0 ? (
+    <div className="table-group-body text-gray-AA">
+      <br/>
+      <Button className='btn w-50 mb-20 text-none btn-grad' style={{ width: 'auto', marginLeft: "25%" }} onClick={fun}>VIEW</Button>
     </div>
-    </div>
-{/* <div className="table-group-td text-end">{pageSize.tvlvalue}</div> */}
-</div>
-</div></>)
- 
-})}</>)}
-                    
-                    {/* <div className="table-group-tr">
-                        <div className="table-group-td">
-                            <div className="d-flex align-items-center td-cell">
-                                <img src={Icon1} alt='icon' />
-                                <img src={Icon2} alt='icon' />
-                                <span>frax / rome</span>
-                            </div>
-                        </div>
-                        <div className="table-group-td">$9,358,540.57</div>
-                        <div className="table-group-td">$3,975,560.21</div>
-                        <div className="table-group-td">$23,916,390.33</div>
-                        <div className="table-group-td">$9,938.90</div>
-                        <div className="table-group-td">$59,790.98</div>
-                        <div className="table-group-td text-end">38.76%</div>
-                    </div>
-                    <div className="table-group-tr">
-                        <div className="table-group-td">
-                            <div className="d-flex align-items-center td-cell">
-                                <img src={Icon1} alt='icon' />
-                                <img src={Icon2} alt='icon' />
-                                <span>frax / rome</span>
-                            </div>
-                        </div>
-                        <div className="table-group-td">$9,358,540.57</div>
-                        <div className="table-group-td">$3,975,560.21</div>
-                        <div className="table-group-td">$23,916,390.33</div>
-                        <div className="table-group-td">$9,938.90</div>
-                        <div className="table-group-td">$59,790.98</div>
-                        <div className="table-group-td text-end">38.76%</div>
-                    </div>
-                    <div className="table-group-tr">
-                        <div className="table-group-td">
-                            <div className="d-flex align-items-center td-cell">
-                                <img src={Icon1} alt='icon' />
-                                <img src={Icon2} alt='icon' />
-                                <span>frax / rome</span>
-                            </div>
-                        </div>
-                        <div className="table-group-td">$9,358,540.57</div>
-                        <div className="table-group-td">$3,975,560.21</div>
-                        <div className="table-group-td">$23,916,390.33</div>
-                        <div className="table-group-td">$9,938.90</div>
-                        <div className="table-group-td">$59,790.98</div>
-                        <div className="table-group-td text-end">38.76%</div>
-                    </div>
-                    <div className="table-group-tr">
-                        <div className="table-group-td">
-                            <div className="d-flex align-items-center td-cell">
-                                <img src={Icon1} alt='icon' />
-                                <img src={Icon2} alt='icon' />
-                                <span>frax / rome</span>
-                            </div>
-                        </div>
-                        <div className="table-group-td">$9,358,540.57</div>
-                        <div className="table-group-td">$3,975,560.21</div>
-                        <div className="table-group-td">$23,916,390.33</div>
-                        <div className="table-group-td">$9,938.90</div>
-                        <div className="table-group-td">$59,790.98</div>
-                        <div className="table-group-td text-end">38.76%</div>
-                    </div> */}
-                
+  ) : (
+    liqList.map((x, index) => (
+      <div key={index} className="table-group-body text-gray-AA">
+        <div className="table-group-tr">
+          <div className="table-group-td name-column">
+            <div className="d-flex align-items-center td-cell">
+              <img src={elem} alt='icon' />
+              <img src={tau} alt='icon' />
+              <span>{x?.name}</span>
             </div>
+          </div>
+          <div className="table-group-td liquidity-column">{parseFloat(x?.liquidity).toFixed(4)}</div>
+          <div className="table-group-td volume-column">{parseFloat(x?.reserve1).toFixed(4)} {x?.name1} <br/> {parseFloat(x?.reserve2).toFixed(4)} {x?.name2}</div>
+          <div className="table-group-td pool-column"><a href={`https://seitrace.com/address/${x?.lpaddress}?chain=atlantic-2`} target="_blank">{x?.lpaddress}</a></div>
+          <div className="table-group-td creator-column"><a href={`https://seitrace.com/address/${x?.creator}?chain=atlantic-2`} target="_blank">{x?.creator}</a></div>
+          <div className="table-group-td">{x?.dateNew}</div>
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
 
             <div className="pagination-footer d-flex align-items-center justify-content-between">
                 <p>showing 1-{parseFloat(postsPerPage/4).toFixed(0)} from {parseFloat(b.length/4).toFixed(0)}</p>
 
                 <div className="d-flex align-items-center">
-                    <Button variant='arrow'  onClick={()=>{setpostcall()}}>
+                    <Button variant='arrow'  >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
                         </svg>
                     </Button>
-                    <Button variant='arrow' onClick={()=>{setincrm()}}>
+                    <Button variant='arrow' >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                         </svg>

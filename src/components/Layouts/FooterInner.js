@@ -21,7 +21,7 @@ function Footer() {
                 <Row className='mb-4 pb-2 align-items-center'>
                     <Col className='text-md-start text-center mb-md-0 mb-4'>
                         <img src={colorLogo}  width='15%' height='15%' className='mb-3' alt="logo" />
-                        <p>Element DLEX</p>
+                        <p style={{marginLeft:"20px"}}>Element </p>
                     </Col>
                     <Col>
                         <div className="social-icons justify-content-md-end justify-content-center d-flex align-items-center">
@@ -92,7 +92,7 @@ function Footer() {
 
 
                 <div className="copyright text-center">
-                    Copyright © 2024 Element DLEX
+                    Copyright © 2024 Element 
                 </div>
             </Container>
         </div>

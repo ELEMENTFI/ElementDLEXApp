@@ -3,7 +3,7 @@ import { Col, Container, Row, Form, Tabs, Tab, Button} from 'react-bootstrap';
 import Layout from './Layouts/LayoutInner';
 import OrderIcon from '../assets/images/order-icon.png';
 
-import BG from '../assets/images/market-left-bg.png';
+import BG from '../assets/images/market-left-bg-new1.png';
 import BGGrad from '../assets/images/bg-grad.png';
 import usdcLogo from '../assets/images/usdc-logo.png'
 import elementLogo from '../assets/images/elem-original.png';

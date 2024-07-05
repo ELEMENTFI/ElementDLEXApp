@@ -3,7 +3,7 @@ import { Col, Container, Row, Form, Tabs, Tab, Button, Dropdown, DropdownButton}
 import Layout from './Layouts/LayoutInner';
 import OrderIcon from '../assets/images/order-icon.png';
 
-import BG from '../assets/images/bg-v2.png';
+import BG from '../assets/images/bg-v2-new.png';
 import BGGrad from '../assets/images/bg-grad.png';
 import elementLogo from '../assets/images/elem-original.png'
 import { ethers } from 'ethers';

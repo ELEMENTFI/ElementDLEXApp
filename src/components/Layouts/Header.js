@@ -720,7 +720,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                             <Dropdown.Item style={{backgroundColor:"#0d0a19"}} href="/borrow">Borrow</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <Link className='nav-link' to="/analytics" activeClassName="active" onClick={e => e.preventDefault()}>Analytics<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link' to="/analytics" activeClassName="active" >Analytics</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link className='nav-link disabled' to="/bridge" activeClassName="active"  >Bridge<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </Nav>
                         </Navbar.Collapse>
@@ -907,7 +907,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                     
                     <Modal.Title>
                         
-                    <h2 className='m-0'>Welcome to ELEMENT DLEX</h2>
+                    <h2 className='m-0'>Welcome to ELEMENT</h2>
                     
                     </Modal.Title>
                     <Button className='modal-close' onClick={handleClose1} variant='reset' style={{marginRight:'17px', marginTop:'18px'}}>
@@ -926,7 +926,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                         <Col md={12} className="align-items-center">
                         <h1>Groundbreaking Exchange, Lending, and Borrowing</h1><br/>
                         <p>
-                        The first of its kind decentralized Lending Exchange (DLEX) platform dedicated to optimizing capital efficiency. As a pioneering and innovative solution, Element DLEX revolutionizes lending and exchange by maximizing returns and minimizing risk exposure.
+                        The first of its kind decentralized Lending Exchange (DLEX) platform dedicated to optimizing capital efficiency. As a pioneering and innovative solution, Element revolutionizes lending and exchange by maximizing returns and minimizing risk exposure.
                         </p>
                         </Col>
                     </Row>
@@ -951,7 +951,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                     <hr className='mb-3' />
                     <Row className='align-items-center text-sm-start text-center'>
                     <Col sm={11}>
-                        <div>Copyright © 2024 Element DLEX</div>
+                        <div>Copyright © 2024 Element</div>
                     </Col>
                     <Col sm={1} className="d-none d-md-block text-end">
                         <img src={colorLogo} alt="image" className='img-fluid' style={{marginRight:"0", padding:"0"}}width={50}/> 

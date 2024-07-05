@@ -4,7 +4,7 @@ import Footer from './FooterInner';
 
 function Layout(props) {
     return (
-        <div id="wrapper">
+        <div>
             <Header />
             {props.children}
             <Footer />

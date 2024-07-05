@@ -4,15 +4,20 @@ import {
     NavLink as Link
   } from "react-router-dom";
 
-import Logo from '../../assets/images/modal-logo-new.png';
+import Logo from '../../assets/images/element logo.png';
 import swap from "../Swap";
 function Header() {
     return (
         <header className="header">
             <Navbar expand="xl" className='p-0'>
                 <Container fluid="lg">
-                    <Navbar.Brand href="/"><img src={Logo} alt="logo" />
-                     <span className='ms-3'>/&nbsp; Analytics</span>
+                    <Navbar.Brand href="/"> <div className="flex items-center gap-3">
+                            <img src={Logo} alt="logo" width={50} />
+                            <p className="text-white font-bold text-xl tablet:text-2xl">
+                                ELEMENT
+                            </p>
+                            </div>
+                    
                     
                      </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav">

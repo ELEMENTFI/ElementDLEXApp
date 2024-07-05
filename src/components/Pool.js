@@ -34,6 +34,7 @@ import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/re
 import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, PancakeRouterV2ABI, PancakePairV2ABI, ERC20ABI, WSEIAddress } from '../abi';
 import { ethers } from 'ethers';
 import { Sidebar } from './Snippets/sidebar';
+import { createLiqlistFirebase } from '../firebasefunctions';
 
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -2405,7 +2406,9 @@ const approvePair = async() => {
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
         const currentEpoch = Math.floor(Date.now() / 1000); // current epoch in seconds
         const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
-
+        const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, signer);
+        let pairAddress = await factoryContract.getPair(token11,token22);
+        
         // Helper function to format amount correctly
     const formatAmount = (amount, decimals, a) => {
       const parts = amount.toString().split('.');
@@ -2438,6 +2441,16 @@ const approvePair = async() => {
         }
         
         await tx.wait();
+        let pairAddress1 = await factoryContract.getPair(token11,token22);
+        if (pairAddress === "0x0000000000000000000000000000000000000000"){
+                  // Get the current time in milliseconds
+        const currentTimeMillis = new Date().getTime();
+
+        // Convert milliseconds to seconds (Epoch time is in seconds)
+        const epochTimeSeconds = Math.floor(currentTimeMillis / 1000);
+
+          await createLiqlistFirebase(`${name1}-${name2}`,name1, name2, address,token11,token22,decimals1, decimals2,pairAddress1, epochTimeSeconds); 
+        }
         if(state){
           setSwapamount1("");
           setSwapamount2("");
