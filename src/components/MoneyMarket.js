@@ -10,7 +10,7 @@ import elemLogo from '../assets/images/elem-original.png'
 import comboLogo from '../assets/images/usdcelem.png'
 import colorLogo from '../assets/images/element logo.png'
 
-import BG from '../assets/images/market-left-bg.png';
+import BG from '../assets/images/market-left-bg-new1.png';
 
 const MoneyMarket = () => {
     React.useEffect(() => {

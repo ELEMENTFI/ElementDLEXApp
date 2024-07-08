@@ -7,8 +7,9 @@ import {
 
 // import Icon1 from '../assets/images/icon1.png';
 // import Icon2 from '../assets/images/icon2.png';
-import Icon1 from '../assets/images/elem-original.png';
-import Icon2 from '../assets/images/Ethereum-icon.svg';
+import Icon1 from '../assets/images/element logo.png';
+// import Icon2 from '../assets/images/Ethereum-icon.svg';
+import Icon2 from '../assets/images/sei-logo.png';
 import Icon3 from '../assets/images/tau-original.png';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import configfile from "../stakingconfig.json";
@@ -22,6 +23,11 @@ import {farmtvltau} from "./TAUFarmStaking ";
 import {Rewardelemalgopair} from "./REWARDELEMALGO.js";
 import {Rewardelem} from "./REWARDELEM";
 import {Rewardtau} from "./REWARDTAU";
+
+import { ethers } from 'ethers';
+import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react';
+import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI } from '../abi.js';
+
 const algosdk = require('algosdk');
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
 const myAlgoConnect = new MyAlgoConnect();
@@ -30,6 +36,16 @@ function FarmPage() {
     React.useEffect(() => {
         window.scrollTo(0, 0);
     });
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
+
+    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const provider = new ethers.providers.JsonRpcProvider(url);
+
+    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
+
     //window.location.reload();
    // const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingconfigTau.json");
     const[allfarm,setAllfarm]=useState(true);
@@ -55,6 +71,17 @@ function FarmPage() {
     const[totalstakeelemalgo,setTotalStakeelemalgo]=useState("");
     const[totalstaketau,setTotalStaketau]=useState("");
     const[totalvaluelockedoverall,setOverallTVL]=useState([]);
+
+    const[stakeAmount, setStakeAmount] = useState("");
+    const[unstakeAmount, setUnstakeAmount] = useState("");
+    const[allowance, setAllowance] = useState("");
+    const[totalStaked, settotalStaked] = useState("");
+    const[userStaked, setUserStaked] = useState("");
+    const[totalReward, setTotalReward] = useState("");
+    const[userReward, setUserReward] = useState("");
+    const[lpbal, setlpbal] = useState("");
+    const[elembal, setelembal] = useState("");
+
     //const[displaying,setDisplaying]=usestate([]);    
     //let totalstakeelemalgo="";
  const allfarmfunction = async() => {
@@ -88,49 +115,49 @@ const elem = async() => {
     console.log("insideelem");
  }
 //for value fetching
-useEffect(() => {
-    const fetchPosts = async () => {
-         // read local state of application from user account
+// useEffect(() => {
+//     const fetchPosts = async () => {
+//          // read local state of application from user account
 
-  let accountInfoResponse = await algodClient.accountInformation(localStorage.getItem("walletAddress")).do();
-  let appById = await algodClient.getApplicationByID(parseInt(configfile.applicationid)).do();
-  console.log("globalappid",appById);
+//   let accountInfoResponse = await algodClient.accountInformation(localStorage.getItem("walletAddress")).do();
+//   let appById = await algodClient.getApplicationByID(parseInt(configfile.applicationid)).do();
+//   console.log("globalappid",appById);
  
-    console.log("Application's global state:");
+//     console.log("Application's global state:");
    
-       console.log("Application's global state:1",appById['params']['global-state']);
-       console.log("Application's :1",appById['params']['global-state'][0]['key']);
-       console.log("globaltime",appById['params']['global-state'][0]['value']['uint']);
+//        console.log("Application's global state:1",appById['params']['global-state']);
+//        console.log("Application's :1",appById['params']['global-state'][0]['key']);
+//        console.log("globaltime",appById['params']['global-state'][0]['value']['uint']);
       
-       let globaltimenew;
-       let gloablstakenew;
-       let totalsulnew;
-       let totalslatelocknew;
-       let stakedbalancenew;
-       let rewardbalancenew;
-       let usertimenew;
-       for(let i=0;i<11;i++){
+//        let globaltimenew;
+//        let gloablstakenew;
+//        let totalsulnew;
+//        let totalslatelocknew;
+//        let stakedbalancenew;
+//        let rewardbalancenew;
+//        let usertimenew;
+//        for(let i=0;i<11;i++){
           
-            if(appById['params']['global-state'][i]['key']==="R1Q="){
-            globaltimenew = appById['params']['global-state'][i]['value']['uint'];
-            setGlobalTime(appById['params']['global-state'][i]['value']['uint']);
-            console.log("globaltime",globaltime);
-            }
+//             if(appById['params']['global-state'][i]['key']==="R1Q="){
+//             globaltimenew = appById['params']['global-state'][i]['value']['uint'];
+//             setGlobalTime(appById['params']['global-state'][i]['value']['uint']);
+//             console.log("globaltime",globaltime);
+//             }
  
-            if(appById['params']['global-state'][i]['key']==="R1NT"){
-              gloablstakenew=appById['params']['global-state'][i]['value']['uint'];
-              setGlobalStake(appById['params']['global-state'][i]['value']['uint']);
-              }
-            if(appById['params']['global-state'][i]['key']==="VFNVTA=="){
-                totalsulnew =appById['params']['global-state'][i]['value']['uint'];
+//             if(appById['params']['global-state'][i]['key']==="R1NT"){
+//               gloablstakenew=appById['params']['global-state'][i]['value']['uint'];
+//               setGlobalStake(appById['params']['global-state'][i]['value']['uint']);
+//               }
+//             if(appById['params']['global-state'][i]['key']==="VFNVTA=="){
+//                 totalsulnew =appById['params']['global-state'][i]['value']['uint'];
                 
-                settotalsul(appById['params']['global-state'][i]['value']['uint']);
-                }
-            if(appById['params']['global-state'][i]['key']==="VFNM"){
-                  totalslatelocknew=appById['params']['global-state'][i]['value']['uint'];
-                  settotalslatelock(appById['params']['global-state'][i]['value']['uint']);
-                  }   
-           }
+//                 settotalsul(appById['params']['global-state'][i]['value']['uint']);
+//                 }
+//             if(appById['params']['global-state'][i]['key']==="VFNM"){
+//                   totalslatelocknew=appById['params']['global-state'][i]['value']['uint'];
+//                   settotalslatelock(appById['params']['global-state'][i]['value']['uint']);
+//                   }   
+//            }
           
 
        
@@ -140,98 +167,98 @@ useEffect(() => {
    
 
 
-  console.log("accinfolocal",accountInfoResponse);
-  if( accountInfoResponse['apps-local-state'].length === null|| accountInfoResponse['apps-local-state'].length ===undefined||accountInfoResponse['apps-local-state'].length===""){
-    alert("check");
- }
-else{
+//   console.log("accinfolocal",accountInfoResponse);
+//   if( accountInfoResponse['apps-local-state'].length === null|| accountInfoResponse['apps-local-state'].length ===undefined||accountInfoResponse['apps-local-state'].length===""){
+//     alert("check");
+//  }
+// else{
 
 
-  console.log("User",accountInfoResponse['apps-local-state'].length);
-  for (let i = 0; i < accountInfoResponse['apps-local-state'].length; i++) { 
-      if (accountInfoResponse['apps-local-state'][i].id == parseInt(configfile.applicationid)) {
-          console.log("User's local state:",accountInfoResponse['apps-local-state'][i].id);
-          let acccheck= accountInfoResponse['apps-local-state'][i][`key-value`]; 
-          console.log("Usercheck",acccheck);
-          console.log("User",accountInfoResponse['apps-local-state'][i][`key-value`]);
+//   console.log("User",accountInfoResponse['apps-local-state'].length);
+//   for (let i = 0; i < accountInfoResponse['apps-local-state'].length; i++) { 
+//       if (accountInfoResponse['apps-local-state'][i].id == parseInt(configfile.applicationid)) {
+//           console.log("User's local state:",accountInfoResponse['apps-local-state'][i].id);
+//           let acccheck= accountInfoResponse['apps-local-state'][i][`key-value`]; 
+//           console.log("Usercheck",acccheck);
+//           console.log("User",accountInfoResponse['apps-local-state'][i][`key-value`]);
         
-          if(accountInfoResponse['apps-local-state'][i][`key-value`]=== null|| accountInfoResponse['apps-local-state'][i][`key-value`] === undefined||accountInfoResponse['apps-local-state'][i][`key-value`]===""){
-            alert("check");
-         }
-        else{
-for (let n = 0; n < accountInfoResponse['apps-local-state'][i][`key-value`].length; n++) {
-              console.log(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
-              //setStakedBalance(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
+//           if(accountInfoResponse['apps-local-state'][i][`key-value`]=== null|| accountInfoResponse['apps-local-state'][i][`key-value`] === undefined||accountInfoResponse['apps-local-state'][i][`key-value`]===""){
+//             alert("check");
+//          }
+//         else{
+// for (let n = 0; n < accountInfoResponse['apps-local-state'][i][`key-value`].length; n++) {
+//               console.log(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
+//               //setStakedBalance(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
               
-              let rewardkey =accountInfoResponse['apps-local-state'][i]['key-value'][n];
-             if(rewardkey['key'] === "VUE="){
-               stakedbalancenew=accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
-               setStakedBalance(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-             }
-            if(rewardkey['key'] === "VVNT"){
-              rewardbalancenew=accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
-              console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-              setrewardBalance(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-              console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-            }
-            if(rewardkey['key'] === "VVQ="){
-              usertimenew = accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
-              console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-              setusertime(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-              console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
-            }
+//               let rewardkey =accountInfoResponse['apps-local-state'][i]['key-value'][n];
+//              if(rewardkey['key'] === "VUE="){
+//                stakedbalancenew=accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
+//                setStakedBalance(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//              }
+//             if(rewardkey['key'] === "VVNT"){
+//               rewardbalancenew=accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
+//               console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//               setrewardBalance(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//               console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//             }
+//             if(rewardkey['key'] === "VVQ="){
+//               usertimenew = accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint'];
+//               console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//               setusertime(accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//               console.log("rewardcheck",accountInfoResponse['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//             }
               
-          }
+//           }
 
-        }
+//         }
 
           
-      }
-  }
-}
-  for(let i = 0; i < accountInfoResponse['assets'].length; i++){
-    console.log("accountsasset", accountInfoResponse['assets']);
-     if (accountInfoResponse['assets'][i]['asset-id'] == parseInt(configfile.assetid)) {
-      setBalance(accountInfoResponse['assets'][i]['amount']);
-      console.log("accountsassetnew", accountInfoResponse['assets'][i]['amount']);
+//       }
+//   }
+// }
+//   for(let i = 0; i < accountInfoResponse['assets'].length; i++){
+//     console.log("accountsasset", accountInfoResponse['assets']);
+//      if (accountInfoResponse['assets'][i]['asset-id'] == parseInt(configfile.assetid)) {
+//       setBalance(accountInfoResponse['assets'][i]['amount']);
+//       console.log("accountsassetnew", accountInfoResponse['assets'][i]['amount']);
 
-     }
-  }
+//      }
+//   }
 
 
   
-  console.log("sub",globaltimenew);
-  console.log("sub_div",usertimenew);
-  console.log("mul1",stakedbalancenew);
-  console.log("add_div",rewardbalancenew);
-  console.log("mul2",gloablstakenew);
-  // console.log("rewardCal",rewardCal);
-  let sub = parseInt(globaltimenew) - parseInt(usertimenew);
-    console.log("checksub",sub);
-  let sub_div = parseFloat(sub) / 60;
+//   console.log("sub",globaltimenew);
+//   console.log("sub_div",usertimenew);
+//   console.log("mul1",stakedbalancenew);
+//   console.log("add_div",rewardbalancenew);
+//   console.log("mul2",gloablstakenew);
+//   // console.log("rewardCal",rewardCal);
+//   let sub = parseInt(globaltimenew) - parseInt(usertimenew);
+//     console.log("checksub",sub);
+//   let sub_div = parseFloat(sub) / 60;
   
-  let mul1 = parseFloat(sub_div) * parseFloat(stakedbalancenew);
+//   let mul1 = parseFloat(sub_div) * parseFloat(stakedbalancenew);
   
-  let add = parseFloat(rewardbalancenew) + parseFloat(mul1);
+//   let add = parseFloat(rewardbalancenew) + parseFloat(mul1);
   
-  let add_div =  parseFloat(add) / parseFloat(gloablstakenew);
+//   let add_div =  parseFloat(add) / parseFloat(gloablstakenew);
   
-  let mul2 = parseFloat(add_div) * parseFloat(totalsulnew);
+//   let mul2 = parseFloat(add_div) * parseFloat(totalsulnew);
   
-  let rewardCal1 = parseFloat(mul2) / 1000000;
-  let rewardCal = rewardCal1.toFixed(6);
-  console.log("rewardamountcalculation",rewardCal);
-  //let rewardcalculation =parseFloat((parseFloat(rewardamountbalance)+(parseFloat((globaltime)-parseFloat(usertime))/60)*parseFloat(stakedbalance)/parseFloat(globalstake))*parseFloat(totalsul)/parseFloat(1000000));
-  setrewardcalculation(rewardCal);
+//   let rewardCal1 = parseFloat(mul2) / 1000000;
+//   let rewardCal = rewardCal1.toFixed(6);
+//   console.log("rewardamountcalculation",rewardCal);
+//   //let rewardcalculation =parseFloat((parseFloat(rewardamountbalance)+(parseFloat((globaltime)-parseFloat(usertime))/60)*parseFloat(stakedbalance)/parseFloat(globalstake))*parseFloat(totalsul)/parseFloat(1000000));
+//   setrewardcalculation(rewardCal);
 
 
   
     
-    };
+//     };
     
 
-    fetchPosts();
-  }, []);
+//     fetchPosts();
+//   }, []);
 
 //for elem totalstakeed and reward 
 // useEffect(() => {
@@ -275,68 +302,68 @@ for (let n = 0; n < accountInfoResponse['apps-local-state'][i][`key-value`].leng
 
 
 //for price
-useEffect(() => {
-const fetchPosts = async () => {
-  let slpricenew;
-  let s2pricenew;
-let priceappid = 21580889;
-const client = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
-//let accountInfoResponse1 = await client.accountInformation("MX4W5I4UMDT5B76BMP4DS63Z357WDMNHDICPNEKPG4HVPZJTS2G53DDVBY").do();
-let accountInfoResponse2 = await client.accountInformation(configfile.pairescrowaddress).do();
-console.log("accinfolocalprice",accountInfoResponse2);
-if( accountInfoResponse2['apps-local-state'].length === null|| accountInfoResponse2['apps-local-state'].length ===undefined||accountInfoResponse2['apps-local-state'].length===""){
-alert("checkprice");
-}else{
-console.log("priceconsole",accountInfoResponse2['apps-local-state'].length);
-for (let i = 0; i < accountInfoResponse2['apps-local-state'].length; i++) { 
-if (accountInfoResponse2['apps-local-state'][i].id == parseInt(configfile.priceappid)) {
-    console.log("User's local stateprice:",accountInfoResponse2['apps-local-state'][i].id);
-    let acccheck= accountInfoResponse2['apps-local-state'][i][`key-value`]; 
-    console.log("Usercheckfor price",acccheck);
-    console.log("Userforprice",accountInfoResponse2['apps-local-state'][i][`key-value`]);
+// useEffect(() => {
+// const fetchPosts = async () => {
+//   let slpricenew;
+//   let s2pricenew;
+// let priceappid = 21580889;
+// const client = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
+// //let accountInfoResponse1 = await client.accountInformation("MX4W5I4UMDT5B76BMP4DS63Z357WDMNHDICPNEKPG4HVPZJTS2G53DDVBY").do();
+// let accountInfoResponse2 = await client.accountInformation(configfile.pairescrowaddress).do();
+// console.log("accinfolocalprice",accountInfoResponse2);
+// if( accountInfoResponse2['apps-local-state'].length === null|| accountInfoResponse2['apps-local-state'].length ===undefined||accountInfoResponse2['apps-local-state'].length===""){
+// alert("checkprice");
+// }else{
+// console.log("priceconsole",accountInfoResponse2['apps-local-state'].length);
+// for (let i = 0; i < accountInfoResponse2['apps-local-state'].length; i++) { 
+// if (accountInfoResponse2['apps-local-state'][i].id == parseInt(configfile.priceappid)) {
+//     console.log("User's local stateprice:",accountInfoResponse2['apps-local-state'][i].id);
+//     let acccheck= accountInfoResponse2['apps-local-state'][i][`key-value`]; 
+//     console.log("Usercheckfor price",acccheck);
+//     console.log("Userforprice",accountInfoResponse2['apps-local-state'][i][`key-value`]);
   
-    if(accountInfoResponse2['apps-local-state'][i][`key-value`]=== null|| accountInfoResponse2['apps-local-state'][i][`key-value`] === undefined||accountInfoResponse2['apps-local-state'][i][`key-value`]===""){
-      alert("check");
-   }
-  else{
-for (let n = 0; n < accountInfoResponse2['apps-local-state'][i][`key-value`].length; n++) {
-        console.log(accountInfoResponse2['apps-local-state'][i][`key-value`][n]);
-        //setStakedBalance(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
+//     if(accountInfoResponse2['apps-local-state'][i][`key-value`]=== null|| accountInfoResponse2['apps-local-state'][i][`key-value`] === undefined||accountInfoResponse2['apps-local-state'][i][`key-value`]===""){
+//       alert("check");
+//    }
+//   else{
+// for (let n = 0; n < accountInfoResponse2['apps-local-state'][i][`key-value`].length; n++) {
+//         console.log(accountInfoResponse2['apps-local-state'][i][`key-value`][n]);
+//         //setStakedBalance(accountInfoResponse['apps-local-state'][i][`key-value`][n]);
         
-        let rewardkey =accountInfoResponse2['apps-local-state'][i]['key-value'][n];
-       if(rewardkey['key'] === "czE="){
-        slpricenew=accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint'];
-        console.log("s1pricenew",accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
-         setS1(accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
-       }
-      if(rewardkey['key'] === "czI="){
-        s2pricenew=accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint'];
-        console.log("s2pricenew",accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
-        setS2(accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//         let rewardkey =accountInfoResponse2['apps-local-state'][i]['key-value'][n];
+//        if(rewardkey['key'] === "czE="){
+//         slpricenew=accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint'];
+//         console.log("s1pricenew",accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//          setS1(accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//        }
+//       if(rewardkey['key'] === "czI="){
+//         s2pricenew=accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint'];
+//         console.log("s2pricenew",accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
+//         setS2(accountInfoResponse2['apps-local-state'][i]['key-value'][n]['value']['uint']);
       
-      }
+//       }
       
         
-    }
+//     }
 
-  }
+//   }
 
     
-}
-}
+// }
+// }
 
 
-}
-let pricecal;
-pricecal=parseInt((slpricenew)/(s2pricenew));
-console.log("pricecalculated",pricecal);
-setprice(pricecal);
+// }
+// let pricecal;
+// pricecal=parseInt((slpricenew)/(s2pricenew));
+// console.log("pricecalculated",pricecal);
+// setprice(pricecal);
 
-};
+// };
 
 
-fetchPosts();
-}, []); 
+// fetchPosts();
+// }, []); 
 
 
 // //for elemalgo
@@ -382,42 +409,94 @@ fetchPosts();
   
 
 //ELEMETHPAIR
-useEffect(() => {
-    const fetchPosts = async () => {
-        setTotalStakeelemalgo(await farmtvlelemalgopair(configfileelemalgo.creatoraddress,configfileelemalgo.applicationid));   
-        setTotalrewardallocatedelemalgo(await Rewardelemalgopair(configfileelemalgo.creatoraddress,configfileelemalgo.applicationid));        
-    };
-    fetchPosts();
-  }, []); 
+// useEffect(() => {
+//     const fetchPosts = async () => {
+//         setTotalStakeelemalgo(await farmtvlelemalgopair(configfileelemalgo.creatoraddress,configfileelemalgo.applicationid));   
+//         setTotalrewardallocatedelemalgo(await Rewardelemalgopair(configfileelemalgo.creatoraddress,configfileelemalgo.applicationid));        
+//     };
+//     fetchPosts();
+//   }, []); 
 //ELEM
-useEffect(() => {
-    const fetchPosts = async () => {
-        setTotalStake(await farmtvlelem(configfile.creatoraddress,configfile.applicationid));   
-        setTotalrewardallocatedelem(await Rewardelem(configfile.creatoraddress,configfile.applicationid));
-        console.log("checkingELEMREWARD",totalrewardallocatedelem);   
-    };
-    fetchPosts();
-  }, []); 
+// useEffect(() => {
+//     const fetchPosts = async () => {
+//         setTotalStake(await farmtvlelem(configfile.creatoraddress,configfile.applicationid));   
+//         setTotalrewardallocatedelem(await Rewardelem(configfile.creatoraddress,configfile.applicationid));
+//         console.log("checkingELEMREWARD",totalrewardallocatedelem);   
+//     };
+//     fetchPosts();
+//   }, []); 
 
   //tau
-useEffect(() => {
-    const fetchPosts = async () => {
-        setTotalStaketau(await farmtvltau(configfiletau.creatoraddress,configfiletau.applicationid));   
-        setTotalrewardallocatedtau(await Rewardtau(configfiletau.creatoraddress,configfiletau.applicationid));
-        console.log("checkingELEMREWARD",totalrewardallocatedtau);   
-    };
-    fetchPosts();
-  }, []); 
+// useEffect(() => {
+//     const fetchPosts = async () => {
+//         setTotalStaketau(await farmtvltau(configfiletau.creatoraddress,configfiletau.applicationid));   
+//         setTotalrewardallocatedtau(await Rewardtau(configfiletau.creatoraddress,configfiletau.applicationid));
+//         console.log("checkingELEMREWARD",totalrewardallocatedtau);   
+//     };
+//     fetchPosts();
+//   }, []); 
 
 //TOTAL VALUE LOCKED(OVERALL)
-useEffect(() => {
-    const fetchPosts = async () => {
-        setOverallTVL(await totalstakeelemalgo + totalstake);
-        console.log("calculatingtvl",totalvaluelockedoverall);
+// useEffect(() => {
+//     const fetchPosts = async () => {
+//         setOverallTVL(await totalstakeelemalgo + totalstake);
+//         console.log("calculatingtvl",totalvaluelockedoverall);
 
-    };
-    fetchPosts();
-  }, [totalvaluelockedoverall]); 
+//     };
+//     fetchPosts();
+//   }, [totalvaluelockedoverall]); 
+
+  const approveStake = async() => {
+    try{
+        const ethersProvider =  new ethers.providers.Web3Provider(provider)
+        const signer =  ethersProvider.getSigner();
+        const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, signer);
+        let tx = await pairContract.approve(LPStakeAddress, ethers.utils.parseUnits((1000000000000).toString(), 18));
+        await tx.wait();
+    } catch (e) {
+        console.error("Error in approve:",e);
+    }
+  }
+
+  const stake = async() => {
+    try{
+        const stakeAmount = 0;
+        const ethersProvider =  new ethers.providers.Web3Provider(provider)
+        const signer =  ethersProvider.getSigner();
+        const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
+        let tx = await stakingContract.deposit(ethers.utils.parseUnits((stakeAmount).toString(), 18));
+        await tx.wait();
+    } catch (e) {
+        console.error("Error in stake:",e);
+    }
+  }
+
+  const fun = async() => {
+    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+    const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, provider);
+    const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
+    const erc20Contract = new ethers.Contract(elemAddress, ERC20ABI, provider);
+
+    const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
+    settotalStaked(totalStaked1);
+    const [userStaked1, rewardAamount1] = await stakingContract.userInfo(address);
+    const allowance1 = ethers.utils.formatUnits(await pairContract.allowance(address, LPStakeAddress), 0);
+    setAllowance(allowance1);
+    const lpbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
+    setlpbal(lpbal1);
+    const elembal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(LPStakeAddress), 18);
+    setTotalReward(elembal1);
+    const userStaked11 =  ethers.utils.formatUnits(userStaked1, 18);
+    const rewardAamount22 =  ethers.utils.formatUnits(rewardAamount1, 18);
+    setUserStaked(userStaked11);
+    setUserReward(rewardAamount22);
+
+    console.log("useeffect:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+}
+
+useEffect(() => {
+fun();
+},[]);
 
     return (
         <Layout>
@@ -431,14 +510,14 @@ useEffect(() => {
 
                                 <h6 className='text-gray-D2'>Total Value Locked (TVL)</h6>
 
-                                <h4 className='mb-30'>{parseFloat((parseFloat(totalstakeelemalgo)/1000000)+parseFloat((totalstake)/1000000) + parseFloat((totalstaketau)/1000000))==='NaN'?0.00: parseFloat((parseFloat(totalstakeelemalgo)/1000000)+parseFloat((totalstake)/1000000) + parseFloat((totalstaketau)/1000000)).toFixed(2)}</h4>
+                                <h4 className='mb-30'>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</h4>
 
 
                                 <h6 className='text-gray-D2'>ELEM Price</h6>
                                 <h4 className='mb-30'>$3.00</h4>
 
                                 <h6 className='text-gray-D2'>Total Reward Allocated</h6>
-                                <h4 className='mb-0'>{parseFloat((parseFloat(totalrewardallocatedelem)/1000000)+parseFloat((totalrewardallocatedelemalgo))/1000000 + parseFloat((totalrewardallocatedtau))/1000000)}</h4>
+                                <h4 className='mb-0'>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'} ELEM</h4>
                             </div>
                         </Col>
                         <Col lg={8} xl={9}>
@@ -476,11 +555,11 @@ useEffect(() => {
                                                     TVL
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                         <div className="table-group-th">Total Rewards</div>
@@ -490,11 +569,11 @@ useEffect(() => {
                                                     APR
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -502,22 +581,22 @@ useEffect(() => {
                                 <div className="table-group-body">
                                
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'ETH/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                  
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' />
-                                                <span style={{color:"white"}}>ETH/ELEM</span>
+                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
+                                                <span style={{color:"white"}}>SEI/ELEM</span>
                                             </div>
                                         </div>
-                                        <div className="table-group-td" style={{color:"white"}}>{parseFloat((parseFloat(totalstakeelemalgo)/1000000))}</div>
+                                        <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
                                               
-                                                <span style={{color:"white"}}>{parseFloat((parseFloat(totalrewardallocatedelemalgo)/1000000))}</span>
+                                                <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td text-end">
@@ -542,7 +621,7 @@ useEffect(() => {
                                 
                                     </div>
                                     </Link>
-                                    <Link to={{
+                                    {/* <Link to={{
                   pathname: 'FarmStaking', query:{farm: 'ELEM',image1:Icon1,tvl:totalstake}}}   onClick={elem}>
 
                                     <div className="table-group-tr">
@@ -619,7 +698,7 @@ useEffect(() => {
                                             <p>annualized</p>
                                         </div>
                                     </div>
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             </div>
 
@@ -679,7 +758,7 @@ useEffect(() => {
                                     </div>
                                 </div>
                                 <div className="table-group-body">
-                                <Link to={{
+                                {/* <Link to={{
                   pathname: 'FarmStaking', query:{farm: 'ELEM',image1:Icon1,tvl:totalstake}}}   onClick={elem}>
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
@@ -756,7 +835,8 @@ useEffect(() => {
                                             <p>annualized</p>
                                         </div>
                                     </div>
-                                      </Link>
+                                      </Link> */}
+                                      <center>No farm found</center>
                                     {/* <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
@@ -851,21 +931,21 @@ useEffect(() => {
                                 </div>
                                 <div className="table-group-body">
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'ETH/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' />
-                                                <span style={{color:"white"}}>ETH/ELEM</span>
+                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
+                                                <span style={{color:"white"}}>SEI/ELEM</span>
                                             </div>
                                         </div>
-                                        <div className="table-group-td" style={{color:"white"}}>{parseFloat((parseFloat(totalstakeelemalgo)/1000000))}</div>
+                                        <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
                                                
-                                                <span style={{color:"white"}}>{parseFloat((parseFloat(totalrewardallocatedelemalgo)/1000000))}</span>
+                                                <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td text-end">
@@ -1030,7 +1110,7 @@ useEffect(() => {
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
                                                 <img src={Icon2} alt='icon' />
-                                                <span style={{color:"white"}}>ETH/ELEM</span>
+                                                <span style={{color:"white"}}>SEI/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>$60,419.94</div>

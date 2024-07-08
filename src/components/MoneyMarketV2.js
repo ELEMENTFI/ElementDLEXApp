@@ -9,7 +9,7 @@ import usdcLogo from '../assets/images/usdc-logo.png'
 import elemLogo from '../assets/images/elem-original.png'
 import colorLogo from '../assets/images/element logo.png'
 
-import BG from '../assets/images/bg-v2.png';
+import BG from '../assets/images/bg-v2-new.png';
 
 const MoneyMarket = () => {
     React.useEffect(() => {

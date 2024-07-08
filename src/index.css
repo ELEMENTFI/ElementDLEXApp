@@ -16,4 +16,38 @@
 .modal-dashboard .modal-header closeButton {
     color: red !important;
   }
+
+  .table-group-td {
+    padding: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .name-column {
+    width: 20%;
+  }
+  
+  .liquidity-column {
+    width: 20%;
+  }
+  
+  .volume-column {
+    width: 20%;
+  }
+  
+  .pool-column {
+    width: 20%;
+  }
+  
+  .creator-column {
+    width: 20%;
+  }
+  
+  .table-group-th,
+  .table-group-td {
+    text-align: left;
+    vertical-align: middle;
+  }
+  
   

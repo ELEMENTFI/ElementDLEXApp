@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from './Layouts/LayoutAnalytics';
+// import Layout from './Layouts/Layout';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { Container } from 'react-bootstrap';
@@ -69,6 +70,7 @@ function AnalyticsPage() {
                         <AnalyticChart />
                     </div>
 
+                    
                     <TopLiquidity />
                     
                     {/* <div>
