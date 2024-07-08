@@ -5,7 +5,7 @@ import OrderIcon from '../assets/images/order-icon.png';
 
 import BG from '../assets/images/bg-v2-new.png';
 import BGGrad from '../assets/images/bg-grad.png';
-import elementLogo from '../assets/images/elem-original.png'
+import elementLogo from '../assets/images/element logo.png'
 import { ethers } from 'ethers';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
 import BigInt from 'BigInt';

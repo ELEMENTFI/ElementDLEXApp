@@ -15,6 +15,9 @@ import configfile from "../stakingconfig.json";
 //import configfile from "../stakingelemalgoconfig.json";
 import url from "../configurl";
 
+import { ethers } from 'ethers';
+import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react';
+import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI } from '../abi.js';
 
 
 const algosdk = require('algosdk');
@@ -23,6 +26,15 @@ const myAlgoConnect = new MyAlgoConnect();
 
 
 function FarmStaking(props) {
+
+    const { walletProvider } = useWeb3ModalProvider();
+    const { address, chainId, isConnected } = useWeb3ModalAccount();
+
+    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const provider = new ethers.providers.JsonRpcProvider(url);
+
+    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
  
   const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingFarmTauconfig.json");
   const location = useLocation();
@@ -116,9 +128,19 @@ function FarmStaking(props) {
     const[rewardleft,setRewardleft]=useState("");
     const[totalclaimed,setTotalclaim]=useState("");
     const[totallock,setTotallock]=useState("");
-    let address=localStorage.getItem("walletAddress");
+    // let address=localStorage.getItem("walletAddress");
     const[tk1,sett1] = useState("");
     const[tk2,sett2] = useState("");
+
+    const[stakeAmount, setStakeAmount] = useState("");
+    const[unstakeAmount, setUnstakeAmount] = useState("");
+    const[allowance, setAllowance] = useState("");
+    const[totalStaked, settotalStaked] = useState("");
+    const[userStaked, setUserStaked] = useState("");
+    const[totalReward, setTotalReward] = useState("");
+    const[userReward, setUserReward] = useState("");
+    const[lpbal, setlpbal] = useState("");
+    const[elembal, setelembal] = useState("");
    
     useEffect(() => {
         const fetchPosts = async () => {
@@ -987,9 +1009,81 @@ console.log("Application's global state:");
       
       }
 
+      const approveStake = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, signer);
+            let tx = await pairContract.approve(LPStakeAddress, ethers.utils.parseUnits((1000000000000).toString(), 18));
+            await tx.wait();
+            await fun();
+        } catch (e) {
+            console.error("Error in approve:",e);
+        }
+      }
+    
+      const stakesei = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
+            let tx = await stakingContract.deposit(ethers.utils.parseUnits((stakeAmount).toString(), 18));
+            await tx.wait();
+            await fun();
+        } catch (e) {
+            console.error("Error in stake:",e);
+        }
+      }
 
+      const unstakesei = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
+            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18));
+            await tx.wait();
+            await fun();
+        } catch (e) {
+            console.error("Error in stake:",e);
+        }
+      }
 
+      const claimrewardsei = async() => {
+        try{
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const signer =  ethersProvider.getSigner();
+            const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
+            let tx = await stakingContract.claimReward();
+            await tx.wait();
+            await fun();
+        } catch (e) {
+            console.error("Error in stake:",e);
+        }
+      }
+    
+      const fun = async() => {
+            const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+            const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, provider);
+            const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
+    
+            const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
+            settotalStaked(totalStaked1);
+            const [userStaked1, rewardAamount1] = await stakingContract.userInfo(address);
+            const allowance1 = ethers.utils.formatUnits(await pairContract.allowance(address, LPStakeAddress), 0);
+            setAllowance(allowance1);
+            const lpbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
+            setlpbal(lpbal1);
+            const userStaked11 =  ethers.utils.formatUnits(userStaked1, 18);
+            const rewardAamount22 =  ethers.utils.formatUnits(rewardAamount1, 18);
+            setUserStaked(userStaked11);
+            setUserReward(rewardAamount22);
+    
+            console.log("useeffect:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+      }
 
+      useEffect(() => {
+        fun();
+      },[]);
 
 
 
@@ -1005,13 +1099,13 @@ console.log("Application's global state:");
                                 <h5 className='text-gray text-normal mb-30'>Stake  tokens to earn rewards in ELEM. <br /><Link to="/" className="btn-link-white">See how it works.</Link></h5>
 
                                 <h6 className='text-gray-D2'>Total Value Locked (TVL)</h6>
-                                <h4 className='mb-30'>{parseFloat(tvl/1000000)}</h4>
+                                <h4 className='mb-30'>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</h4>
 
                                 <h6 className='text-gray-D2'>ELEM PRICE</h6>
                                 <h4 className='mb-30'>$3.00</h4>
 
                                 <h6 className='text-gray-D2'>My Holdings</h6>
-                                <h4 className='mb-0'>{parseFloat(stakedbalance/1000000)}</h4>
+                                <h4 className='mb-0'>{userStaked ? parseFloat(userStaked).toFixed(2) : '0.00'}</h4>
                             </div>
                         </Col>
                         <Col lg={8} xl={9}>
@@ -1096,7 +1190,7 @@ console.log("Application's global state:");
                                             <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                             {farmimage1===null||farmimage1===""||farmimage1===undefined ? (<>   <img src={Icon1} style={{width:'40px',height:'40px'}} /> </>):(<>   <img src={farmimage1} style={{width:'50px',height:'50px'}} /></>)}
-                                            {farmimage2===null||farmimage2===""||farmimage2===undefined ? (<>   </>):(<>   <img src={farmimage2} style={{width:'50px',height:'50px'}} /></>)}                                          
+                                            {farmimage2===null||farmimage2===""||farmimage2===undefined ? (<>   </>):(<>   <img src={farmimage2} style={{width:'45px',height:'45px'}} /></>)}                                          
                                             <span className='d-flex mb-10 align-items-center' ><h5>STAKE</h5></span>{farmname===null||farmname===""||farmname===undefined ? (<span className='d-flex mb-10 align-items-center' >  </span>):(<span  className='d-flex mb-10 align-items-center' ><h5>{farmname}</h5></span>)}
                                            
                                             </div>
@@ -1105,22 +1199,24 @@ console.log("Application's global state:");
                                           
 
                                             <div className="mb-3">
-                                                <label className='d-flex align-items-center justify-content-between'><small>Balance: {balance/1000000}</small></label>
+                                                <label className='d-flex align-items-center justify-content-between'><small>Balance: {lpbal? parseFloat(lpbal).toFixed(4) : '0.00'}</small></label>
                                                 <div className="balance-card d-flex align-items-center justify-content-between">
-                                                    <input type='text' id="tid1" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' />
+                                                    <input type='text' id="tid1" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={stakeAmount} onChange={(e) => {setStakeAmount(e.target.value)}} />
                                                     
                                                     <strong>{farmname}</strong>
                                                 </div>
                                             </div>
-                                            <Row className='gx-2 mb-5'>
-                                                <Col sm="4" className='py-sm-0 py-1'>
+                                            <Row className='gx-2 mb-5 d-flex justify-content-end'>
+                                                {/* <Col sm="4" className='py-sm-0 py-1'>
                                                     <Button variant='grad' className='px-2 py-2 w-100' onClick={assetoptin}>Asset Opt-in</Button>
                                                 </Col>
                                                 <Col sm="4" className='py-sm-0 py-1'>
                                                     <Button variant='grad' className='px-2 py-2 w-100' onClick={optin}>App Opt-in</Button>
-                                                </Col>
+                                                </Col> */}
                                                 <Col sm="4" className='py-sm-0 py-1'>
-                                                    <Button variant='grad' className='px-2 py-2 w-100' onClick={stake}>Stake </Button>
+                                                {allowance >= (stakeAmount * 10**18) ? 
+                                                <Button variant='grad' className='px-2 py-2 w-100' onClick={stakesei}>Stake </Button> : 
+                                                <Button variant='grad' className='px-2 py-2 w-100' onClick={approveStake}>Approve </Button>}
                                                 </Col>
                                             </Row>
 
@@ -1133,15 +1229,15 @@ console.log("Application's global state:");
                                             </h5>
 
                                             <div className="mb-3">
-                                                <label className='d-flex align-items-center justify-content-between'><small>Balance: {parseFloat(stakedbalance/1000000)}</small></label>
+                                                <label className='d-flex align-items-center justify-content-between'><small>Balance: {userStaked ? parseFloat(userStaked).toFixed(4) : '0.00'}</small></label>
                                                 <div className="balance-card d-flex align-items-center justify-content-between">
-                                                    <input type='text' id="tid2" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' />
+                                                    <input type='text' id="tid2" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={unstakeAmount} onChange={(e) => {setUnstakeAmount(e.target.value)}} />
                                                     
                                                     <strong>{farmname}</strong>
                                                 </div>
                                             </div>
 
-                                            <Button variant='grad' className='w-100' onClick={unstake}>Withdraw</Button>
+                                            <Button variant='grad' className='w-100' onClick={unstakesei}>Withdraw</Button>
                                         </Col>
 
                                         <Col md={6} className='mt-md-0 mt-4'>
@@ -1183,7 +1279,7 @@ console.log("Application's global state:");
                                                         </OverlayTrigger>
                                                 </div>
                                                 </div>
-                                                <strong>{stakedbalance/1000000} <small className='h7 ms-2'>{farmname}</small></strong>
+                                                <strong>{userStaked? parseFloat(userStaked).toFixed(3) : '0.00'} <small className='h7 ms-2'>{farmname}</small></strong>
                                             </div>
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>My Earned ELEM 
@@ -1203,7 +1299,7 @@ console.log("Application's global state:");
                                                         </OverlayTrigger>
                                                 </div>
                                                 </div>
-                                                <strong>{rewardBool === true ? (<>{rewardcalc}</>) : (<>{0.00}</>)} <small className='h7 ms-2'>ELEM</small></strong>
+                                                <strong>{userReward? parseFloat(userReward).toFixed(3) : '0.00'} <small className='h7 ms-2'>ELEM</small></strong>
                                             </div>
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>ELEM Rewards 
@@ -1223,7 +1319,7 @@ console.log("Application's global state:");
                                                         </OverlayTrigger>
                                                 </div>
                                                 </div>
-                                                <Button variant='grad' onClick={Claimreward}>Claim Reward</Button>
+                                                <Button variant='grad' onClick={claimrewardsei}>Claim Reward</Button>
                                             </div>
                                         </Col>
                                     </Row>

@@ -23,18 +23,21 @@ function AccountVerifier(props) {
 
     const checkEligibility = async () => {
         if (isConnected) {
+            let verify1;
             let accounts1 = await getAccountsFirebase();
             setAccounts(accounts1);
 
             for (let i = 0; i < accounts1.length; i++) {
                 if ((accounts1[i].account).toLowerCase() === (address).toLowerCase()) {
+                    verify1 = true;
                     setVerify(true);
                     break;
                 } else {
+                    verify1 = false;
                     setVerify(false);
                 }
             }
-            if (verify === true) {
+            if (verify === true || verify1 === true) {
                 navigate.push('/swap');
             }
         } else {
