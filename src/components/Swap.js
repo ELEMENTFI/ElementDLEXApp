@@ -1681,15 +1681,17 @@ const approveSei = async() => {
         const currentEpoch = Math.floor(Date.now() / 1000); // current epoch in seconds
         const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
         
-        // Convert the deposit amount to wei
-        let amountInWei = ethers.utils.parseUnits((swapamount1).toString(), tokenDecimals1);
-        let amountInWei2 = ethers.utils.parseUnits((swapamount2).toString(), tokenDecimals2);
-        let amountInWei2Slipped = ethers.utils.parseUnits((swapamount2 - (swapamount2 * (slippage/100))).toString(), tokenDecimals2);
+            // Convert the deposit amount to wei
+        const decimalLimit = Math.pow(10, tokenDecimals1);
+        const decimalLimit2 = Math.pow(10, tokenDecimals2); 
+        const amountInWei = ethers.utils.parseUnits((Math.floor(swapamount1 * decimalLimit) / decimalLimit).toString(), tokenDecimals1);
+        const amountInWei2 = ethers.utils.parseUnits((Math.floor(swapamount2 * decimalLimit2) / decimalLimit2).toString(), tokenDecimals2);
+        const amountInWei2Slipped = ethers.utils.parseUnits((Math.floor((swapamount2 - swapamount2 * (slippage / 100)) * decimalLimit) / decimalLimit).toString(), tokenDecimals2);
         console.log("chack", amountInWei2, amountInWei2Slipped);
 
         let tx;
         if(tokenName1 === "ETH" || tokenName1 === "SEI"){
-          tx = await swapContract.swapExactETHForTokens(amountInWei2, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
+          tx = await swapContract.swapExactETHForTokens(amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
         } else if (tokenName2 === "ETH" || tokenName2 === "SEI") {
           tx = await swapContract.swapExactTokensForETH(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
         } else {
@@ -2027,7 +2029,7 @@ const approveSei = async() => {
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button>
                                     
                                 </>)} */}
-                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA") ? (<>
+                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== WSEIAddress) ? (<>
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}

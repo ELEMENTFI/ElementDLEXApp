@@ -234,7 +234,7 @@ const MoneyMarket = () => {
                                                     <span className='ms-auto'>Max {userDeposit ? ((((userDeposit)/(1e18))/2) - (userDebt/1e18)).toFixed(2) : "0.00"}</span>
                                                 </div>
 
-                                                <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={borrowAmount} onChange={(e)=>{setborrowAmount(e.target.value)}}/>
+                                                <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={borrowAmount} onChange={(e)=>{setborrowAmount(e.target.value)}}/>
                                                 {borrowAmount >= (((userDeposit/(1e18))/2) - (userDebt/1e18)) ? 
                                                     <Button variant='grad' className='w-100' disabled>Insufficient Collateral</Button> :
                                                     <Button variant='grad' className='w-100' onClick={borrow}>Borrow Elem</Button>}
@@ -262,7 +262,7 @@ const MoneyMarket = () => {
 
                                                 <Form>
                                                 <div className="d-flex mb-3">
-                                                    <input type="text" className="form-control form-dark" placeholder="0.0" value={repayAmount} onChange={(e)=>{setrepayAmount(e.target.value)}}/>
+                                                    <input type="number" className="form-control form-dark" placeholder="0.0" value={repayAmount} onChange={(e)=>{setrepayAmount(e.target.value)}}/>
                                                 </div>
 
                                                 {
@@ -303,7 +303,7 @@ const MoneyMarket = () => {
                                                 </div>
 
                                                 <Form>
-                                                <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={liquidateAmount} onChange={(e)=>{setLiquidateAmount(e.target.value)}}/>
+                                                <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={liquidateAmount} onChange={(e)=>{setLiquidateAmount(e.target.value)}}/>
                                                     <Button variant='grad' className='w-100' onClick={liquidate}>Liquidate USDC</Button>
                                                 </Form>
                                             </div>
