@@ -496,7 +496,7 @@ const elem = async() => {
 
 useEffect(() => {
 fun();
-},[]);
+},[address, isConnected]);
 
     return (
         <Layout>

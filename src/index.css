@@ -50,4 +50,9 @@
     vertical-align: middle;
   }
   
+  .center-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Or any other height you prefer */
+  }
   

@@ -230,7 +230,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
             <img  width="31" height="30" src={assn === "unknown" ? questionlogo : assn}/>
            {ass}
            </>):(<>
-            <img  width="31" height="30" src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"} onClick={setk("SEI")}/>
+            <img  width="31" height="30" src={seilogo} onClick={setk("SEI")}/>
            SEI
            </>)}
         </Button>

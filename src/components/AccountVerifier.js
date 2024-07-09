@@ -53,35 +53,36 @@ function AccountVerifier(props) {
 
     return (
         <div style={{ backgroundImage: `url(${bgBackgroundImage})`, backgroundSize: 'cover', minHeight: '100vh' }}>
-            <ToastContainer position='top-center' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
-            <div className="flex items-center gap-3" style={{ marginLeft: "20px", marginTop: "20px"}}>
-                            <img src={logo} alt="logo icon" style={{height: "60px", width: "60px"}}/>
-                            <p className="text-white font-bold text-xl tablet:text-2xl">
-                                ELEMENT
-                            </p>
-                            </div>
-            <div className="page-content d-flex align-items-center justify-content-center" >
-                <Container fluid className="p-0">
-                    <Row className="justify-content-center">
-                        <Col lg={6} className="mb-lg-0 mb-4 order-lg-2">
-                            <div className="card-base card-shadow card-dark" style={{ height: "auto", overflow: 'auto' }}>
-                                <h3>Check your Eligibility !!</h3>
-                                <center>
-                                    {isConnected ? (
-                                        <>
-                                            <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Disconnect Wallet</Button>
-                                            <br/>{verify === false && <p style={{ color: "red" }}>This Account is not Eligible</p>}
-                                        </>
-                                    ) : (
-                                        <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Connect Wallet</Button>
-                                    )}
-                                </center>
-                            </div>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        </div>
+    <ToastContainer position='top-center' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
+    <div className="flex items-center gap-3" style={{ marginLeft: "20px", marginTop: "20px"}}>
+        <img src={logo} alt="logo icon" style={{height: "60px", width: "60px"}}/>
+        <p className="text-white font-bold text-xl tablet:text-2xl">
+            ELEMENT
+        </p>
+    </div>
+    <div className="page-content d-flex align-items-center justify-content-center" style={{ paddingTop: '1vh' }}>
+        <Container fluid className="p-0">
+            <Row className="justify-content-center">
+                <Col lg={6} className="mb-lg-0 mb-4 order-lg-2">
+                    <div className="card-base card-shadow card-dark" style={{ height: "auto", overflow: 'auto' }}>
+                        <h3>Check your Eligibility !!</h3>
+                        <center>
+                            {isConnected ? (
+                                <>
+                                    <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Disconnect Wallet</Button>
+                                    <br/>{verify === false && <p style={{ color: "red" }}>This Account is not Eligible</p>}
+                                </>
+                            ) : (
+                                <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Connect Wallet</Button>
+                            )}
+                        </center>
+                    </div>
+                </Col>
+            </Row>
+        </Container>
+    </div>
+</div>
+
     );
 }
 
