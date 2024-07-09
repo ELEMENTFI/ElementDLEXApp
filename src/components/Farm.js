@@ -40,7 +40,7 @@ function FarmPage() {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";

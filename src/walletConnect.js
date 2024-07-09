@@ -17,21 +17,21 @@ const metadata = {
     icons: ['https://testnet.divinedimension.io/static/media/logo-icon.cdce6297c02ec9b165cd0f543ffb50ef.svg']
   }
   const testnet = {
-    chainId: 1328,
+    chainId: 97,
     name: 'Sei Testnet',
     currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
+    explorerUrl: 'https://bsc-testnet-rpc.publicnode.com',
     rpcUrl: 'https://seitrace.com'
   }
 
   createWeb3Modal({
     ethersConfig: defaultConfig({ 
       metadata,
-      defaultChainId: 1328,
+      defaultChainId: 97,
       enableEIP6963: true,
       enableInjected: true,
       enableCoinbase: true,
-      rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+      rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
     }),
     chains: [testnet],
     projectId
@@ -57,7 +57,7 @@ export const Web3Provider = ({ children }) => {
 //       try {
 //         // const provider = ethers.getDefaultProvider(Network_Name, {
 //         //   etherscan: API_KEY});
-//         const provider = ethers.getDefaultProvider('https://evm-rpc-testnet.sei-apis.com');
+//         const provider = ethers.getDefaultProvider('https://bsc-testnet-rpc.publicnode.com');
 
 //         // const dime = await getTokenBalance(address, DIME_Token_Address, DIME_Token_ABI);
 //         const eth = await provider.getBalance(address);
@@ -103,11 +103,11 @@ export const Web3Provider = ({ children }) => {
 };
 
 export const config = {
-    chainId: 1328,
+    chainId: 97,
     chainIdHex: '0x530',
     name: 'Sei Testnet',
     currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
+    explorerUrl: 'https://bsc-testnet-rpc.publicnode.com',
     rpcUrl: 'https://seitrace.com'
   }
 

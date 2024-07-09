@@ -50,7 +50,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const handleClose = () => setShow(false);
@@ -149,11 +149,11 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
         // console.log(seemore.assets)
         let s =[];
         s=[
-            {index:0,image:seilogo,name:"SEI", contract: "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA", decimals:18},
-            {index:10458941,image:usdclogo,name:"USDC", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:6},
+            {index:0,image:seilogo,name:"ETH", contract: "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd", decimals:18},
+            {index:10458941,image:usdclogo,name:"USDC", contract: "0x64544969ed7EBf5f083679233325356EbE738930", decimals:6},
             // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
-            {index:71116238,image:elemlogo,name:"ELEM", contract: "0xaB7eEc703836a34105c62595c346b23D4964A2a9", decimals:18},
-            {index:67396430,image:usdtimg,name:"USDT", contract: "0xc5A7cc3395fDba9719179a37525c58773d7EBEeE", decimals:6}
+            {index:71116238,image:elemlogo,name:"ELEM", contract: "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B", decimals:18},
+            {index:67396430,image:usdtimg,name:"USDT", contract: "0xd77C2afeBf3dC665af07588BF798bd938968c72E", decimals:6}
             // {index:470842789,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/14923.png",name:"Defly Token"},
             // {index:27878396,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/10820.png",name:"Yieldly"},
             // {index:66309738,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/8378.png",name:"AKITA INU"},

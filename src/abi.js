@@ -1,15 +1,17 @@
-export const  ERC20MockAddress = "0x3527A104a934D6406e76a307849eeF537E516628";
-export const cftokenAddress = "0x2653Dd71f714261a3c61EAad1e5ED86C445B59DF";
-export const  YearnControllerMockAddress = "0xDA1ED3671A0C49A289AAd10aAeF5371EDe561068";
-export const  YearnVaultMockAddress = "0x12eE905136C3cb5EbbC91905E3898F40E10D30D9";
-export const  VaultAdapterMockAddress = "0xc1937548e57720b37e7a2d8478bea314465a5aFe";
-export const  VaultAdapterMockWithIndirectionAddress = "0x5f463CB0d957f5f6ea0263C4c783294750453C3C";
-export const  StabilizerAddress = "0x5B44FC79c31eAF1154d6889133f90C6091Bf0Fa2";
-export const  CarbonFinanceAddress = "0x4B35195c9Bb8f5dB0acb7943B4d16A447AB0E2B6";
+export const  ERC20MockAddress = "0x72C93F3809b684b65D7B75dB93282BA0577c9235";
+export const cftokenAddress = "0x2c514Da85b9dD8a559cdc5280273bF523E125903";
+export const  YearnControllerMockAddress = "0xB7E1D59f9901BF182bBc956E21d4E1D629b05Fe4";
+export const  YearnVaultMockAddress = "0x33D8773B90b16B394bd40708C1547E632112CE4A";
+export const  VaultAdapterMockAddress = "0x2bc8AeCcDbE279e39f1593A2B87A038506F36Da8";
+export const  VaultAdapterMockWithIndirectionAddress = "0x462F80581F55EF7696Ebf50fB402338B321C5A07";
+export const  StabilizerAddress = "0xFC1B214409200f0a9bc75551f2ed8CA9e54c678c";
+export const  CarbonFinanceAddress = "0x8f2b36b6141805B3a1CD7bA0B9A661aA50949275";
 
-export const PancakeFactoryV2Address = "0xE044566C71D5196FE8Af42A72152A9102bF90592";
-export const PancakeRouterV2Address = "0x08456254c0bD68B7355267e81DB11DD92283948B"//"0xe40A4c44f49e00ca954B11658a4b528e6a5e6294"//"0xaCF8be2E37c3b68a366CFb0BAE3C64e1399593e4";
-export const WSEIAddress = "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA";
+
+export const PancakeFactoryV2Address = "0x002C0e81cBaABA0b6DB899c307c983dE2e67b916";
+export const PancakeRouterV2Address = "0xCb14E10785d2eb2768FF67dBDE1b2cd3E9892B92";
+export const WSEIAddress = "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd";
+
 
 export const LPStakeAddress = "0x2d563D3883a19f61359D4C675875646920aEDa10";
 

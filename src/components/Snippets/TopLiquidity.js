@@ -682,7 +682,7 @@ check_fees:
 const TopLiquidity = () => {
     let history=useHistory();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [dt,setdt] = useState([]);

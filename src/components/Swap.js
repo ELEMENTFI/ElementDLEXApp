@@ -694,7 +694,7 @@ function SwapPage(props) {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ swapamount1, setSwapamount1 ] = useState("");
@@ -2027,7 +2027,7 @@ const approveSei = async() => {
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button>
                                     
                                 </>)} */}
-                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA") ? (<>
+                                {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== WSEIAddress) ? (<>
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}

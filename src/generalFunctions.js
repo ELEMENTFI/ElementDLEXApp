@@ -9,21 +9,21 @@ const metadata = {
     icons: ['https://testnet.divinedimension.io/static/media/logo-icon.cdce6297c02ec9b165cd0f543ffb50ef.svg']
   }
   const testnet = {
-    chainId: 1328,
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
-    rpcUrl: 'https://seitrace.com'
+    chainId: 97,
+    name: 'BNB Smart Chain Testnet',
+    currency: 'tBNB',
+    explorerUrl: 'https://testnet.bscscan.com',
+    rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
   }
-
+  
   createWeb3Modal({
     ethersConfig: defaultConfig({ 
       metadata,
-      defaultChainId: 1328,
+      defaultChainId: 97,
       enableEIP6963: true,
       enableInjected: true,
       enableCoinbase: true,
-      rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+      rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
     }),
     chains: [testnet],
     projectId
@@ -35,12 +35,12 @@ const metadata = {
   };
 
   export const config = {
-    chainId: 1328,
-    chainIdHex: '0x530',
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://seitrace.com/',
-    rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+    chainId: 97,
+    chainIdHex: '0x61',
+    name: 'Binance Testnet',
+    currency: 'tBNB',
+    explorerUrl: 'https://testnet.bscscan.com',
+    rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
   }
   
   export const ChangeNetwork = async (walletProvider) => {
