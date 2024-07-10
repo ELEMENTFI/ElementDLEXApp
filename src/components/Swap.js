@@ -1,5 +1,6 @@
 import React from 'react';
 import { Col, Container, Row, Breadcrumb, Dropdown, Button, ButtonGroup, DropdownButton, InputGroup, FormControl, Modal } from 'react-bootstrap';
+import ButtonLoad from 'react-bootstrap-button-loader';
 import Layout from './Layouts/LayoutInner';
 // import {Container} from 'react-bootstrap';
 import SwapChart from './Snippets/SwapChart';
@@ -710,6 +711,7 @@ function SwapPage(props) {
     const [ tokenbal1, setTokenbal1 ] = useState(0.0);
     const [ tokenbal2, setTokenbal2 ] = useState(0.0);
     const [ ethbal, setEthbal ] = useState(0.0);
+    const [ loader, setLoader ] =useState(false);
 
   const location = useLocation();
   const [a, setdisplay] = useState([]);
@@ -1655,6 +1657,7 @@ toast.success(`Transaction Success ${response.txId}`);
 
 const approveSei = async() => {
   try{
+      setLoader(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -1666,7 +1669,9 @@ const approveSei = async() => {
       
       await tx.wait();
       await fun();
+      setLoader(false);
   }catch(e){
+      setLoader(false);
       console.error(e);
   }
  
@@ -1675,6 +1680,7 @@ const approveSei = async() => {
 
   const swapSei = async() => {
       try{
+        setLoader(true);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -1701,9 +1707,11 @@ const approveSei = async() => {
         await tx.wait();
         setSwapamount1("");
         setSwapamount2("");
+        setLoader(false);
         await fun();
         
     }catch(e){
+        setLoader(false);
         console.error(e);
     }
   }
@@ -2030,10 +2038,10 @@ const approveSei = async() => {
                                     
                                 </>)} */}
                                 {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== WSEIAddress) ? (<>
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</ButtonLoad>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</ButtonLoad>
                                 </>)}
                                 </>)}
                                 </center>

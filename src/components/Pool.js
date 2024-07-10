@@ -12,6 +12,8 @@ import FilterDropdown from './Snippets/FilterDropdown';
 
 import elem from '../assets/images/elem-original.png';
 import tau from '../assets/images/tau-original.png';
+import Llogo from '../assets/images/L logo.png';
+import Plogo from '../assets/images/P logo.png'
 import FilterDropdown2 from './Snippets/FilterDropdown2';
 // const animatedComponents = makeAnimated();
 import MyAlgoConnect from "@randlabs/myalgo-connect";
@@ -741,6 +743,8 @@ function PoolPage() {
     const [ liquidbal, setliquidbal ] = useState(0.0);
     const [ userPairs, setUserPairs ] = useState([]);
     const[loader, setLoader] = useState(false);
+    const[loader1, setLoader1] = useState(false);
+    const[loader2, setLoader2] = useState(false);
     const [showLoader, setShowLoader] = useState(true);
     const [showNoLiquidity, setShowNoLiquidity] = useState(false);
     
@@ -2346,6 +2350,7 @@ function SetValue2(Amountin){
 
  const approveSei1 = async(token11) => {
   try{
+      setLoader1(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2357,7 +2362,9 @@ function SetValue2(Amountin){
       
       await tx.wait();
       await fun();
+      setLoader1(false);
   }catch(e){
+      setLoader1(false);
       console.error(e);
   }
  
@@ -2365,6 +2372,7 @@ function SetValue2(Amountin){
 
 const approveSei2 = async(token22) => {
   try{
+      setLoader1(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2376,7 +2384,9 @@ const approveSei2 = async(token22) => {
       
       await tx.wait();
       await fun();
+      setLoader1(false);
   }catch(e){
+      setLoader1(false);
       console.error(e);
   }
  
@@ -2384,6 +2394,7 @@ const approveSei2 = async(token22) => {
 
 const approvePair = async() => {
   try{
+      setLoader2(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2395,7 +2406,9 @@ const approvePair = async() => {
       
       await tx.wait();
       await fun3();
+      setLoader2(false);
   }catch(e){
+      setLoader2(false);
       console.error(e);
   }
  
@@ -2404,6 +2417,7 @@ const approvePair = async() => {
 
   const addLiquiditysei = async(amount1, amount2, token11, token22, decimals1, decimals2, name1, name2, state) => {
       try{
+        setLoader1(true);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -2466,15 +2480,17 @@ const approvePair = async() => {
           await fun3();
         }
         
-        
+        setLoader1(false);
         
     }catch(e){
+        setLoader1(false);
         console.error(e);
     }
   }
 
   const remLiquiditysei = async() => {
     try{
+      setLoader2(true);
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -2501,8 +2517,9 @@ const approvePair = async() => {
       await tx.wait();
       setRemLiquidity("");
       await fun();
-      
+      setLoader2(false);
   }catch(e){
+      setLoader2(false);
       console.error(e);
   }
   handleRemove();
@@ -3015,7 +3032,7 @@ const fun1 = async () => {
                             </svg>
                         </Button> */}
                         <h3><b>LIQUIDITY PROVIDER REWARDS</b></h3><br/>
-                        <p>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
+                        <p style={{fontSize: '17px'}}>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
                     </div>
 
                     <div className="card-base text-center card-pool card-dark">
@@ -3093,8 +3110,8 @@ const fun1 = async () => {
                                return (<div> 
                                  <div className="d-flex flex-sm-row mb-30 flex-column justify-content-sm-between align-items-center">
                                  <div class="d-flex align-items-center td-cell">
-                                  <img src={elem} alt="icon" />
-                                  <img src={tau} style={{marginLeft: '-15px'}} alt="icon" />
+                                  <img src={Llogo} alt="icon" style={{width:'40px',height:'40px',borderRadius:'50%'}}/>
+                                  <img src={Plogo} style={{width:'40px',height:'40px',borderRadius:'50%', marginLeft: '-15px'}} alt="icon" />
                                   <span class="ms-2">{r?.asset1Name}/{r?.asset2Name}</span>
                                 </div>
                                  {/* <Breadcrumb className='mb-sm-0 mb-3'>
@@ -3232,11 +3249,11 @@ const fun1 = async () => {
                                         </>)
                                         } */}
                                         { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WSEI" && tokenName1 !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</ButtonLoad>
                                         </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WSEI" && tokenName2 !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</ButtonLoad>
                                         </>):(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</ButtonLoad>
                                         </>)
                                         }
 
@@ -3366,8 +3383,8 @@ const fun1 = async () => {
                                         </h6>
                                     </div>
                                     {allowancePair >= parseFloat(remLiquidity/1e18) ? 
-                                    <Button variant='grad' className='btn-lg w-100' onClick={() => remLiquiditysei()}>Remove</Button> :
-                                    <Button variant='grad' className='btn-lg w-100' onClick={() => approvePair()}>Approve LP</Button>}
+                                    <ButtonLoad loading={loader2} variant='grad' className='btn-lg w-100' onClick={() => remLiquiditysei()}>Remove</ButtonLoad> :
+                                    <ButtonLoad loading={loader2} variant='grad' className='btn-lg w-100' onClick={() => approvePair()}>Approve LP</ButtonLoad>}
                                     
                                 </Col>
                             </Row>
@@ -3435,11 +3452,11 @@ const fun1 = async () => {
 
                                     {/* <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>mint1call(appID_global,samount1,samount2,rstate?.asset1Name,rstate?.asset2Name)}>ADD LIQUIDITY</Button> */}
                                     { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</ButtonLoad>
                                         </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</ButtonLoad>
                                         </>):(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</ButtonLoad>
                                         </>)
                                         }
 

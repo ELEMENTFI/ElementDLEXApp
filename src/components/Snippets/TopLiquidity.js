@@ -5,6 +5,8 @@ import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 
 import Icon1 from '../../assets/images/icon1.png';
 import Icon2 from '../../assets/images/icon2.png';
+import Llogo from '../../assets/images/L logo.png';
+import Plogo from '../../assets/images/P logo.png';
 import elem from '../../assets/images/elem-original.png';
 import tau from '../../assets/images/tau-original.png';
 import { useHistory } from "react-router-dom";
@@ -1438,8 +1440,10 @@ let tvl = s1 + s2;
         <div className="table-group-tr">
           <div className="table-group-td name-column">
             <div className="d-flex align-items-center td-cell">
-              <img src={elem} alt='icon' />
-              <img src={tau} alt='icon' />
+              {/* <img src={elem} alt='icon' />
+              <img src={tau} alt='icon' /> */}
+              <img src={Llogo} alt="icon" style={{width:'35px',height:'35px',borderRadius:'50%'}}/>
+              <img src={Plogo} style={{width:'35px',height:'35px',borderRadius:'50%', marginLeft: '2px'}} alt="icon" />
               <span>{x?.name}</span>
             </div>
           </div>

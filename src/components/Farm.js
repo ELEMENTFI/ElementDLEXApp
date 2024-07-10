@@ -7,9 +7,10 @@ import {
 
 // import Icon1 from '../assets/images/icon1.png';
 // import Icon2 from '../assets/images/icon2.png';
-import Icon1 from '../assets/images/element logo.png';
+import Icon1 from '../assets/images/L logo.png';
 // import Icon2 from '../assets/images/Ethereum-icon.svg';
-import Icon2 from '../assets/images/sei-logo.png';
+import Icon2 from '../assets/images/P logo.png';
+import Icon4 from '../assets/images/element logo.png';
 import Icon3 from '../assets/images/tau-original.png';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import configfile from "../stakingconfig.json";
@@ -102,6 +103,10 @@ function FarmPage() {
 const elemalgopair = async() => {
    localStorage.setItem("ASSETFARM","");
    localStorage.setItem("ASSETFARM","elemalgo");
+   localStorage.setItem('farm', 'SEI/ELEM');
+    localStorage.setItem('image1', Icon1);
+    localStorage.setItem('image2', Icon2);
+    localStorage.setItem('tvl', totalStaked);
    console.log("insideelemalgo");
 }
 const elem = async() => {
@@ -586,15 +591,15 @@ fun();
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
+                                                <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius:"50%"}}/>
+                                                <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius:"50%", marginLeft:"5px"}}/>
                                                 <span style={{color:"white"}}>SEI/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
+                                                <img src={Icon4} alt='icon' />
                                               
                                                 <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
@@ -935,15 +940,15 @@ fun();
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
+                                                <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius: "50%"}}/>
+                                                <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius: "50%", marginLeft:"5px"}}/>
                                                 <span style={{color:"white"}}>SEI/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
+                                                <img src={Icon4} alt='icon' />
                                                
                                                 <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
