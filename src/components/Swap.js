@@ -1682,14 +1682,16 @@ const approveSei = async() => {
         const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
         
         // Convert the deposit amount to wei
-        let amountInWei = ethers.utils.parseUnits((swapamount1).toString(), tokenDecimals1);
-        let amountInWei2 = ethers.utils.parseUnits((swapamount2).toString(), tokenDecimals2);
-        let amountInWei2Slipped = ethers.utils.parseUnits((swapamount2 - (swapamount2 * (slippage/100))).toString(), tokenDecimals2);
+        const decimalLimit = Math.pow(10, tokenDecimals1);
+        const decimalLimit2 = Math.pow(10, tokenDecimals2); 
+        const amountInWei = ethers.utils.parseUnits((Math.floor(swapamount1 * decimalLimit) / decimalLimit).toString(), tokenDecimals1);
+        const amountInWei2 = ethers.utils.parseUnits((Math.floor(swapamount2 * decimalLimit2) / decimalLimit2).toString(), tokenDecimals2);
+        const amountInWei2Slipped = ethers.utils.parseUnits((Math.floor((swapamount2 - swapamount2 * (slippage / 100)) * decimalLimit) / decimalLimit).toString(), tokenDecimals2);
         console.log("chack", amountInWei2, amountInWei2Slipped);
 
         let tx;
         if(tokenName1 === "ETH" || tokenName1 === "SEI"){
-          tx = await swapContract.swapExactETHForTokens(amountInWei2, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
+          tx = await swapContract.swapExactETHForTokens(amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
         } else if (tokenName2 === "ETH" || tokenName2 === "SEI") {
           tx = await swapContract.swapExactTokensForETH(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
         } else {

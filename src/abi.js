@@ -13,7 +13,7 @@ export const PancakeRouterV2Address = "0xCb14E10785d2eb2768FF67dBDE1b2cd3E9892B9
 export const WSEIAddress = "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd";
 
 
-export const LPStakeAddress = "0x2d563D3883a19f61359D4C675875646920aEDa10";
+export const LPStakeAddress = "0x8CF61Ea0297Af18cA8a8D52CBCCCA95118DD78Ac";
 
 export const  ERC20MockAbi = [
 	{
@@ -8413,4 +8413,4 @@ export const LPStakeABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
+]; 

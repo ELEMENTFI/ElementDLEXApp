@@ -1029,6 +1029,7 @@ console.log("Application's global state:");
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
             let tx = await stakingContract.deposit(ethers.utils.parseUnits((stakeAmount).toString(), 18));
             await tx.wait();
+            setStakeAmount("");
             await fun();
         } catch (e) {
             console.error("Error in stake:",e);
@@ -1040,8 +1041,9 @@ console.log("Application's global state:");
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
-            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18));
-            await tx.wait();
+            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18), {gasLimit: 3000000});   
+                     await tx.wait();
+                     setUnstakeAmount("");
             await fun();
         } catch (e) {
             console.error("Error in stake:",e);
@@ -1201,7 +1203,7 @@ console.log("Application's global state:");
                                             <div className="mb-3">
                                                 <label className='d-flex align-items-center justify-content-between'><small>Balance: {lpbal? parseFloat(lpbal).toFixed(4) : '0.00'}</small></label>
                                                 <div className="balance-card d-flex align-items-center justify-content-between">
-                                                    <input type='text' id="tid1" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={stakeAmount} onChange={(e) => {setStakeAmount(e.target.value)}} />
+                                                    <input type='number' id="tid1" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={stakeAmount} onChange={(e) => {setStakeAmount(e.target.value)}} />
                                                     
                                                     <strong>{farmname}</strong>
                                                 </div>
@@ -1231,7 +1233,7 @@ console.log("Application's global state:");
                                             <div className="mb-3">
                                                 <label className='d-flex align-items-center justify-content-between'><small>Balance: {userStaked ? parseFloat(userStaked).toFixed(4) : '0.00'}</small></label>
                                                 <div className="balance-card d-flex align-items-center justify-content-between">
-                                                    <input type='text' id="tid2" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={unstakeAmount} onChange={(e) => {setUnstakeAmount(e.target.value)}} />
+                                                    <input type='number' id="tid2" className='me-3 form-control flex-grow-1 p-0 border-0 text-white' value={unstakeAmount} onChange={(e) => {setUnstakeAmount(e.target.value)}} />
                                                     
                                                     <strong>{farmname}</strong>
                                                 </div>

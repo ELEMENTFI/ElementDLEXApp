@@ -711,7 +711,7 @@ function PoolPage() {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://bsc-testnet-rpc.publicnode.com";
+    const url = "https://evm-rpc-testnet.sei-apis.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ swapamount1, setSwapamount1 ] = useState("");
@@ -741,6 +741,8 @@ function PoolPage() {
     const [ liquidbal, setliquidbal ] = useState(0.0);
     const [ userPairs, setUserPairs ] = useState([]);
     const[loader, setLoader] = useState(false);
+    const [showLoader, setShowLoader] = useState(true);
+    const [showNoLiquidity, setShowNoLiquidity] = useState(false);
     
 
     const [show, setShow] = React.useState(false);
@@ -2249,9 +2251,10 @@ const manager = async(r,a,b,c) =>{
 let l=[];
 l.push(a);
 l.push(b);
-l.push(c)
+l.push(c);
+
   setrstate(r);
-  setaprice(l)
+  setaprice(l);
   // let p = await readingLocalstate(algodClient,r.algoAddress);
   // //console.log("prime",p)
   //   let p1 =await rewardasset1(p, r.accountType);
@@ -2455,9 +2458,11 @@ const approvePair = async() => {
           setSwapamount1("");
           setSwapamount2("");
           await fun();
+          await fun1();
         } else {
           setLiqamount1("");
           setLiqamount2("");
+          await fun4();
           await fun3();
         }
         
@@ -2475,19 +2480,21 @@ const approvePair = async() => {
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
       const currentEpoch = Math.floor(Date.now() / 1000); // current epoch in seconds
       const epochPlus10Minutes = currentEpoch + (10 * 60); // adding 10 minutes
-      console.log("eth:",ethers.utils.parseUnits((remLiquidity).toString(),0), remLiquidity); 
+      const decimalLimit = Math.pow(10, 18);
+      console.log("eth:",ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), remLiquidity); 
       let tx;
+      
       if(rstate?.asset1Name === "WSEI"){
 
-        tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress2, ethers.utils.parseUnits((remLiquidity).toString(),0), 0, 0, address, epochPlus10Minutes);
+        tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress2, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
       } else if (rstate?.asset2Name === "WSEI") {
 
-        tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress1, ethers.utils.parseUnits((remLiquidity).toString(),0), 0, 0, address, epochPlus10Minutes);
+        tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress1, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
       } else {
 
-        tx = await swapContract.removeLiquidity(rstate?.tokenAddress1, rstate?.tokenAddress2, ethers.utils.parseUnits((remLiquidity).toString(),0), 0, 0, address, epochPlus10Minutes);
+        tx = await swapContract.removeLiquidity(rstate?.tokenAddress1, rstate?.tokenAddress2, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
       }
       
@@ -2510,8 +2517,9 @@ const handleremLiq = async (a) => {
   let rmliq = ethers.utils.formatUnits(pairBal1, 0) * (a / 100);
   setRemLiquidity(rmliq);
 
+  const decimalLimit = Math.pow(10, 18);
   // Use rmliq directly to fetch liquidity values
-  let [amount0, amount1] = await routerContract.getLiquidityValue(rstate?.pair, ethers.utils.parseUnits(rmliq.toString(), 0));
+  let [amount0, amount1] = await routerContract.getLiquidityValue(rstate?.pair, ethers.utils.parseUnits((Math.floor((rmliq * decimalLimit)/decimalLimit)).toString(), 0));
   console.log("check handle1:", amount0, amount1);
 
   // Update state in one go
@@ -2664,6 +2672,7 @@ useEffect(() => {
 
 const poolsei = async() => {
   try{
+    setShowLoader(true);
     setLoader(true);
     await fun1();
     setLoader(false);
@@ -2913,7 +2922,6 @@ const fun1 = async () => {
     const pairContract = new ethers.Contract(rstate?.pair, PancakePairV2ABI, provider);
     const erc20Contract = new ethers.Contract(rstate?.tokenAddress1, ERC20ABI, provider);
     const erc20Contract2 = new ethers.Contract(rstate?.tokenAddress2, ERC20ABI, provider);
-    
     if(rstate?.tokenAddress1 !== WSEIAddress){
       let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
       setAllowanceLiq1(allowance1);
@@ -2924,15 +2932,45 @@ const fun1 = async () => {
       setAllowanceLiq2(allowance2);
       console.log("allow2",allowance2);
     }
-
     let allowancePair1 = ethers.utils.formatUnits(await pairContract.allowance(address, PancakeRouterV2Address), 18);
     setAllowancePair(allowancePair1)
     let liqbal1 = await pairContract.balanceOf(address);
     setliquidbal(ethers.utils.formatUnits(liqbal1, 18));
     let [amount0, amount1] = await routerContract.getLiquidityValue(rstate?.pair, liqbal1);
-    setliquidityval1(ethers.utils.formatUnits(amount0,0));
-    setliquidityval2(ethers.utils.formatUnits(amount1,0));
-    console.log("remove Liquidity:", amount0, amount1, allowancePair1);
+    setliquidityval1(ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1));
+    setliquidityval2(ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2));
+    console.log("remove Liquidity:", ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1), ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2), allowancePair1);
+    }
+  }
+
+  const fun4 = async() => {
+    if(address){
+      const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
+      const pairContract = new ethers.Contract(rstate?.pair, PancakePairV2ABI, provider);
+      const erc20Contract = new ethers.Contract(rstate?.tokenAddress1, ERC20ABI, provider);
+      const erc20Contract2 = new ethers.Contract(rstate?.tokenAddress2, ERC20ABI, provider);
+      let rstatebuff;
+      if(rstate?.tokenAddress1 !== WSEIAddress){
+        let bal1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), rstate?.tokenDecimals1);
+        rstatebuff = {...rstate, tokenBal1: bal1};
+        console.log("allow",allowance1);
+      } else {
+        const eth = await provider.getBalance(address);
+        setEthbal(eth);
+        let bal1 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals1);
+        rstatebuff = {...rstate, tokenBal1: bal1};
+      }
+      if(rstate?.tokenAddress2 !== WSEIAddress){
+        let bal2 = ethers.utils.formatUnits( await erc20Contract2.balanceOf(address), rstate?.tokenDecimals2);
+        rstatebuff = {...rstate, tokenBal2: bal2};
+        console.log("allow2",allowance2);
+      } else {
+        const eth = await provider.getBalance(address);
+        setEthbal(eth);
+        let bal2 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals2);
+        rstatebuff = {...rstate, tokenBal2: bal2};
+      }
+      setrstate(rstatebuff);
     }
   }
 
@@ -2948,6 +2986,18 @@ const fun1 = async () => {
     fun();
     console.log("tokens:", token1, token2, tokenDecimals1, tokenDecimals2);
   },[address, isConnected, token1, token2]);
+
+  const loaderDelay = async() => {
+    if(userPairs.length === 0 && show) {
+      setShowLoader(false);
+      setShowNoLiquidity(true);
+    }
+  }
+
+  useEffect(() => {
+    const intervalId = setInterval(loaderDelay,10000);
+    return () => clearInterval(intervalId);
+  }, [show]);
     
     return (
         <Layout>
@@ -3024,9 +3074,17 @@ const fun1 = async () => {
                             
                           
                             <div className="modal-manage mb-2">
-                              {userPairs.length ===0 ?(<>
-                                <img src="https://c.tenor.com/FBeNVFjn-EkAAAAS/ben-redblock-loading.gif"/>
-                              </>):(<>
+                              {userPairs.length ===0 ?(
+                                showLoader ? (
+                                  <div className="center-loader">
+                                    <img src="https://c.tenor.com/FBeNVFjn-EkAAAAS/ben-redblock-loading.gif" alt="Loading..." />
+                                  </div>
+                                ) : (
+                                  <div className="center-loader">
+                                    <p>No liquidity found</p>
+                                  </div>
+                                )
+                              ) :(<>
                                 {userPairs.map((r,i)=>{
                              
                              if(address){
@@ -3151,7 +3209,7 @@ const fun1 = async () => {
                                             </div>
                                         </div>
                                         {/* {(tk2 == "TAU")||(tk2 == "Algo")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<><small>Balance:{parseFloat(id2Token/1000000).toFixed(2) } </small></>) } */}
-                                        {(tk2 == "ETH")||(tk1 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0':parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+                                        {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0':parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
                                         {/* <div className="balance-card py-2 mb-10 d-flex align-items-center justify-content-between">
                                             <label>POOL FEE</label>
 
@@ -3265,8 +3323,8 @@ const fun1 = async () => {
                                         <h6>{parseFloat(liquidbal).toFixed(4)} LP</h6>
                                     </Col>
                                     <Col sm={4}>
-                                        <h6>{parseFloat(aprice[0]).toFixed(4)} {rstate?.asset1Name}</h6>
-                                        <h6>{parseFloat(aprice[1]).toFixed(4)} {rstate?.asset2Name}</h6>
+                                        <h6>{parseFloat(liquidityval1).toFixed(4)} {rstate?.asset1Name}</h6>
+                                        <h6>{parseFloat(liquidityval2).toFixed(4)} {rstate?.asset2Name}</h6>
                                     </Col>
                                 </Row>
                             </div>
