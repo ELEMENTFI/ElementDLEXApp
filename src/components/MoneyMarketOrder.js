@@ -188,7 +188,7 @@ const MoneyMarket = () => {
                                                 </div>
 
                                                 <Form>
-                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
+                                                    <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
                                                     {(allowance/1e18) >= depositAmount ? 
                                                     <Button variant='grad' className='w-100' onClick={deposit}>Deposit</Button> :
                                                     <Button variant='grad' className='w-100' onClick={approve}>Approve</Button>}
@@ -213,7 +213,7 @@ const MoneyMarket = () => {
                                                 </div>
 
                                                 <Form>
-                                                    <input type="text" className='form-control mb-3 form-dark' placeholder='0.0' value={withdrawAmount} onChange={(e)=>{setWithdrawAmount(e.target.value)}}/>
+                                                    <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={withdrawAmount} onChange={(e)=>{setWithdrawAmount(e.target.value)}}/>
                                                     <Button variant='grad' className='w-100' onClick={withdraw} >Withdraw</Button>
                                                 </Form>
                                             </div>
