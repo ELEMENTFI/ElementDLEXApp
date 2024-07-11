@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col, Container, Row, Breadcrumb, Dropdown, Button, ButtonGroup, DropdownButton, InputGroup, FormControl, Modal } from 'react-bootstrap';
 import Layout from './Layouts/LayoutInner';
+import ButtonLoad from 'react-bootstrap-button-loader';
 // import {Container} from 'react-bootstrap';
 import SwapChart from './Snippets/SwapChart';
 // import Select from 'react-select';
@@ -26,6 +27,7 @@ import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, P
 import { ethers } from 'ethers';
 import usdcLogo from '../assets/images/usdc-logo.png';
 import seilogo from '../assets/images/sei-logo.png';
+import ethlogo from '../assets/images/Ethereum-icon.svg';
 
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -710,6 +712,7 @@ function SwapPage(props) {
     const [ tokenbal1, setTokenbal1 ] = useState(0.0);
     const [ tokenbal2, setTokenbal2 ] = useState(0.0);
     const [ ethbal, setEthbal ] = useState(0.0);
+    const [ loader, setLoader ] = useState(false);
 
   const location = useLocation();
   const [a, setdisplay] = useState([]);
@@ -1655,6 +1658,7 @@ toast.success(`Transaction Success ${response.txId}`);
 
 const approveSei = async() => {
   try{
+      setLoader(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -1666,7 +1670,9 @@ const approveSei = async() => {
       
       await tx.wait();
       await fun();
+      setLoader(false);
   }catch(e){
+      setLoader(false);
       console.error(e);
   }
  
@@ -1675,6 +1681,7 @@ const approveSei = async() => {
 
   const swapSei = async() => {
       try{
+        setLoader(true);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -1702,8 +1709,9 @@ const approveSei = async() => {
         setSwapamount1("");
         setSwapamount2("");
         await fun();
-        
+        setLoader(false);
     }catch(e){
+        setLoader(false);
         console.error(e);
     }
   }
@@ -1715,7 +1723,7 @@ const approveSei = async() => {
     setSwapamount1(e);
     let swapAmount22 = await swapContract.getAmountsOut(ethers.utils.parseUnits((e).toString(), tokenDecimals1), [token1,token2]);
     let swapbuff = ethers.utils.formatUnits(swapAmount22[1]._hex, 0)
-    setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
+    setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
     console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
   };
 
@@ -1733,19 +1741,22 @@ const approveSei = async() => {
       console.log("check use");
       const eth = await provider.getBalance(address);
       setEthbal(eth);
-
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
       
-      if(token1 !== WSEIAddress){
+      let tokenbal1, tokenbal2;
+      if(token1 !== WSEIAddress && token1 !== ""){
+        const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance(allowance1);
         console.log("allow",allowance1);
+        tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+        setTokenbal1(tokenbal1);
       }
-      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
-      setTokenbal1(tokenbal1);
-      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
-      setTokenbal2(tokenbal2);
+      if(token2 !== WSEIAddress && token2 !== ""){
+        const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
+        tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+        setTokenbal2(tokenbal2);
+      }
+      
       console.log("allow1",tokenbal1,tokenbal2,eth);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
@@ -2030,10 +2041,10 @@ const approveSei = async() => {
                                     
                                 </>)} */}
                                 {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== WSEIAddress) ? (<>
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</ButtonLoad>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</ButtonLoad>
                                 </>)}
                                 </>)}
                                 </center>
@@ -2061,11 +2072,11 @@ const approveSei = async() => {
                                             <circle cx="19.5" cy="19.5" r="19.5" fill="#CACACA"/>
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.35 19.5754L19.4468 7.8L26.5434 19.5754L19.4468 23.7702L19.4468 23.7702L12.35 19.5754ZM19.4468 30.9217L12.35 20.9212L19.4468 25.1139L26.5478 20.9212L19.4468 30.9217Z" fill="#1C1D1F"/>
                                             </svg>                                 */}
-                                        <img width="33" height="33"  src={seilogo}/>
+                                        <img width="33" height="33"  src={ethlogo}/>
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "SEI"}</span>
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>):(<>
                                       {logovalue2 ? (<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns={logovalue1}>

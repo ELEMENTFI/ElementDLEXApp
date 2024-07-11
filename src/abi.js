@@ -1,5 +1,5 @@
 export const  ERC20MockAddress = "0x72C93F3809b684b65D7B75dB93282BA0577c9235";
-export const cftokenAddress = "0x2c514Da85b9dD8a559cdc5280273bF523E125903";
+export const cftokenAddress = "0xBbf7E499A71206E0D4415965f2bEA3C82639b40c"//"0x2c514Da85b9dD8a559cdc5280273bF523E125903";
 export const  YearnControllerMockAddress = "0xB7E1D59f9901BF182bBc956E21d4E1D629b05Fe4";
 export const  YearnVaultMockAddress = "0x33D8773B90b16B394bd40708C1547E632112CE4A";
 export const  VaultAdapterMockAddress = "0x2bc8AeCcDbE279e39f1593A2B87A038506F36Da8";

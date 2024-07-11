@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Form, Tabs, Tab, Button} from 'react-bootstrap';
+import ButtonLoad from 'react-bootstrap-button-loader';
 import Layout from './Layouts/LayoutInner';
 import OrderIcon from '../assets/images/order-icon.png';
 
@@ -30,6 +31,8 @@ const MoneyMarket = () => {
     const [totalDeposited, setTotalDeposited] = useState("");
     const [totalELEM, setTotalELEM] = useState("");
     const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
+    const [loader, setLoader] = useState(false);
+    const [loader1, setLoader1] = useState(false);
 
     const fun = async() => {
         const erc20Contract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, provider);
@@ -59,6 +62,7 @@ const MoneyMarket = () => {
 
     const approve = async() => {
         try{
+            setLoader(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, signer);
@@ -71,7 +75,9 @@ const MoneyMarket = () => {
             let tx = await carbonContract.approve(address, amountInWei);
             await tx.wait();
             await fun();
+            setLoader(false);
         }catch(e){
+            setLoader(false);
             console.error(e);
         }
        
@@ -79,6 +85,7 @@ const MoneyMarket = () => {
 
     const deposit = async() => {
         try{
+            setLoader(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
@@ -92,14 +99,16 @@ const MoneyMarket = () => {
             await tx.wait();
             setDepositAmount("");
             await fun();
-            
+            setLoader(false);
         }catch(e){
+            setLoader(false);
             console.error(e);
         }
     }
 
     const withdraw = async() => {
         try{
+            setLoader1(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
@@ -113,8 +122,9 @@ const MoneyMarket = () => {
             await tx.wait();
             setWithdrawAmount("");
             await fun();
-            
+            setLoader1(false);
         }catch(e){
+            setLoader1(false);
             console.error(e);
         }
     }
@@ -190,8 +200,8 @@ const MoneyMarket = () => {
                                                 <Form>
                                                     <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
                                                     {(allowance/1e18) >= depositAmount ? 
-                                                    <Button variant='grad' className='w-100' onClick={deposit}>Deposit</Button> :
-                                                    <Button variant='grad' className='w-100' onClick={approve}>Approve</Button>}
+                                                    <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={deposit}>Deposit</ButtonLoad> :
+                                                    <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={approve}>Approve</ButtonLoad>}
                                                 </Form>
                                             </div>
                                         </Tab>
@@ -214,7 +224,7 @@ const MoneyMarket = () => {
 
                                                 <Form>
                                                     <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={withdrawAmount} onChange={(e)=>{setWithdrawAmount(e.target.value)}}/>
-                                                    <Button variant='grad' className='w-100' onClick={withdraw} >Withdraw</Button>
+                                                    <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={withdraw} >Withdraw</ButtonLoad>
                                                 </Form>
                                             </div>
                                         </Tab>

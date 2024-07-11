@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Col, Container, Row, Form, Tabs, Tab, Button, Dropdown, DropdownButton} from 'react-bootstrap';
 import Layout from './Layouts/LayoutInner';
+import ButtonLoad from 'react-bootstrap-button-loader';
 import OrderIcon from '../assets/images/order-icon.png';
 
 import BG from '../assets/images/bg-v2-new.png';
@@ -34,6 +35,9 @@ const MoneyMarket = () => {
     const [totalELEM, setTotalELEM] = useState("");
     const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
     const [repayToken, setRepayToken] = useState("ELEM");
+    const [loader, setLoader] = useState(false);
+    const [loader1, setLoader1] = useState(false);
+    const [loader2, setLoader2] = useState(false);
 
     const fun = async() => {
         const erc20Contract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, provider);
@@ -62,6 +66,7 @@ const MoneyMarket = () => {
 
     const approve = async() => {
         try{
+            setLoader1(true);
             console.log("approve starts...");
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
@@ -76,7 +81,9 @@ const MoneyMarket = () => {
             
             await tx.wait();
             await fun();
+            setLoader1(false);
         }catch(e){
+            setLoader1(false);
             console.error(e);
         }
        
@@ -84,6 +91,7 @@ const MoneyMarket = () => {
 
     const borrow = async() => {
         try{
+            setLoader(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
@@ -97,14 +105,16 @@ const MoneyMarket = () => {
             await tx.wait();
             setborrowAmount("");
             await fun();
-            
+            setLoader(false);
         }catch(e){
+            setLoader(false);
             console.error(e);
         }
     }
 
     const repay = async() => {
         try {
+            setLoader1(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
@@ -125,14 +135,16 @@ const MoneyMarket = () => {
             await tx.wait();
             setrepayAmount("");
             await fun();
-           
+            setLoader1(false);
         }catch(e){
+            setLoader1(false);
             console.error(e);
         }
     }
 
     const liquidate = async() => {
         try{
+            setLoader2(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
@@ -140,8 +152,9 @@ const MoneyMarket = () => {
             await tx.wait();
             setLiquidateAmount("");
             await fun();
-            
+            setLoader2(false);
         }catch(e){
+            setLoader2(false);
             console.error(e);
         }
     }
@@ -237,7 +250,7 @@ const MoneyMarket = () => {
                                                 <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={borrowAmount} onChange={(e)=>{setborrowAmount(e.target.value)}}/>
                                                 {borrowAmount >= (((userDeposit/(1e18))/2) - (userDebt/1e18)) ? 
                                                     <Button variant='grad' className='w-100' disabled>Insufficient Collateral</Button> :
-                                                    <Button variant='grad' className='w-100' onClick={borrow}>Borrow Elem</Button>}
+                                                    <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={borrow}>Borrow Elem</ButtonLoad>}
                                                 
                                             </div>
                                         </Tab>
@@ -268,16 +281,16 @@ const MoneyMarket = () => {
                                                 {
                                                 repayToken === "ELEM" &&
                                                 <>{ (allowance2/1e18) >= repayAmount ?
-                                                    <Button variant='grad' className='w-100' onClick={repay}>Repay</Button> :
-                                                    <Button variant='grad' className='w-100' onClick={approve}>Approve ELEM</Button>
+                                                    <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={repay}>Repay</ButtonLoad> :
+                                                    <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={approve}>Approve ELEM</ButtonLoad>
                                                 }</>
                                                 }
 
 {
                                                 repayToken === "USDC" &&
                                                 <>{ (allowance/1e18) >= repayAmount ?
-                                                    <Button variant='grad' className='w-100' onClick={repay}>Repay</Button> :
-                                                    <Button variant='grad' className='w-100' onClick={approve}>Approve USDC</Button>
+                                                    <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={repay}>Repay</ButtonLoad> :
+                                                    <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={approve}>Approve USDC</ButtonLoad>
                                                 }</>
                                                 }
                                                     
@@ -304,7 +317,7 @@ const MoneyMarket = () => {
 
                                                 <Form>
                                                 <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={liquidateAmount} onChange={(e)=>{setLiquidateAmount(e.target.value)}}/>
-                                                    <Button variant='grad' className='w-100' onClick={liquidate}>Liquidate USDC</Button>
+                                                    <ButtonLoad loading={loader2} variant='grad' className='w-100' onClick={liquidate}>Liquidate USDC</ButtonLoad>
                                                 </Form>
                                             </div>
                                         </Tab>

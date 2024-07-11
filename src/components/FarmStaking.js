@@ -1,5 +1,6 @@
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { Col, Container, Row, Form, InputGroup, Button, Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import ButtonLoad from 'react-bootstrap-button-loader';
 import Layout from './Layouts/LayoutInner';
 import { Link, useHistory,useLocation } from "react-router-dom";
 import Icon1 from '../assets/images/elem-original.png';
@@ -33,8 +34,8 @@ function FarmStaking(props) {
     const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
-    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
+    const LPpairAddress = "0x5C43a8Cc6e4E6c43257a8a2C327eDDC2bc26C1B8";
+    const elemAddress = "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B"; 
  
   const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingFarmTauconfig.json");
   const location = useLocation();
@@ -44,23 +45,24 @@ function FarmStaking(props) {
   const[tvl,settvl]=useState("");
   useEffect(() => {
     const fetchPosts = async () => {
-      if(location.query.farm === "" ||location.query.farm === undefined ||location.query.farm === null||location.query.image1 === "" ||location.query.image1 === undefined ||location.query.image1 === null ){
+      // if(location.query.farm === "" ||location.query.farm === undefined ||location.query.farm === null||location.query.image1 === "" ||location.query.image1 === undefined ||location.query.image1 === null ){
     
-      }else{
-        console.log("locationnew",location.query.farm);
-        setFarmname(location.query.farm);
-        settvl(location.query.tvl);
-        setImage1(location.query.image1);
-        if(location.query.image2 === "" ||location.query.image2 === undefined ||location.query.image2 === null ){
+      // }else{
+        console.log("locationnew",localStorage.getItem('farm'));
+        
+        setFarmname(localStorage.getItem('farm'));
+        settvl(localStorage.getItem('tvl'));
+        setImage1(localStorage.getItem('image1'));
+        // if(location.query.image2 === "" ||location.query.image2 === undefined ||location.query.image2 === null ){
 
-        }
-        else{
-          setImage2(location.query.image2);
-        }
+        // }
+        // else{
+          setImage2(localStorage.getItem('image2'));
+        // }
       } 
 
 
-    };
+    // };
     
 
     fetchPosts();
@@ -141,6 +143,9 @@ function FarmStaking(props) {
     const[userReward, setUserReward] = useState("");
     const[lpbal, setlpbal] = useState("");
     const[elembal, setelembal] = useState("");
+    const[loader, setLoader] = useState(false);
+    const[loader1, setLoader1] = useState(false);
+    const[loader2, setLoader2] = useState(false);
    
     useEffect(() => {
         const fetchPosts = async () => {
@@ -1011,19 +1016,23 @@ console.log("Application's global state:");
 
       const approveStake = async() => {
         try{
+            setLoader(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, signer);
             let tx = await pairContract.approve(LPStakeAddress, ethers.utils.parseUnits((1000000000000).toString(), 18));
             await tx.wait();
             await fun();
+            setLoader(false);
         } catch (e) {
+            setLoader(false);
             console.error("Error in approve:",e);
         }
       }
     
       const stakesei = async() => {
         try{
+            setLoader(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
@@ -1031,34 +1040,42 @@ console.log("Application's global state:");
             await tx.wait();
             setStakeAmount("");
             await fun();
+            setLoader(false);
         } catch (e) {
+            setLoader(false);
             console.error("Error in stake:",e);
         }
       }
 
       const unstakesei = async() => {
         try{
+            setLoader1(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
-            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18), {gasLimit: 3000000});   
-                     await tx.wait();
-                     setUnstakeAmount("");
+            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18), {gasLimit: 3000000});
+            await tx.wait();
+            setUnstakeAmount("");
             await fun();
+            setLoader1(false);
         } catch (e) {
+            setLoader1(false);
             console.error("Error in stake:",e);
         }
       }
 
       const claimrewardsei = async() => {
         try{
+            setLoader2(true);
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
             let tx = await stakingContract.claimReward();
             await tx.wait();
             await fun();
+            setLoader2(false);
         } catch (e) {
+            setLoader2(false);
             console.error("Error in stake:",e);
         }
       }
@@ -1191,8 +1208,8 @@ console.log("Application's global state:");
                                            
                                             <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                            {farmimage1===null||farmimage1===""||farmimage1===undefined ? (<>   <img src={Icon1} style={{width:'40px',height:'40px'}} /> </>):(<>   <img src={farmimage1} style={{width:'50px',height:'50px'}} /></>)}
-                                            {farmimage2===null||farmimage2===""||farmimage2===undefined ? (<>   </>):(<>   <img src={farmimage2} style={{width:'45px',height:'45px'}} /></>)}                                          
+                                            {farmimage1===null||farmimage1===""||farmimage1===undefined ? (<>   <img src={Icon1} style={{width:'40px',height:'40px',borderRadius:'50%'}} /> </>):(<>   <img src={farmimage1} style={{width:'50px',height:'50px',borderRadius:'50%'}} /></>)}
+                                            {farmimage2===null||farmimage2===""||farmimage2===undefined ? (<>   </>):(<>   <img src={farmimage2} style={{width:'50px',height:'50px',borderRadius:'50%'}} /></>)}                                          
                                             <span className='d-flex mb-10 align-items-center' ><h5>STAKE</h5></span>{farmname===null||farmname===""||farmname===undefined ? (<span className='d-flex mb-10 align-items-center' >  </span>):(<span  className='d-flex mb-10 align-items-center' ><h5>{farmname}</h5></span>)}
                                            
                                             </div>
@@ -1217,8 +1234,8 @@ console.log("Application's global state:");
                                                 </Col> */}
                                                 <Col sm="4" className='py-sm-0 py-1'>
                                                 {allowance >= (stakeAmount * 10**18) ? 
-                                                <Button variant='grad' className='px-2 py-2 w-100' onClick={stakesei}>Stake </Button> : 
-                                                <Button variant='grad' className='px-2 py-2 w-100' onClick={approveStake}>Approve </Button>}
+                                                <ButtonLoad loading={loader} variant='grad' className='px-2 py-2 w-100' onClick={stakesei}>Stake </ButtonLoad> : 
+                                                <ButtonLoad loading={loader} variant='grad' className='px-2 py-2 w-100' onClick={approveStake}>Approve </ButtonLoad>}
                                                 </Col>
                                             </Row>
 
@@ -1239,7 +1256,7 @@ console.log("Application's global state:");
                                                 </div>
                                             </div>
 
-                                            <Button variant='grad' className='w-100' onClick={unstakesei}>Withdraw</Button>
+                                            <ButtonLoad loading={loader1} variant='grad' className='w-100' onClick={unstakesei}>Withdraw</ButtonLoad>
                                         </Col>
 
                                         <Col md={6} className='mt-md-0 mt-4'>
@@ -1321,7 +1338,7 @@ console.log("Application's global state:");
                                                         </OverlayTrigger>
                                                 </div>
                                                 </div>
-                                                <Button variant='grad' onClick={claimrewardsei}>Claim Reward</Button>
+                                                <ButtonLoad loading={loader2} variant='grad' onClick={claimrewardsei}>Claim Reward</ButtonLoad>
                                             </div>
                                         </Col>
                                     </Row>
