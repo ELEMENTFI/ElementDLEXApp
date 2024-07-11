@@ -2582,7 +2582,7 @@ useEffect(() => {
       } else {
         let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
         let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
+        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
         console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
       }   
     }
@@ -2601,7 +2601,7 @@ useEffect(() => {
       } else {
         let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve11, reserve22);
         let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals1)));
+        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals1)).toFixed(tokenDecimals1));
         console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
       }   
     }
@@ -2618,7 +2618,7 @@ useEffect(() => {
         } else {
           let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals1), reserve11, reserve22);
           let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, rstate?.decimals2);
-          setLiqamount2(parseFloat(swapbuff));
+          setLiqamount2(parseFloat(swapbuff).toFixed(rstate?.decimals2));
           console.log("SwapAmount:", e, swapAmount22, swapbuff);
         }   
       }
@@ -2643,7 +2643,7 @@ useEffect(() => {
         } else {
           let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals2), reserve11, reserve22);
           let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, rstate?.decimals1);
-          setLiqamount1(parseFloat(swapbuff));
+          setLiqamount1(parseFloat(swapbuff).toFixed(rstate?.decimals1));
           console.log("SwapAmount:", e, swapAmount11, swapbuff);
         }   
       }
@@ -2659,25 +2659,24 @@ useEffect(() => {
       console.log("check use");
       const eth = await provider.getBalance(address);
       setEthbal(eth);
-
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
-
-      if(token1 !== WSEIAddress){
+     
+      let tokenbal1,tokenbal2;
+      if(token1 !== WSEIAddress && token1 !== ""){
+        const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance1(allowance1);
+        tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+        setTokenbal1(tokenbal1);
         console.log("allow",allowance1);
       }
-      if(token2 !== WSEIAddress){
+      if(token2 !== WSEIAddress && token2 !== ""){
+        const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
         let allowance2 = ethers.utils.formatUnits( await erc20Contract2.allowance(address, PancakeRouterV2Address), 0);
         setAllowance2(allowance2);
+        tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+        setTokenbal2(tokenbal2);
         console.log("allow2",allowance2, eth);
       }
-
-      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
-      setTokenbal1(tokenbal1);
-      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
-      setTokenbal2(tokenbal2);
       console.log("allow3",tokenbal1,tokenbal2,ethbal);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
