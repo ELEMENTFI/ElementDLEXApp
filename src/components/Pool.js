@@ -2570,40 +2570,52 @@ useEffect(() => {
   }
 
   const handleSwapamount1 = async(e) => {
-    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
-    const signer =  ethersProvider.getSigner();
-    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
-    if(token1!== "" && token2 !==""){
-      setSwapamount1(e);
-      let [reserve11, reserve22] = await getReserves(token1, token2);
-      
-      if (reserve11 === 0 || reserve22 === 0){
-            console.log("e:",e);
-      } else {
-        let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
-        let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
-        console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
-      }   
+    try{
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+      if(token1!== "" && token2 !==""){
+        setSwapamount1(e);
+        let [reserve11, reserve22] = await getReserves(token1, token2);
+        
+        if (reserve11 === 0 || reserve22 === 0){
+              console.log("e:",e);
+        } else {
+          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
+          setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
+          console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
+        }   
+      }
+    }
+    catch(e) {
+      setSwapamount2("");
+      console.log("error:", e);
     }
   };
 
   const handleSwapamount2 = async(e) => {
-    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
-    const signer =  ethersProvider.getSigner();
-    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
-    if(token1!== "" && token2 !==""){
-      setSwapamount2(e);
-      let [reserve11, reserve22] = await getReserves(token1, token2);
-      
-      if (reserve11 === 0 || reserve22 === 0){
+    try{
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+      if(token1!== "" && token2 !==""){
+        setSwapamount2(e);
+        let [reserve11, reserve22] = await getReserves(token1, token2);
+        
+        if (reserve11 === 0 || reserve22 === 0){
 
-      } else {
-        let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve11, reserve22);
-        let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals1)));
-        console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
-      }   
+        } else {
+          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
+          setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)).toFixed(tokenDecimals1));
+          console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
+        }   
+      }
+    }
+    catch(e) {
+      setSwapamount1("");
+      console.log("error:", e);
     }
   };
 
@@ -2616,9 +2628,9 @@ useEffect(() => {
         if (reserve11 === 0 || reserve22 === 0){
               console.log("e:",e);
         } else {
-          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals1), reserve11, reserve22);
-          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, rstate?.decimals2);
-          setLiqamount2(parseFloat(swapbuff));
+          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.tokenDecimals1), reserve11, reserve22);
+          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, rstate?.tokenDecimals2);
+          setLiqamount2(parseFloat(swapbuff).toFixed(rstate?.tokenDecimals2));
           console.log("SwapAmount:", e, swapAmount22, swapbuff);
         }   
       }
@@ -2641,9 +2653,9 @@ useEffect(() => {
         if (reserve11 === 0 || reserve22 === 0){
 
         } else {
-          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals2), reserve11, reserve22);
-          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, rstate?.decimals1);
-          setLiqamount1(parseFloat(swapbuff));
+          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.tokenDecimals2), reserve22,  reserve11);
+          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, rstate?.tokenDecimals1);
+          setLiqamount1(parseFloat(swapbuff).toFixed(rstate?.tokenDecimals1));
           console.log("SwapAmount:", e, swapAmount11, swapbuff);
         }   
       }
@@ -2659,25 +2671,24 @@ useEffect(() => {
       console.log("check use");
       const eth = await provider.getBalance(address);
       setEthbal(eth);
-
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
-
-      if(token1 !== WSEIAddress){
+     
+      let tokenbal1,tokenbal2;
+      if(token1 !== WSEIAddress && token1 !== ""){
+        const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance1(allowance1);
+        tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+        setTokenbal1(tokenbal1);
         console.log("allow",allowance1);
       }
-      if(token2 !== WSEIAddress){
+      if(token2 !== WSEIAddress && token2 !== ""){
+        const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
         let allowance2 = ethers.utils.formatUnits( await erc20Contract2.allowance(address, PancakeRouterV2Address), 0);
         setAllowance2(allowance2);
+        tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+        setTokenbal2(tokenbal2);
         console.log("allow2",allowance2, eth);
       }
-
-      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
-      setTokenbal1(tokenbal1);
-      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
-      setTokenbal2(tokenbal2);
       console.log("allow3",tokenbal1,tokenbal2,ethbal);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
@@ -3406,7 +3417,7 @@ const fun1 = async () => {
                             <Row className='justify-content-center'>
                                 <Col md={9} lg={8}>
                                     <div className="mb-2">
-                                        <label className='d-flex align-items-center justify-content-between'>From <small>Balance: { !(rstate?.tokenBal1) ?'0.0' :  parseFloat(rstate?.tokenBal1).toFixed(3) } {rstate?.asset1Name}</small></label>
+                                        <label className='d-flex align-items-center justify-content-between'>From {(rstate?.asset1Name === "WSEI" || rstate?.asset1Name === "SEI" || rstate?.asset1Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset1Name}</small> : <small>Balance: { !(rstate?.tokenBal1) ?'0.0' : parseFloat(rstate?.tokenBal1).toFixed(4) }  {rstate?.asset1Name}</small>}</label>
                                         {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WSEI")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                           
@@ -3425,7 +3436,7 @@ const fun1 = async () => {
                                     </div>
 
                                     <div className="mb-20">
-                                        <label className='d-flex align-items-center justify-content-between'>T0 <small>Balance: { !(rstate?.tokenBal2) ?'0.0' : parseFloat(rstate?.tokenBal2).toFixed(4) }  {rstate?.asset2Name}</small></label>
+                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WSEI" || rstate?.asset2Name === "SEI" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(rstate?.tokenBal2) ?'0.0' : parseFloat(rstate?.tokenBal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
 
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                          
