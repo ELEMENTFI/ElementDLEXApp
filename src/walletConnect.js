@@ -18,10 +18,10 @@ const metadata = {
   }
   const testnet = {
     chainId: 97,
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://bsc-testnet-rpc.publicnode.com',
-    rpcUrl: 'https://seitrace.com'
+    name: 'Binance Smartchain Testnet',
+    currency: 'tBNB',
+    explorerUrl: 'https://testnet.bscscan.com',
+    rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
   }
 
   createWeb3Modal({
@@ -105,10 +105,10 @@ export const Web3Provider = ({ children }) => {
 export const config = {
     chainId: 97,
     chainIdHex: '0x530',
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://bsc-testnet-rpc.publicnode.com',
-    rpcUrl: 'https://seitrace.com'
+    name: 'Binance SmartChain Testnet',
+    currency: 'tBNB',
+    explorerUrl: 'https://testnet.bscscan.com/',
+    rpcUrl: 'https://bsc-testnet-rpc.publicnode.com'
   }
 
 export const ConnectWallet = async () => {

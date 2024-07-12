@@ -233,7 +233,7 @@ class Area extends Component {
                             <div className="card-analytic-head d-flex justify-content-between align-items-center">
                                 <div className="d-flex flex-column">
                                     <span>Liquidity</span>
-                                    <div className="h3 m-0">${(localStorage.getItem("tvl")/1000000).toFixed(3) > 0 ? (localStorage.getItem("tvl")/1000000).toFixed(3):'0.0'}</div>
+                                    <div className="h3 m-0">${parseFloat(localStorage.getItem("tvl")).toFixed(3) > 0 ? parseFloat(localStorage.getItem("tvl")).toFixed(3):'0.0'}</div>
                                     {/* <small className='date'>Dec 29, '21</small> */}
                                 </div>
 

@@ -7,9 +7,10 @@ import {
 
 // import Icon1 from '../assets/images/icon1.png';
 // import Icon2 from '../assets/images/icon2.png';
-import Icon1 from '../assets/images/element logo.png';
+import Icon1 from '../assets/images/L logo.png';
 // import Icon2 from '../assets/images/Ethereum-icon.svg';
-import Icon2 from '../assets/images/sei-logo.png';
+import Icon2 from '../assets/images/P logo.png';
+import Icon4 from '../assets/images/element logo.png';
 import Icon3 from '../assets/images/tau-original.png';
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import configfile from "../stakingconfig.json";
@@ -43,8 +44,8 @@ function FarmPage() {
     const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
-    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
+    const LPpairAddress = "0x5C43a8Cc6e4E6c43257a8a2C327eDDC2bc26C1B8";
+    const elemAddress = "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B"; 
 
     //window.location.reload();
    // const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingconfigTau.json");
@@ -102,6 +103,10 @@ function FarmPage() {
 const elemalgopair = async() => {
    localStorage.setItem("ASSETFARM","");
    localStorage.setItem("ASSETFARM","elemalgo");
+   localStorage.setItem('farm', 'BNB/ELEM');
+    localStorage.setItem('image1', Icon1);
+    localStorage.setItem('image2', Icon2);
+    localStorage.setItem('tvl', totalStaked);
    console.log("insideelemalgo");
 }
 const elem = async() => {
@@ -498,7 +503,6 @@ useEffect(() => {
 fun();
 },[address, isConnected]);
 
-
     return (
         <Layout>
             <div className="page-content">
@@ -582,20 +586,20 @@ fun();
                                 <div className="table-group-body">
                                
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'BNB/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                  
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius:"50%"}}/>
+                                                <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius:"50%", marginLeft:"5px"}}/>
+                                                <span style={{color:"white"}}>BNB/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
+                                                <img src={Icon4} alt='icon' />
                                               
                                                 <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
@@ -932,19 +936,19 @@ fun();
                                 </div>
                                 <div className="table-group-body">
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'BNB/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
-                                                <img src={Icon2} alt='icon' style={{height: "30px", width: "30px"}}/>
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius: "50%"}}/>
+                                                <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius: "50%", marginLeft:"5px"}}/>
+                                                <span style={{color:"white"}}>BNB/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
-                                                <img src={Icon1} alt='icon' />
+                                                <img src={Icon4} alt='icon' />
                                                
                                                 <span style={{color:"white"}}>{totalReward ? parseFloat(totalReward).toFixed(2) : '0.00'}</span>
                                             </div>
@@ -1111,7 +1115,7 @@ fun();
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
                                                 <img src={Icon2} alt='icon' />
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <span style={{color:"white"}}>BNB/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>$60,419.94</div>

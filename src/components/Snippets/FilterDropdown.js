@@ -149,7 +149,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
         // console.log(seemore.assets)
         let s =[];
         s=[
-            {index:0,image:seilogo,name:"ETH", contract: "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd", decimals:18},
+            {index:0,image:ethlogo,name:"ETH", contract: "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd", decimals:18},
             {index:10458941,image:usdclogo,name:"USDC", contract: "0x64544969ed7EBf5f083679233325356EbE738930", decimals:6},
             // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
             {index:71116238,image:elemlogo,name:"ELEM", contract: "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B", decimals:18},
@@ -230,8 +230,8 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
             <img  width="31" height="30" src={assn === "unknown" ? questionlogo : assn}/>
            {ass}
            </>):(<>
-            <img  width="31" height="30" src={seilogo} onClick={setk("SEI")}/>
-           SEI
+            <img  width="31" height="30" src={ethlogo} onClick={setk("ETH")}/>
+           ETH
            </>)}
         </Button>
 

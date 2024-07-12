@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col, Container, Row, Breadcrumb, Dropdown, Button, ButtonGroup, DropdownButton, InputGroup, FormControl, Modal } from 'react-bootstrap';
 import Layout from './Layouts/LayoutInner';
+import ButtonLoad from 'react-bootstrap-button-loader';
 // import {Container} from 'react-bootstrap';
 import SwapChart from './Snippets/SwapChart';
 // import Select from 'react-select';
@@ -26,6 +27,7 @@ import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, P
 import { ethers } from 'ethers';
 import usdcLogo from '../assets/images/usdc-logo.png';
 import seilogo from '../assets/images/sei-logo.png';
+import ethlogo from '../assets/images/Ethereum-icon.svg';
 
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -701,15 +703,16 @@ function SwapPage(props) {
     const [ swapamount2, setSwapamount2 ] = useState("");
     const [ slippage, setSlippage ] = useState(0.01);
     const [allowance, setAllowance] = useState("");
-    const [ token1, setToken1 ] = useState("");
+    const [ token1, setToken1 ] = useState(WSEIAddress);
     const [ token2, setToken2 ] = useState("");
-    const [ tokenName1, setTokenName1 ] = useState("");
+    const [ tokenName1, setTokenName1 ] = useState("WBNB");
     const [ tokenName2, setTokenName2 ] = useState("");
     const [ tokenDecimals1, setTokenDecimals1 ] = useState(18);
     const [ tokenDecimals2, setTokenDecimals2 ] = useState(18);
     const [ tokenbal1, setTokenbal1 ] = useState(0.0);
     const [ tokenbal2, setTokenbal2 ] = useState(0.0);
     const [ ethbal, setEthbal ] = useState(0.0);
+    const [ loader, setLoader ] = useState(false);
 
   const location = useLocation();
   const [a, setdisplay] = useState([]);
@@ -1589,20 +1592,24 @@ else{
     
   }
 
-const changetokens =()=>{
+const changetokens = async()=>{
   setSwapv(!swapv)
-  setsamount1(0)
+  setsamount1(0);
   setsamount2(0);
+  const tokenbuff1 = tk1;
   const tokenbuff = token1;
   const tokenbuff2 = tokenName1;
   const tokenbuff3 = tokenDecimals1;
+  sett1(tk2);
+  sett2(tokenbuff1);
   setToken1(token2);
   setToken2(tokenbuff);
   setTokenName1(tokenName2);
   setTokenName2(tokenbuff2);
   setTokenDecimals1(tokenDecimals2);
   setTokenDecimals2(tokenbuff3);
-  handleSwapamount1(swapamount2);
+  setSwapamount1(swapamount2);
+  console.log("change details:",token1, token2, tokenName1, tokenName2, tokenDecimals1, tokenDecimals2);
   // let a = tk1;
   // let b = tk2;
   // // sett1(a) 
@@ -1614,6 +1621,12 @@ const changetokens =()=>{
   // //console.log("tkvalues",tk1,tk2)
 
 }
+
+useEffect(() => {
+  if (swapamount1 !== '') {
+    handleSwapamount1(swapamount1);
+  }
+}, [swapamount1]);
 
 const appOptIn = async () =>
 {
@@ -1655,6 +1668,7 @@ toast.success(`Transaction Success ${response.txId}`);
 
 const approveSei = async() => {
   try{
+      setLoader(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -1666,7 +1680,9 @@ const approveSei = async() => {
       
       await tx.wait();
       await fun();
+      setLoader(false);
   }catch(e){
+      setLoader(false);
       console.error(e);
   }
  
@@ -1675,6 +1691,7 @@ const approveSei = async() => {
 
   const swapSei = async() => {
       try{
+        setLoader(true);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -1690,9 +1707,9 @@ const approveSei = async() => {
         console.log("chack", amountInWei2, amountInWei2Slipped);
 
         let tx;
-        if(tokenName1 === "ETH" || tokenName1 === "SEI"){
+        if(tokenName1 === "ETH" || tokenName1 === "SEI" || tokenName1 === "BNB" || tokenName1 === "WBNB"){
           tx = await swapContract.swapExactETHForTokens(amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes, {value: amountInWei});
-        } else if (tokenName2 === "ETH" || tokenName2 === "SEI") {
+        } else if (tokenName2 === "ETH" || tokenName2 === "SEI" || tokenName2 === "BNB" || tokenName2 === "WBNB") {
           tx = await swapContract.swapExactTokensForETH(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
         } else {
           tx = await swapContract.swapExactTokensForTokens(amountInWei, amountInWei2Slipped, [token1,token2], address, epochPlus10Minutes);
@@ -1702,30 +1719,43 @@ const approveSei = async() => {
         setSwapamount1("");
         setSwapamount2("");
         await fun();
-        
+        setLoader(false);
     }catch(e){
+        setLoader(false);
         console.error(e);
     }
   }
 
   const handleSwapamount1 = async(e) => {
-    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
-    const signer =  ethersProvider.getSigner();
-    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
-    setSwapamount1(e);
-    let swapAmount22 = await swapContract.getAmountsOut(ethers.utils.parseUnits((e).toString(), tokenDecimals1), [token1,token2]);
-    let swapbuff = ethers.utils.formatUnits(swapAmount22[1]._hex, 0)
-    setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
-    console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
+    try{
+      console.log("change details2:",token1, token2, tokenName1, tokenName2, tokenDecimals1, tokenDecimals2);
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+      setSwapamount1(e);
+      let swapAmount22 = await swapContract.getAmountsOut(ethers.utils.parseUnits((e).toString(), tokenDecimals1), [token1,token2]);
+      let swapbuff = ethers.utils.formatUnits(swapAmount22[1]._hex, 0)
+      setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
+      console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
+    } catch (e) {
+      setSwapamount2("");
+      console.log("error:",e);
+    }
+    
   };
 
   const handleSwapamount2 = async(e) => {
+    try{
     const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
     setSwapamount2(e);
     let swapAmount11 = await swapContract.getAmountsIn(ethers.utils.parseUnits((e).toString(), tokenDecimals2), [token1,token2]);
     let swapbuff = ethers.utils.formatUnits(swapAmount11[0]._hex, 0)
     setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)));
     console.log("SwapAmount2:", e, swapAmount11, parseFloat(swapbuff/(10**tokenDecimals1)));
+  } catch (e) {
+    setSwapamount1("");
+    console.log("error:",e);
+  }
   };
 
   const fun = async() => {
@@ -1733,19 +1763,22 @@ const approveSei = async() => {
       console.log("check use");
       const eth = await provider.getBalance(address);
       setEthbal(eth);
-
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
       
-      if(token1 !== WSEIAddress){
+      let tokenbal1, tokenbal2;
+      if(token1 !== WSEIAddress && token1 !== ""){
+        const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance(allowance1);
         console.log("allow",allowance1);
+        tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+        setTokenbal1(tokenbal1);
       }
-      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
-      setTokenbal1(tokenbal1);
-      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
-      setTokenbal2(tokenbal2);
+      if(token2 !== WSEIAddress && token2 !== ""){
+        const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
+        tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+        setTokenbal2(tokenbal2);
+      }
+      
       console.log("allow1",tokenbal1,tokenbal2,eth);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
@@ -1852,7 +1885,7 @@ const approveSei = async() => {
                                 <div className="mb-0">
                                   
                                     <label className='d-flex align-items-center justify-content-between'>From
-                                    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo") ? (<><small>Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):
+                                    {(tk1 == "ETH")||(tk1 == "WBNB")||(tk1 == "SEI")||(tk1 == "Algo") ? (<><small>Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):
                                     (tk1 == "USDC")?(<><small>Price:${pc2 > 0 ? parseFloat(pc2).toFixed(2) :  (pr1 > 0)?pr1:'0.0'} {tk1.toUpperCase()}</small></>):(<></>) }
                                             
                                      </label>
@@ -1872,7 +1905,7 @@ const approveSei = async() => {
   <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId1)=>(setAssetId1(AssetId1))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}></FilterDropdown>
   </div>
     {/* {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) } */}
-    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WBNB")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
 
     </>
 ):(<>
@@ -1909,7 +1942,7 @@ const approveSei = async() => {
          
         </Button>
         </div>
-    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WBNB")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
 
 </>)}                                        
   </div>
@@ -1925,7 +1958,7 @@ const approveSei = async() => {
 
 <div className="mb-2">
     <label className='d-flex align-items-center justify-content-between'>To 
-    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WBNB")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
       (tk2 == "USDC")?(<><small>Price:${pc2 > 0 ? parseFloat(pc2).toFixed(2) :  (pr2 > 0)?pr2:'0.0'} {tk1.toUpperCase()}</small></>):(<></>) }
 
 
@@ -1942,7 +1975,7 @@ const approveSei = async() => {
   <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}/>
   </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WBNB")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
                                     
                                     
  </>
@@ -1952,7 +1985,7 @@ const approveSei = async() => {
  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2? swapamount2 : ""} onChange={(e) => handleSwapamount2(e.target.value)} disabled={true} />
  <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId2)=>(setAssetId1(AssetId2))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}></FilterDropdown>
   </div>
-    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WBNB")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
 
     </>)} </>
 ):(<>
@@ -1976,7 +2009,7 @@ const approveSei = async() => {
         </Button>
         </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small></>) }
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WBNB")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small></>) }
                                     
 </>)}
                                     {/* </>) } */}
@@ -2030,10 +2063,10 @@ const approveSei = async() => {
                                     
                                 </>)} */}
                                 {(allowance < (swapamount1 * (10 ** tokenDecimals1)) && token1 !== WSEIAddress) ? (<>
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</ButtonLoad>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
-                                    <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</Button>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</ButtonLoad>
                                 </>)}
                                 </>)}
                                 </center>
@@ -2061,11 +2094,11 @@ const approveSei = async() => {
                                             <circle cx="19.5" cy="19.5" r="19.5" fill="#CACACA"/>
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.35 19.5754L19.4468 7.8L26.5434 19.5754L19.4468 23.7702L19.4468 23.7702L12.35 19.5754ZM19.4468 30.9217L12.35 20.9212L19.4468 25.1139L26.5478 20.9212L19.4468 30.9217Z" fill="#1C1D1F"/>
                                             </svg>                                 */}
-                                        <img width="33" height="33"  src={seilogo}/>
+                                        <img width="33" height="33"  src={ethlogo}/>
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "SEI"}</span>
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>):(<>
                                       {logovalue2 ? (<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns={logovalue1}>

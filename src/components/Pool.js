@@ -12,6 +12,8 @@ import FilterDropdown from './Snippets/FilterDropdown';
 
 import elem from '../assets/images/elem-original.png';
 import tau from '../assets/images/tau-original.png';
+import Llogo from '../assets/images/L logo.png';
+import Plogo from '../assets/images/P logo.png'
 import FilterDropdown2 from './Snippets/FilterDropdown2';
 // const animatedComponents = makeAnimated();
 import MyAlgoConnect from "@randlabs/myalgo-connect";
@@ -711,7 +713,7 @@ function PoolPage() {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ swapamount1, setSwapamount1 ] = useState("");
@@ -741,6 +743,8 @@ function PoolPage() {
     const [ liquidbal, setliquidbal ] = useState(0.0);
     const [ userPairs, setUserPairs ] = useState([]);
     const[loader, setLoader] = useState(false);
+    const[loader1, setLoader1] = useState(false);
+    const[loader2, setLoader2] = useState(false);
     const [showLoader, setShowLoader] = useState(true);
     const [showNoLiquidity, setShowNoLiquidity] = useState(false);
     
@@ -2346,6 +2350,7 @@ function SetValue2(Amountin){
 
  const approveSei1 = async(token11) => {
   try{
+      setLoader1(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2357,7 +2362,9 @@ function SetValue2(Amountin){
       
       await tx.wait();
       await fun();
+      setLoader1(false);
   }catch(e){
+      setLoader1(false);
       console.error(e);
   }
  
@@ -2365,6 +2372,7 @@ function SetValue2(Amountin){
 
 const approveSei2 = async(token22) => {
   try{
+      setLoader1(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2376,7 +2384,9 @@ const approveSei2 = async(token22) => {
       
       await tx.wait();
       await fun();
+      setLoader1(false);
   }catch(e){
+      setLoader1(false);
       console.error(e);
   }
  
@@ -2384,6 +2394,7 @@ const approveSei2 = async(token22) => {
 
 const approvePair = async() => {
   try{
+      setLoader2(true);
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
@@ -2395,7 +2406,9 @@ const approvePair = async() => {
       
       await tx.wait();
       await fun3();
+      setLoader2(false);
   }catch(e){
+      setLoader2(false);
       console.error(e);
   }
  
@@ -2404,6 +2417,7 @@ const approvePair = async() => {
 
   const addLiquiditysei = async(amount1, amount2, token11, token22, decimals1, decimals2, name1, name2, state) => {
       try{
+        setLoader1(true);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -2429,11 +2443,11 @@ const approvePair = async() => {
     console.log("check", amountInWei, amountInWei2);
 
         let tx;
-        if(name1 === "ETH" || name1 === "WSEI" || name1 === "SEI"){
-
+        if(name1 === "ETH" || name1 === "WBNB" || name1 === "BNB" ||name1 === "SEI"){
+          console.log("check name:", name1);
           tx = await swapContract.addLiquidityETH(token22, amountInWei2, 0, 0, address, epochPlus10Minutes, {value: amountInWei, gasLimit:3000000});
 
-        } else if (name2 === "ETH" || name2 === "WSEI" || name2 === "SEI") {
+        } else if (name2 === "ETH" || name2 === "WBNB" || name2 === "BNB" || name2 === "SEI") {
 
           tx = await swapContract.addLiquidityETH(token11, amountInWei, 0, 0, address, epochPlus10Minutes, {value: amountInWei2, gasLimit:3000000});
 
@@ -2466,15 +2480,17 @@ const approvePair = async() => {
           await fun3();
         }
         
-        
+        setLoader1(false);
         
     }catch(e){
+        setLoader1(false);
         console.error(e);
     }
   }
 
   const remLiquiditysei = async() => {
     try{
+      setLoader2(true);
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -2484,11 +2500,11 @@ const approvePair = async() => {
       console.log("eth:",ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), remLiquidity); 
       let tx;
       
-      if(rstate?.asset1Name === "WSEI"){
+      if(rstate?.asset1Name === "WBNB"){
 
         tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress2, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
-      } else if (rstate?.asset2Name === "WSEI") {
+      } else if (rstate?.asset2Name === "WBNB") {
 
         tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress1, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
@@ -2501,8 +2517,9 @@ const approvePair = async() => {
       await tx.wait();
       setRemLiquidity("");
       await fun();
-      
+      setLoader2(false);
   }catch(e){
+      setLoader2(false);
       console.error(e);
   }
   handleRemove();
@@ -2553,41 +2570,53 @@ useEffect(() => {
   }
 
   const handleSwapamount1 = async(e) => {
-    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
-    const signer =  ethersProvider.getSigner();
-    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
-    if(token1!== "" && token2 !==""){
-      setSwapamount1(e);
-      let [reserve11, reserve22] = await getReserves(token1, token2);
-      
-      if (reserve11 === 0 || reserve22 === 0){
-            console.log("e:",e);
-      } else {
-        let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
-        let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)));
-        console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
-      }   
+    try{
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+      if(token1!== "" && token2 !==""){
+        setSwapamount1(e);
+        let [reserve11, reserve22] = await getReserves(token1, token2);
+        
+        if (reserve11 === 0 || reserve22 === 0){
+              console.log("e:",e);
+        } else {
+          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
+          setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
+          console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
+        }   
+      }
+    } catch(e) {
+       setSwapamount2("");
+       console.error(e);
     }
+    
   };
 
   const handleSwapamount2 = async(e) => {
-    const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
-    const signer =  ethersProvider.getSigner();
-    const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
-    if(token1!== "" && token2 !==""){
-      setSwapamount2(e);
-      let [reserve11, reserve22] = await getReserves(token1, token2);
-      
-      if (reserve11 === 0 || reserve22 === 0){
+    try{
+      const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
+      const signer =  ethersProvider.getSigner();
+      const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
+      if(token1!== "" && token2 !==""){
+        setSwapamount2(e);
+        let [reserve11, reserve22] = await getReserves(token1, token2);
+        
+        if (reserve11 === 0 || reserve22 === 0){
 
-      } else {
-        let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve11, reserve22);
-        let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
-        setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals1)));
-        console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
-      }   
+        } else {
+          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
+          setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)).toFixed(tokenDecimals1));
+          console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
+        }   
+      }
+    } catch (e) {
+       setSwapamount1("");
+       console.error(e);
     }
+    
   };
 
   const handleLiqamount1 = async(e) => {
@@ -2599,9 +2628,9 @@ useEffect(() => {
         if (reserve11 === 0 || reserve22 === 0){
               console.log("e:",e);
         } else {
-          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals1), reserve11, reserve22);
-          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, rstate?.decimals2);
-          setLiqamount2(parseFloat(swapbuff));
+          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.tokenDecimals1), reserve11, reserve22);
+          let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, rstate?.tokenDecimals2);
+          setLiqamount2(parseFloat(swapbuff).toFixed(rstate?.tokenDecimals2));
           console.log("SwapAmount:", e, swapAmount22, swapbuff);
         }   
       }
@@ -2624,9 +2653,9 @@ useEffect(() => {
         if (reserve11 === 0 || reserve22 === 0){
 
         } else {
-          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.decimals2), reserve11, reserve22);
-          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, rstate?.decimals1);
-          setLiqamount1(parseFloat(swapbuff));
+          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), rstate?.tokenDecimals2), reserve22, reserve11);
+          let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, rstate?.tokenDecimals1);
+          setLiqamount1(parseFloat(swapbuff).toFixed(rstate?.tokenDecimals1));
           console.log("SwapAmount:", e, swapAmount11, swapbuff);
         }   
       }
@@ -2642,25 +2671,24 @@ useEffect(() => {
       console.log("check use");
       const eth = await provider.getBalance(address);
       setEthbal(eth);
-
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
-
-      if(token1 !== WSEIAddress){
+     
+      let tokenbal1,tokenbal2;
+      if(token1 !== WSEIAddress && token1 !== ""){
+        const erc20Contract = new ethers.Contract(token1, ERC20ABI, provider);
         let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
         setAllowance1(allowance1);
+        tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
+        setTokenbal1(tokenbal1);
         console.log("allow",allowance1);
       }
-      if(token2 !== WSEIAddress){
+      if(token2 !== WSEIAddress && token2 !== ""){
+        const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
         let allowance2 = ethers.utils.formatUnits( await erc20Contract2.allowance(address, PancakeRouterV2Address), 0);
         setAllowance2(allowance2);
+        tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
+        setTokenbal2(tokenbal2);
         console.log("allow2",allowance2, eth);
       }
-
-      let tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
-      setTokenbal1(tokenbal1);
-      let tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
-      setTokenbal2(tokenbal2);
       console.log("allow3",tokenbal1,tokenbal2,ethbal);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
@@ -2939,7 +2967,7 @@ const fun1 = async () => {
     let [amount0, amount1] = await routerContract.getLiquidityValue(rstate?.pair, liqbal1);
     setliquidityval1(ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1));
     setliquidityval2(ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2));
-    console.log("remove Liquidity:", ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1), ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2), allowancePair1);
+    console.log("remove Liquidity:", ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1), ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2), ethers.utils.formatUnits(liqbal1, 18), allowancePair1);
     }
   }
 
@@ -3015,7 +3043,7 @@ const fun1 = async () => {
                             </svg>
                         </Button> */}
                         <h3><b>LIQUIDITY PROVIDER REWARDS</b></h3><br/>
-                        <p>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
+                        <p style={{fontSize: '17px'}}>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
                     </div>
 
                     <div className="card-base text-center card-pool card-dark">
@@ -3093,8 +3121,8 @@ const fun1 = async () => {
                                return (<div> 
                                  <div className="d-flex flex-sm-row mb-30 flex-column justify-content-sm-between align-items-center">
                                  <div class="d-flex align-items-center td-cell">
-                                  <img src={elem} alt="icon" />
-                                  <img src={tau} style={{marginLeft: '-15px'}} alt="icon" />
+                                  <img src={Llogo} alt="icon" style={{width:'40px',height:'40px',borderRadius:'50%'}}/>
+                                  <img src={Plogo} style={{width:'40px',height:'40px',borderRadius:'50%', marginLeft: '-15px'}} alt="icon" />
                                   <span class="ms-2">{r?.asset1Name}/{r?.asset2Name}</span>
                                 </div>
                                  {/* <Breadcrumb className='mb-sm-0 mb-3'>
@@ -3231,12 +3259,12 @@ const fun1 = async () => {
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>mint(appID_global)}>CREATE LIQUIDITY</Button>
                                         </>)
                                         } */}
-                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WSEI" && tokenName1 !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</Button>
-                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WSEI" && tokenName2 !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</Button>
+                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WBNB" && tokenName1 !== "SEI"))?(<>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</ButtonLoad>
+                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WBNB" && tokenName2 !== "SEI"))?(<>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</ButtonLoad>
                                         </>):(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</ButtonLoad>
                                         </>)
                                         }
 
@@ -3366,8 +3394,8 @@ const fun1 = async () => {
                                         </h6>
                                     </div>
                                     {allowancePair >= parseFloat(remLiquidity/1e18) ? 
-                                    <Button variant='grad' className='btn-lg w-100' onClick={() => remLiquiditysei()}>Remove</Button> :
-                                    <Button variant='grad' className='btn-lg w-100' onClick={() => approvePair()}>Approve LP</Button>}
+                                    <ButtonLoad loading={loader2} variant='grad' className='btn-lg w-100' onClick={() => remLiquiditysei()}>Remove</ButtonLoad> :
+                                    <ButtonLoad loading={loader2} variant='grad' className='btn-lg w-100' onClick={() => approvePair()}>Approve LP</ButtonLoad>}
                                     
                                 </Col>
                             </Row>
@@ -3390,7 +3418,7 @@ const fun1 = async () => {
                                 <Col md={9} lg={8}>
                                     <div className="mb-2">
                                         <label className='d-flex align-items-center justify-content-between'>From <small>Balance: { !(rstate?.tokenBal1) ?'0.0' :  parseFloat(rstate?.tokenBal1).toFixed(3) } {rstate?.asset1Name}</small></label>
-                                        {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WSEI")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
+                                        {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WBNB")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                           
                                             <input type='number' className='m-0 form-control p-0 border-0 text-white'  value={liqamount1 ? liqamount1 : ""} onChange={e => handleLiqamount1(e.target.value)}  placeholder="0.0" autoComplete='off'/>
@@ -3408,7 +3436,7 @@ const fun1 = async () => {
                                     </div>
 
                                     <div className="mb-20">
-                                        <label className='d-flex align-items-center justify-content-between'>T0 <small>Balance: { !(rstate?.tokenBal2) ?'0.0' : parseFloat(rstate?.tokenBal2).toFixed(4) }  {rstate?.asset2Name}</small></label>
+                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WBNB" || rstate?.asset2Name === "BNB" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(rstate?.tokenBal2) ?'0.0' : parseFloat(rstate?.tokenBal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
 
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                          
@@ -3434,12 +3462,12 @@ const fun1 = async () => {
                                     </p>
 
                                     {/* <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>mint1call(appID_global,samount1,samount2,rstate?.asset1Name,rstate?.asset2Name)}>ADD LIQUIDITY</Button> */}
-                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</Button>
-                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</Button>
+                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WBNB" && rstate?.asset1Name !== "SEI"))?(<>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</ButtonLoad>
+                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WBNB" && rstate?.asset2Name !== "SEI"))?(<>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</ButtonLoad>
                                         </>):(<>
-                                            <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</Button>
+                                            <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</ButtonLoad>
                                         </>)
                                         }
 
