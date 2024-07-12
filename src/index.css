@@ -23,6 +23,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+    /* styles.css or your stylesheet */
+  .table-group-td:hover{
+    color: white;
+  }
+
+  .table-group-td:hover a {
+    color: white;
+    text-decoration: underline !important;
+  }
+
   
   .name-column {
     width: 20%;
