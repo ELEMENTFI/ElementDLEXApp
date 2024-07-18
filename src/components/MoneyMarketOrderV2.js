@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react';
 import BigInt from 'BigInt';
 import { CarbonFinanceAbi, CarbonFinanceAddress, ERC20MockAbi, ERC20MockAddress, cftokenAbi, cftokenAddress } from '../abi';
+import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 
 const MoneyMarket = () => {
 
@@ -80,6 +81,7 @@ const MoneyMarket = () => {
             }
             
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Approved Succesfully`));
             await fun();
             setLoader1(false);
         }catch(e){
@@ -103,6 +105,7 @@ const MoneyMarket = () => {
             let amountInWei = ethers.utils.parseUnits(borrowAmount, 18);
             let tx = await carbonContract.mint(amountInWei);
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Borrow Succesful`));
             setborrowAmount("");
             await fun();
             setLoader(false);
@@ -133,6 +136,7 @@ const MoneyMarket = () => {
             }
             
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Repaid Succesfully`));
             setrepayAmount("");
             await fun();
             setLoader1(false);
@@ -150,6 +154,7 @@ const MoneyMarket = () => {
             const carbonContract = new ethers.Contract(CarbonFinanceAddress, CarbonFinanceAbi, signer);
             let tx = await carbonContract.liquidate(ethers.utils.parseUnits((liquidateAmount).toString(), 18));
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Liquidate Succesful`));
             setLiquidateAmount("");
             await fun();
             setLoader2(false);
@@ -163,12 +168,21 @@ const MoneyMarket = () => {
         fun();
     }, [address, isConnected]);
 
+    const toastDiv = (txId,type) =>
+    (
+        <div>
+          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://testnet.bscscan.com/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
+    </svg></a></p> 
+        </div>
+    );
 
     // React.useEffect(() => {
     //     window.scrollTo(0, 0);
     // });
     return (
         <Layout>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
             <div className="page-content">
                 <Container fluid="lg">
                     <Row>
@@ -217,7 +231,7 @@ const MoneyMarket = () => {
                                     >
                                         <Tab eventKey="borrow" title="Borrow">
                                             <div className="pt-4">
-                                                <div className="h4 mb-4 pb-2">Borrow ELEM</div>
+                                                <div className="h5 mb-4 pb-2">Borrow ELEM</div>
 
                                                 {/* <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -256,7 +270,7 @@ const MoneyMarket = () => {
                                         </Tab>
                                         <Tab eventKey="repay" title="Repay">
                                         <div className="pt-4">
-                                                <div className="h4 mb-4 pb-2">Repay ELEM</div>
+                                                <div className="h5 mb-4 pb-2">Repay ELEM</div>
 
                                                 <div className="d-flex mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -300,7 +314,7 @@ const MoneyMarket = () => {
                                         </Tab>
                                         <Tab eventKey="liquidate" title="Liquidate">
                                         <div className="pt-4">
-                                                <div className="h4 mb-4 pb-2">Liquidate USDC</div>
+                                                <div className="h5 mb-4 pb-2">Liquidate USDC</div>
 
                                                 <div className="d-flex mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>

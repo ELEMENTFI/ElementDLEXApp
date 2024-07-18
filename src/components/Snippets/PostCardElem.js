@@ -839,7 +839,7 @@ let mapPercent = parseFloat((ReactDomServer.renderToString(mapTotal))/parseFloat
     return (
         
         <>
-{/* <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></> */}
+{/* <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></> */}
                    <Modal show={showDonate} centered onHide={handleCloseDonate}>
                 <Modal.Header class="btn-close btn-close-white" closeButton />
                 <Modal.Body>

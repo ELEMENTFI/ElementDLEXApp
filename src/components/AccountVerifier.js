@@ -55,7 +55,7 @@ function AccountVerifier(props) {
 
     return (
         <div style={{ backgroundImage: `url(${bgBackgroundImage})`, backgroundSize: 'cover', minHeight: '100vh' }}>
-    <ToastContainer position='top-center' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
+    <ToastContainer position='bottom-right' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
     <div className="flex items-center gap-3" style={{ marginLeft: "20px", marginTop: "20px"}}>
         <img src={logo} alt="logo icon" style={{height: "60px", width: "60px"}}/>
         <p className="text-white font-bold text-xl tablet:text-2xl">

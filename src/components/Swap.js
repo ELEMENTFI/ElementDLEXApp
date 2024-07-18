@@ -1679,6 +1679,7 @@ const approveSei = async() => {
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((swapamount1).toString(), 18));
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
       await fun();
       setLoader(false);
   }catch(e){
@@ -1716,6 +1717,7 @@ const approveSei = async() => {
         }
         
         await tx.wait();
+        toast.success(toastDiv(tx.hash, `Transaction Success`));
         setSwapamount1("");
         setSwapamount2("");
         await fun();
@@ -1761,6 +1763,8 @@ const approveSei = async() => {
   const fun = async() => {
     try{
       console.log("check use");
+      const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, provider);
+
       const eth = await provider.getBalance(address);
       setEthbal(eth);
       
@@ -1778,6 +1782,13 @@ const approveSei = async() => {
         tokenbal2 = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address),0);
         setTokenbal2(tokenbal2);
       }
+
+      let pairAddress = await factoryContract.getPair(token1,token2);
+      if (pairAddress === "0x0000000000000000000000000000000000000000"){
+        setsufficient(true);
+      } else {
+        setsufficient(false);
+      }
       
       console.log("allow1",tokenbal1,tokenbal2,eth);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
@@ -1788,6 +1799,15 @@ const approveSei = async() => {
     
 }
 
+  const toastDiv = (txId,type) =>
+    (
+        <div>
+          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://testnet.bscscan.com/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
+    </svg></a></p> 
+        </div>
+    );
+
   useEffect(() => {
     fun();
     console.log("tokens:", token1, token2, tokenDecimals1, tokenDecimals2);
@@ -1795,10 +1815,8 @@ const approveSei = async() => {
 
     return (
         <Layout>
-        <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
-
+        <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false} className="Toastify__toast-container--bottom-right"/></>
             <div className="page-content">
-
             <Modal centered size="lgmd" show={showModal} onHide={handleCloseModal}>
               <Modal.Body>
                 <Button className='modal-close' onClick={handleCloseModal} variant='reset'>
@@ -2066,7 +2084,7 @@ const approveSei = async() => {
                                     <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</ButtonLoad>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
-                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</ButtonLoad>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>Swap</ButtonLoad>
                                 </>)}
                                 </>)}
                                 </center>
