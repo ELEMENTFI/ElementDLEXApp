@@ -1035,7 +1035,7 @@ toast.success(`Transaction Successful with ${response.txId}`);
                 onHide={handleClose}
                 keyboard={false}
             >
-<><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
+<><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
                 <Modal.Body>
 
                     <Button className='modal-close' onClick={handleClose} variant='reset'>

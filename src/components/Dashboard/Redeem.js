@@ -440,7 +440,7 @@ const amountSet = (value)=>{
     
     return (
         <Layout>
-            <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
+            <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
             <Container fluid="lg">
                 <Row className='mb-40'>
                     <Col md="4" sm="6" lg="3" className="mb-3">

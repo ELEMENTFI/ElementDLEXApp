@@ -2371,13 +2371,14 @@ function SetValue2(Amountin){
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
-      const erc20Contract = new ethers.Contract(token1, ERC20ABI, signer);
+      const erc20Contract = new ethers.Contract(token11, ERC20ABI, signer);
       // const cfContract = new ethers.Contract(cftokenAddress, cftokenAbi, signer);
       let tx;
       
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000).toString(), 18));
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
       await fun();
       setLoader1(false);
   }catch(e){
@@ -2393,13 +2394,14 @@ const approveSei2 = async(token22) => {
       console.log("approve starts...");
       const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
       const signer =  ethersProvider.getSigner();
-      const erc20Contract = new ethers.Contract(token2, ERC20ABI, signer);
+      const erc20Contract = new ethers.Contract(token22, ERC20ABI, signer);
       // const cfContract = new ethers.Contract(cftokenAddress, cftokenAbi, signer);
       let tx;
       
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000).toString(), 18));
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
       await fun();
       setLoader1(false);
   }catch(e){
@@ -2422,6 +2424,7 @@ const approvePair = async() => {
       tx = await pairContract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000000).toString(), 18));
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
       await fun3();
       setLoader2(false);
   }catch(e){
@@ -2475,6 +2478,7 @@ const approvePair = async() => {
         }
         
         await tx.wait();
+        toast.success(toastDiv(tx.hash, `Transaction Success`));
         let pairAddress1 = await factoryContract.getPair(token11,token22);
         if (pairAddress === "0x0000000000000000000000000000000000000000"){
                   // Get the current time in milliseconds
@@ -2532,6 +2536,7 @@ const approvePair = async() => {
       }
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Remove Liquidity Successful`));
       setRemLiquidity("");
       await fun();
       setLoader2(false);
@@ -3049,10 +3054,19 @@ const fun1 = async () => {
     const intervalId = setInterval(loaderDelay,10000);
     return () => clearInterval(intervalId);
   }, [show]);
+
+  const toastDiv = (txId,type) =>
+    (
+        <div>
+          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
+    </svg></a></p> 
+        </div>
+    );
     
     return (
         <Layout>
-          
+          <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
             <div className="page-content">
               
                 <Container fluid="sm">
@@ -3078,7 +3092,7 @@ const fun1 = async () => {
             </div>
 
             <Modal show={show} centered={true} size="lg" onHide={handleClose}>
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+            
                 <Modal.Body className='modal-liquidity-body'>
                   
                     <Button className='modal-close' onClick={handleClose} variant='reset'>
@@ -3097,7 +3111,7 @@ const fun1 = async () => {
                                     <h3>LIQUIDITY PROVIDER REWARDS</h3><br/>
                                     <p>Liquidity providers earn a 0.20% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.</p>
 
-                                    <Link to="/" className='btn-link-purple text-underline'>Learn more about providing liquidity</Link>
+                                    <a href="https://x.com/ElementDeFi" target="blank" className='btn-link-purple text-underline'>Learn more about providing liquidity</a>
                                 </Col>
                             </Row>
 
@@ -3311,7 +3325,6 @@ const fun1 = async () => {
 
 
             <Modal show={manage} centered={true} size="lg" onHide={handleManage}>
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
                 <Modal.Body className='modal-liquidity-body'>
                     <Button className='modal-close' onClick={handleManage} variant='reset'>
                         <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">

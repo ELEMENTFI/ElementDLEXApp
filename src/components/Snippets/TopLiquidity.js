@@ -1323,7 +1323,7 @@ let tvl = s1 + s2;
             <h2 className="h3 mb-40">Top Liquidity Pairs</h2>
            
                 <Modal show={handleLiquidiyopen} centered={true} size="lg" onHide={handlelclose}>
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
                 <Modal.Body className='modal-liquidity-body'>
                 <div className="modal_header mb-50 d-flex align-items-center">
                                 <Button variant='reset' onClick={()=>closevalue()} className='p-0 me-4'>
@@ -1409,7 +1409,7 @@ let tvl = s1 + s2;
                                 </Modal.Body>
             </Modal>
            
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
 
             <div className="table-group-outer table-group-lg">
   <div className="table-group-head">

@@ -729,7 +729,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
             </header>
             
             <Modal show={show} centered={true} size="lg" onHide={handleClose}>
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
 
                 <Modal.Body className='modal-liquidity-body'>
                     <Button className='modal-close' onClick={handleClose} variant='reset'>
@@ -811,7 +811,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                 </Modal.Body>
             </Modal>
             <Modal show={showvalue} centered={true} size="lg" onHide={closevalue}>
-            <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
 
                 <Modal.Body className='modal-liquidity-body'>
                     <Button className='modal-close' onClick={()=>handlecareclose()} variant='reset'>
