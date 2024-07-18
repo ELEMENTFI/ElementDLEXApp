@@ -66,13 +66,13 @@ const MoneyMarket = () => {
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, signer);
-            if (typeof depositAmount !== 'string') {
-                depositAmount = depositAmount.toString();
-            }
+            // if (typeof depositAmount !== 'string') {
+            //     depositAmount = depositAmount.toString();
+            // }
             
             // Convert the deposit amount to wei
-            let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
-            let tx = await carbonContract.approve(address, amountInWei);
+            let amountInWei = ethers.utils.parseUnits((1000000000).toString(), 18);
+            let tx = await carbonContract.approve(CarbonFinanceAddress, amountInWei);
             await tx.wait();
             await fun();
             setLoader(false);

@@ -67,3 +67,10 @@
     align-items: center; /* Or any other height you prefer */
   }
   
+  .badg {
+    opacity : 70%;
+    color: red;
+    background-color: rgb(39, 38, 38) !important;
+    border: 1px solid red !important;
+    margin-top: 10px;
+  }
