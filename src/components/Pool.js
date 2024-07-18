@@ -741,6 +741,8 @@ function PoolPage() {
     const [ liquidityval11, setliquidityval11 ] = useState(0.0);
     const [ liquidityval22, setliquidityval22 ] = useState(0.0);
     const [ liquidbal, setliquidbal ] = useState(0.0);
+    const [ liquidbal1, setliquidbal1 ] = useState(0.0);
+    const [ liquidbal2, setliquidbal2] = useState(0.0);
     const [ userPairs, setUserPairs ] = useState([]);
     const[loader, setLoader] = useState(false);
     const[loader1, setLoader1] = useState(false);
@@ -2252,10 +2254,26 @@ let vl = s1 + s2 + ilt;
     };
 
 const manager = async(r,a,b,c) =>{
+const erc20Contract = new ethers.Contract(r?.tokenAddress1, ERC20ABI, provider);
+const erc20Contract2 = new ethers.Contract(r?.tokenAddress2, ERC20ABI, provider);
 let l=[];
 l.push(a);
 l.push(b);
 l.push(c);
+if(r?.tokenAddress1 !== WSEIAddress){
+  let bal1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), r?.tokenDecimals1);
+  setliquidbal1(bal1);
+} else {
+  const eth = await provider.getBalance(address);
+  setEthbal(eth);
+}
+if(r?.tokenAddress2 !== WSEIAddress){
+  let bal2 = ethers.utils.formatUnits( await erc20Contract2.balanceOf(address), r?.tokenDecimals2);
+  setliquidbal2(bal2);
+} else {
+  const eth = await provider.getBalance(address);
+  setEthbal(eth);
+}
 
   setrstate(r);
   setaprice(l);
@@ -2559,7 +2577,8 @@ useEffect(() => {
     const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, signer);
     let pairAddress = await factoryContract.getPair(token11,token22);
     if (pairAddress === "0x0000000000000000000000000000000000000000"){
-      return 0,0;
+      console.log("ZERO ADDRESS");
+      return [0,0];
     } else {
       const pairContract = new ethers.Contract(pairAddress, PancakePairV2ABI, signer);
     let [reserve11, reserve22, ] = await pairContract.getReserves();
@@ -2972,34 +2991,39 @@ const fun1 = async () => {
   }
 
   const fun4 = async() => {
-    if(address){
-      const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
-      const pairContract = new ethers.Contract(rstate?.pair, PancakePairV2ABI, provider);
-      const erc20Contract = new ethers.Contract(rstate?.tokenAddress1, ERC20ABI, provider);
-      const erc20Contract2 = new ethers.Contract(rstate?.tokenAddress2, ERC20ABI, provider);
-      let rstatebuff;
-      if(rstate?.tokenAddress1 !== WSEIAddress){
-        let bal1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), rstate?.tokenDecimals1);
-        rstatebuff = {...rstate, tokenBal1: bal1};
-        console.log("allow",allowance1);
-      } else {
-        const eth = await provider.getBalance(address);
-        setEthbal(eth);
-        let bal1 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals1);
-        rstatebuff = {...rstate, tokenBal1: bal1};
+    try{
+      if(address){
+        const erc20Contract = new ethers.Contract(rstate?.tokenAddress1, ERC20ABI, provider);
+        const erc20Contract2 = new ethers.Contract(rstate?.tokenAddress2, ERC20ABI, provider);
+        let rstatebuff;
+        if(rstate?.tokenAddress1 !== WSEIAddress){
+          let bal1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), rstate?.tokenDecimals1);
+          setliquidbal1(bal1);
+          rstatebuff = {...rstate, tokenBal1: liquidbal1};
+          console.log("allow",allowance1);
+        } else {
+          const eth = await provider.getBalance(address);
+          setEthbal(eth);
+          let bal1 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals1);
+          rstatebuff = {...rstate, tokenBal1: bal1};
+        }
+        if(rstate?.tokenAddress2 !== WSEIAddress){
+          let bal2 = ethers.utils.formatUnits( await erc20Contract2.balanceOf(address), rstate?.tokenDecimals2);
+          setliquidbal2(bal2);
+          rstatebuff = {...rstate, tokenBal2: liquidbal2};
+          console.log("allow2",allowance2);
+        } else {
+          const eth = await provider.getBalance(address);
+          setEthbal(eth);
+          let bal2 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals2);
+          rstatebuff = {...rstate, tokenBal2: bal2};
+        }
+        setrstate(rstatebuff);
       }
-      if(rstate?.tokenAddress2 !== WSEIAddress){
-        let bal2 = ethers.utils.formatUnits( await erc20Contract2.balanceOf(address), rstate?.tokenDecimals2);
-        rstatebuff = {...rstate, tokenBal2: bal2};
-        console.log("allow2",allowance2);
-      } else {
-        const eth = await provider.getBalance(address);
-        setEthbal(eth);
-        let bal2 = ethers.utils.formatUnits( eth, rstate?.tokenDecimals2);
-        rstatebuff = {...rstate, tokenBal2: bal2};
-      }
-      setrstate(rstatebuff);
+    } catch(e){
+      console.log("fun4 error:", e);
     }
+    
   }
 
   useEffect(() => {
@@ -3417,7 +3441,7 @@ const fun1 = async () => {
                             <Row className='justify-content-center'>
                                 <Col md={9} lg={8}>
                                     <div className="mb-2">
-                                        <label className='d-flex align-items-center justify-content-between'>From <small>Balance: { !(rstate?.tokenBal1) ?'0.0' :  parseFloat(rstate?.tokenBal1).toFixed(3) } {rstate?.asset1Name}</small></label>
+                                        <label className='d-flex align-items-center justify-content-between'>From {(rstate?.asset1Name === "WBNB" || rstate?.asset1Name === "BNB" || rstate?.asset1Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset1Name}</small> : <small>Balance: { !(liquidbal1) ?'0.0' : parseFloat(liquidbal1).toFixed(4) }  {rstate?.asset1Name}</small>}</label>
                                         {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WBNB")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                           
@@ -3436,7 +3460,7 @@ const fun1 = async () => {
                                     </div>
 
                                     <div className="mb-20">
-                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WBNB" || rstate?.asset2Name === "BNB" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(rstate?.tokenBal2) ?'0.0' : parseFloat(rstate?.tokenBal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
+                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WBNB" || rstate?.asset2Name === "BNB" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(liquidbal2) ?'0.0' : parseFloat(liquidbal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
 
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                          

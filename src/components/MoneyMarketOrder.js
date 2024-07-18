@@ -66,13 +66,13 @@ const MoneyMarket = () => {
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, signer);
-            if (typeof depositAmount !== 'string') {
-                depositAmount = depositAmount.toString();
-            }
+            // if (typeof depositAmount !== 'string') {
+            //     depositAmount = depositAmount.toString();
+            // }
             
             // Convert the deposit amount to wei
-            let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
-            let tx = await carbonContract.approve(address, amountInWei);
+            let amountInWei = ethers.utils.parseUnits((1000000000).toString(), 18);
+            let tx = await carbonContract.approve(CarbonFinanceAddress, amountInWei);
             await tx.wait();
             await fun();
             setLoader(false);
@@ -199,7 +199,7 @@ const MoneyMarket = () => {
 
                                                 <Form>
                                                     <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
-                                                    {(allowance/1e18) >= depositAmount ? 
+                                                    {parseFloat(allowance/1e18) >= depositAmount ? 
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={deposit}>Deposit</ButtonLoad> :
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={approve}>Approve</ButtonLoad>}
                                                 </Form>

@@ -731,7 +731,7 @@ function SwapPage(props) {
     const [AssetId1,setAssetId1] = useState("");
     const [AssetId2,setAssetId2] = useState("");
 console.log("Assetid1",AssetId1,AssetId2)
-    const[tk1,sett1] = useState("");
+    const[tk1,sett1] = useState("WBNB");
     const[id1Token,setTokenId1] = useState("");
     const[id2Token,setTokenId2] = useState("");
     const[tk2,sett2] = useState("");

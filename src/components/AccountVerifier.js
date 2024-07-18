@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Row, Button } from 'react-bootstrap';
+import { Col, Container, Row, Button, Badge } from 'react-bootstrap';
 import { useState, useEffect } from "react";
 import { ToastContainer, Zoom } from 'react-toastify';
 import { useLocation, useHistory } from "react-router-dom";
@@ -8,7 +8,9 @@ import { ethers } from 'ethers';
 import { ConnectWallet } from '../generalFunctions';
 import { getAccountsFirebase } from '../firebasefunctions';
 import bgBackgroundImage from '../assets/images/main_cover.png';
-import logo from '../assets/images/element logo.png'
+import logo from '../assets/images/element logo.png';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 function AccountVerifier(props) {
     const { address, chainId, isConnected } = useWeb3ModalAccount();
@@ -70,7 +72,11 @@ function AccountVerifier(props) {
                             {isConnected ? (
                                 <>
                                     <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Disconnect Wallet</Button>
-                                    <br/>{verify === false && <p style={{ color: "red" }}>This Account is not Eligible</p>}
+                                    <br/><center>{verify === false && 
+                                        <Badge bg="danger" className="mb-3 badg">
+                                            <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                                            Your Wallet is not allowed to access this Website.
+                                        </Badge>}</center>
                                 </>
                             ) : (
                                 <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Connect Wallet</Button>
