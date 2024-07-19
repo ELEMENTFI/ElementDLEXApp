@@ -12,7 +12,7 @@ import logo from '../assets/images/element logo.png';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-function AccountVerifier(props) {
+function AccountVerifier({setEligibile }) {
     const { address, chainId, isConnected } = useWeb3ModalAccount();
     const navigate = useHistory();
 
@@ -33,10 +33,14 @@ function AccountVerifier(props) {
                 if ((accounts1[i].account).toLowerCase() === (address).toLowerCase()) {
                     verify1 = true;
                     setVerify(true);
+                    setEligibile(true);
+                    localStorage.setItem('eligibility', JSON.stringify(true));
                     break;
                 } else {
                     verify1 = false;
                     setVerify(false);
+                    setEligibile(false);
+                    localStorage.setItem('eligibility', JSON.stringify(false));
                 }
             }
             if (verify === true || verify1 === true) {
