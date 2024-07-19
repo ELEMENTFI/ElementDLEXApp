@@ -721,6 +721,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
                                         </Dropdown.Menu>
                                     </Dropdown>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link className='nav-link' to="/analytics" activeClassName="active" >Analytics</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <Link className='nav-link' to="/faucet" activeClassName="active" >Faucet</Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link className='nav-link disabled' to="/bridge" activeClassName="active"  >Bridge<Badge>Upcoming</Badge></Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </Nav>
                         </Navbar.Collapse>
