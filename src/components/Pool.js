@@ -3059,7 +3059,7 @@ const fun1 = async () => {
   const toastDiv = (txId,type) =>
     (
         <div>
-           <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://testnet.bscscan.com/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+           <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://testnet.bscscan.com/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in BNB Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
     </svg></a></p> 
         </div>
