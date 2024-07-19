@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Row, Button } from 'react-bootstrap';
+import { Col, Container, Row, Button, Badge } from 'react-bootstrap';
 import { useState, useEffect } from "react";
 import { ToastContainer, Zoom } from 'react-toastify';
 import { useLocation, useHistory } from "react-router-dom";
@@ -8,9 +8,11 @@ import { ethers } from 'ethers';
 import { ConnectWallet } from '../generalFunctions';
 import { getAccountsFirebase } from '../firebasefunctions';
 import bgBackgroundImage from '../assets/images/main_cover.png';
-import logo from '../assets/images/element logo.png'
+import logo from '../assets/images/element logo.png';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-function AccountVerifier(props) {
+function AccountVerifier({setEligibile }) {
     const { address, chainId, isConnected } = useWeb3ModalAccount();
     const navigate = useHistory();
 
@@ -31,10 +33,14 @@ function AccountVerifier(props) {
                 if ((accounts1[i].account).toLowerCase() === (address).toLowerCase()) {
                     verify1 = true;
                     setVerify(true);
+                    setEligibile(true);
+                    localStorage.setItem('eligibility', JSON.stringify(true));
                     break;
                 } else {
                     verify1 = false;
                     setVerify(false);
+                    setEligibile(false);
+                    localStorage.setItem('eligibility', JSON.stringify(false));
                 }
             }
             if (verify === true || verify1 === true) {
@@ -53,7 +59,7 @@ function AccountVerifier(props) {
 
     return (
         <div style={{ backgroundImage: `url(${bgBackgroundImage})`, backgroundSize: 'cover', minHeight: '100vh' }}>
-    <ToastContainer position='top-center' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
+    <ToastContainer position='bottom-right' draggable={false} transition={Zoom} autoClose={8000} closeOnClick={false} />
     <div className="flex items-center gap-3" style={{ marginLeft: "20px", marginTop: "20px"}}>
         <img src={logo} alt="logo icon" style={{height: "60px", width: "60px"}}/>
         <p className="text-white font-bold text-xl tablet:text-2xl">
@@ -70,7 +76,11 @@ function AccountVerifier(props) {
                             {isConnected ? (
                                 <>
                                     <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Disconnect Wallet</Button>
-                                    <br/>{verify === false && <p style={{ color: "red" }}>This Account is not Eligible</p>}
+                                    <br/><center>{verify === false && 
+                                        <Badge bg="danger" className="mb-3 badg">
+                                            <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" />
+                                            Your Wallet is not allowed to access this Website.
+                                        </Badge>}</center>
                                 </>
                             ) : (
                                 <Button className="mt-xxl-4 mt-2 btn w-70 btn-grad" style={{ width: "50%" }} onClick={connectWalletSei}>Connect Wallet</Button>

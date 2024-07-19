@@ -1508,7 +1508,7 @@ console.error(err);
 
     return (
         <Layout>
-            <><ToastContainer position='top-center' draggable = {true} transition={Slide} autoClose={8000} closeOnClick = {false}/></>
+            <><ToastContainer position='bottom-right' draggable = {true} transition={Slide} autoClose={8000} closeOnClick = {false}/></>
             <Container fluid="lg">
             <Modal show={showStake} centered onHide={handleCloseStake}>
                 {/* <Modal.Header class="btn-close btn-close-white" closeButton /> */}

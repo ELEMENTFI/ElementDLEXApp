@@ -451,7 +451,7 @@ const check = () => {
 
     return (
         <Layout>
-              <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
+              <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
             <Container fluid="lg">
 
                 <Row className='mb-40'>

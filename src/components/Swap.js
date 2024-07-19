@@ -730,7 +730,7 @@ function SwapPage(props) {
     const [AssetId1,setAssetId1] = useState("");
     const [AssetId2,setAssetId2] = useState("");
 console.log("Assetid1",AssetId1,AssetId2)
-    const[tk1,sett1] = useState("");
+    const[tk1,sett1] = useState("WSEI");
     const[id1Token,setTokenId1] = useState("");
     const[id2Token,setTokenId2] = useState("");
     const[tk2,sett2] = useState("");
@@ -1678,6 +1678,7 @@ const approveSei = async() => {
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((swapamount1).toString(), 18));
       
       await tx.wait();
+      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
       await fun();
       setLoader(false);
   }catch(e){
@@ -1715,6 +1716,7 @@ const approveSei = async() => {
         }
         
         await tx.wait();
+        toast.success(toastDiv(tx.hash, `Transaction Success`));
         setSwapamount1("");
         setSwapamount2("");
         setLoader(false);
@@ -1760,6 +1762,8 @@ const approveSei = async() => {
   const fun = async() => {
     try{
       console.log("check use");
+      const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, provider);
+
       const eth = await provider.getBalance(address);
       setEthbal(eth);
       
@@ -1778,6 +1782,14 @@ const approveSei = async() => {
         setTokenbal2(tokenbal2);
       }
       
+      let pairAddress = await factoryContract.getPair(token1,token2);
+      console.log(pairAddress);
+      if (pairAddress === "0x0000000000000000000000000000000000000000"){
+        setsufficient(true);
+      } else {
+        setsufficient(false);
+      }
+
       console.log("allow1",tokenbal1,tokenbal2,eth);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
@@ -1787,6 +1799,15 @@ const approveSei = async() => {
     
 }
 
+const toastDiv = (txId,type) =>
+  (
+      <div>
+        <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
+  </svg></a></p> 
+      </div>
+  );
+
   useEffect(() => {
     fun();
     console.log("tokens:", token1, token2, tokenDecimals1, tokenDecimals2);
@@ -1794,7 +1815,7 @@ const approveSei = async() => {
 
     return (
         <Layout>
-        <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
+        <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
 
             <div className="page-content">
 
@@ -2053,7 +2074,7 @@ const approveSei = async() => {
                                 </>)}
                                <center>
                                 {sufficient ? (<>
-                                  <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' >INSUFFICIENT LIQUIDITY</Button>
+                                  <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' disabled={true}>INSUFFICIENT LIQUIDITY</Button>
                                 </>):(<>
                                   {/* {(swapopt === true ) ? (<>
                                     <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {assn1? assn1 : ""}</Button>
@@ -2065,7 +2086,7 @@ const approveSei = async() => {
                                     <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>approveSei()}> Approve {tokenName1? tokenName1 : ""}</ButtonLoad>
                                 </>):(<>
                                     {/* <Button className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swap(appID_global,swapamount)}>ZERO FEE EXCHANGE</Button> */}
-                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>EXCHANGE</ButtonLoad>
+                                    <ButtonLoad loading={loader} className='mt-xxl-4 mt-2 btn w-70 btn-grad' onClick={()=>swapSei()}>Swap</ButtonLoad>
                                 </>)}
                                 </>)}
                                 </center>
