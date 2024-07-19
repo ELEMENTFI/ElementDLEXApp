@@ -189,9 +189,9 @@ function App() {
             <Route exact path="/">
               <AccountVerifier setEligibile={setEligibile} />
             </Route>
-            <Route path="*">
+            {/* <Route path="*">
               <PageNotFound />
-            </Route>
+            </Route> */}
           </>
         ) : (
           <>
