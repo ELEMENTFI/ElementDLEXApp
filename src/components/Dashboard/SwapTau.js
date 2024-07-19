@@ -62,7 +62,7 @@ const swapTau = () => {
               
             </Modal>
                 <Container>
-                <ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
+                <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
                     <Row>
                         <Col lg={6} className='mb-lg-0 mb-4 order-lg-2'>
                             <div className="card-base card-shadow card-dark">

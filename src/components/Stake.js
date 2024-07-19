@@ -328,7 +328,7 @@ for (let n = 0; n < accountInfoResponse2['apps-local-state'][i][`key-value`].len
 
     return (
         <Layout>
-            <><ToastContainer position='top-center' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
+            <><ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/></>
             <div className="page-content">
                 <Container fluid="lg">
                     <Row>

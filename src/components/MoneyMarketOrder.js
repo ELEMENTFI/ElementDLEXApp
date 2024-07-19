@@ -12,6 +12,7 @@ import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/re
 import BigInt from 'BigInt';
 import { ethers } from 'ethers';
 import { CarbonFinanceAbi, CarbonFinanceAddress, ERC20MockAbi, ERC20MockAddress, cftokenAbi, cftokenAddress } from '../abi';
+import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 
 const MoneyMarket = () => {
 
@@ -66,14 +67,15 @@ const MoneyMarket = () => {
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const carbonContract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, signer);
-            if (typeof depositAmount !== 'string') {
-                depositAmount = depositAmount.toString();
-            }
+            // if (typeof depositAmount !== 'string') {
+            //     depositAmount = depositAmount.toString();
+            // }
             
             // Convert the deposit amount to wei
-            let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
-            let tx = await carbonContract.approve(address, amountInWei);
+            let amountInWei = ethers.utils.parseUnits((1000000000).toString(), 18);
+            let tx = await carbonContract.approve(CarbonFinanceAddress, amountInWei);
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Approved Successfully`));
             await fun();
             setLoader(false);
         }catch(e){
@@ -97,6 +99,7 @@ const MoneyMarket = () => {
             let amountInWei = ethers.utils.parseUnits(depositAmount, 18);
             let tx = await carbonContract.deposit(amountInWei);
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Deposit Successful`));
             setDepositAmount("");
             await fun();
             setLoader(false);
@@ -120,6 +123,7 @@ const MoneyMarket = () => {
             let amountInWei = ethers.utils.parseUnits(withdrawAmount, 18);
             let tx = await carbonContract.withdraw(amountInWei);
             await tx.wait();
+            toast.success(toastDiv(tx.hash, `Withdrawn Succesfully`));
             setWithdrawAmount("");
             await fun();
             setLoader1(false);
@@ -129,11 +133,21 @@ const MoneyMarket = () => {
         }
     }
 
+    const toastDiv = (txId,type) =>
+    (
+        <div>
+          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://testnet.bscscan.com/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in BNB Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
+    </svg></a></p> 
+        </div>
+    );
+
     // React.useEffect(() => {
     //     window.scrollTo(0, 0);
     // });
     return (
         <Layout>
+            <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
             <div className="page-content">
                 <Container fluid="lg">
                     <Row>
@@ -180,9 +194,9 @@ const MoneyMarket = () => {
                                         id="noanim-tab-example"
                                         className='tabs-dark'
                                     >
-                                        <Tab eventKey="deposite" title="Deposit USDC">
+                                        <Tab eventKey="deposite" title="Deposit">
                                             <div className="pt-4">
-                                                <div className="h4 mb-4 pb-2">Deposit USDC</div>
+                                                <div className="h5 mb-4 pb-2">Deposit USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
@@ -199,15 +213,15 @@ const MoneyMarket = () => {
 
                                                 <Form>
                                                     <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={depositAmount} onChange={(e)=>{setDepositAmount(e.target.value)}}/>
-                                                    {(allowance/1e18) >= depositAmount ? 
+                                                    {parseFloat(allowance/1e18) >= depositAmount ? 
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={deposit}>Deposit</ButtonLoad> :
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={approve}>Approve</ButtonLoad>}
                                                 </Form>
                                             </div>
                                         </Tab>
-                                        <Tab eventKey="withdraw" title="Withdraw USDC">
+                                        <Tab eventKey="withdraw" title="Withdraw">
                                         <div className="pt-4">
-                                                <div className="h4 mb-4 pb-2">Withdraw USDC</div>
+                                                <div className="h5 mb-4 pb-2">Withdraw USDC</div>
 
                                                 <div className="d-flex flex-wrap mb-24 align-items-center" style={{color: '#969696'}}>
                                                     <span className='arrow-45'>
