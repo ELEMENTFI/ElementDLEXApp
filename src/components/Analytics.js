@@ -1,6 +1,6 @@
 import React from 'react';
-import Layout from './Layouts/LayoutAnalytics';
-// import Layout from './Layouts/Layout';
+// import Layout from './Layouts/LayoutAnalytics';
+import Layout from './Layouts/LayoutInner';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { Container } from 'react-bootstrap';

@@ -74,18 +74,18 @@ createWeb3Modal({
 
 function App() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
-  const [eligible, setEligibleState] = useState(() => {
-    // Initialize from localStorage
-    const savedEligibility = localStorage.getItem('eligibility');
-    return savedEligibility ? JSON.parse(savedEligibility) : false;
-  });
+  // const [eligible, setEligibleState] = useState(() => {
+  //   // Initialize from localStorage
+  //   const savedEligibility = localStorage.getItem('eligibility');
+  //   return savedEligibility ? JSON.parse(savedEligibility) : false;
+  // });
 
-  const history = useHistory();
+  // const history = useHistory();
 
   // Save eligibility status to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('eligibility', JSON.stringify(eligible));
-  }, [eligible]);
+  // useEffect(() => {
+  //   localStorage.setItem('eligibility', JSON.stringify(eligible));
+  // }, [eligible]);
 
   // Redirect to / when the address changes
   // useEffect(() => {
@@ -96,17 +96,17 @@ function App() {
   //   }
   // }, [address]);
 
-  const setEligibile = (value) => {
-    setEligibleState(value);
-    localStorage.setItem('eligibility', JSON.stringify(value));
-  };
+  // const setEligibile = (value) => {
+  //   setEligibleState(value);
+  //   localStorage.setItem('eligibility', JSON.stringify(value));
+  // };
 
   console.log("app.js", address, chainId);
 
   return (
     <Router>
       <Switch>
-        {eligible ? (
+        {/* {eligible ? ( */}
           <>
             <Route path="/borrow-card">
               <MoneyMarketOrderV2 />
@@ -187,23 +187,23 @@ function App() {
               <HomeV2 />
             </Route>
             <Route exact path="/">
-              <AccountVerifier setEligibile={setEligibile} />
+              <AccountVerifier />
             </Route>
             {/* <Route path="*">
               <PageNotFound />
             </Route> */}
           </>
-        ) : (
+        {/* ) : (
           <>
             <Route exact path="*">
               <AccountVerifier setEligibile={setEligibile} />
-            </Route>
+            </Route> */}
             {/* <Route path="*">
               <PageNotFound />
             </Route> */}
-          </>
+          {/* </>
         )}
-        <Redirect to="/" />
+        <Redirect to="/" /> */}
       </Switch>
     </Router>
   );

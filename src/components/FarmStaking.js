@@ -18,7 +18,7 @@ import url from "../configurl";
 
 import { ethers } from 'ethers';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react';
-import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI } from '../abi.js';
+import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI, cftokenAddress, cftokenAbi } from '../abi.js';
 
 
 const algosdk = require('algosdk');
@@ -34,8 +34,7 @@ function FarmStaking(props) {
     const url = "https://evm-rpc-testnet.sei-apis.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
-    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
+    const LPpairAddress = "0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
  
   const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingFarmTauconfig.json");
   const location = useLocation();
@@ -1085,6 +1084,7 @@ console.log("Application's global state:");
       }
     
       const fun = async() => {
+        try{
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, provider);
             const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
@@ -1099,14 +1099,17 @@ console.log("Application's global state:");
             const userStaked11 =  ethers.utils.formatUnits(userStaked1, 18);
             const rewardAamount22 =  ethers.utils.formatUnits(rewardAamount1, 18);
             setUserStaked(userStaked11);
-            setUserReward(rewardAamount22);
+            setUserReward(rewardAamount22); 
     
-            console.log("useeffect:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+            console.log("useeffect stake:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+        } catch (e) {
+          console.log("error:", e);
+        }
       }
 
       useEffect(() => {
         fun();
-      },[]);
+      },[isConnected, address]);
 
       const toastDiv = (txId,type) =>
         (
@@ -1126,7 +1129,7 @@ console.log("Application's global state:");
                     <Col lg={4} xl={3} className='mb-lg-0 mb-4'>
                             <div className="card-base card-dark card-left">
                                 <h2 className="h3 mb-20 font-semi-bold">Farms</h2>
-                                <h5 className='text-gray text-normal mb-30'>Stake  tokens to earn rewards in ELEM. <br /><Link to="/" className="btn-link-white">See how it works.</Link></h5>
+                                <h5 className='text-gray text-normal mb-30'>Stake  tokens to earn rewards in ELEM. <br /><a href="https://x.com/ElementDeFi" target='blank' className="btn-link-white">See how it works.</a></h5>
 
                                 <h6 className='text-gray-D2'>Total Value Locked (TVL)</h6>
                                 <h4 className='mb-30'>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</h4>

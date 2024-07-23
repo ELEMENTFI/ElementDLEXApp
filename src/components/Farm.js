@@ -27,7 +27,7 @@ import {Rewardtau} from "./REWARDTAU";
 
 import { ethers } from 'ethers';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react';
-import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI } from '../abi.js';
+import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI, cftokenAbi, cftokenAddress } from '../abi.js';
 
 const algosdk = require('algosdk');
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -44,8 +44,8 @@ function FarmPage() {
     const url = "https://evm-rpc-testnet.sei-apis.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x86c111d557b862d3B193d8A7922b12c83f1060F9";
-    const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
+    const LPpairAddress = "0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    // const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
 
     //window.location.reload();
    // const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingconfigTau.json");
@@ -480,7 +480,7 @@ const elem = async() => {
     const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
     const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, provider);
     const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
-    const erc20Contract = new ethers.Contract(elemAddress, ERC20ABI, provider);
+    const erc20Contract = new ethers.Contract(cftokenAddress, cftokenAbi, provider);
 
     const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
     settotalStaked(totalStaked1);
@@ -496,12 +496,12 @@ const elem = async() => {
     setUserStaked(userStaked11);
     setUserReward(rewardAamount22);
 
-    console.log("useeffect:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+    console.log("useeffect farm:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
 }
 
 useEffect(() => {
 fun();
-},[address, isConnected]);
+},[address, isConnected, allfarm]);
 
     return (
         <Layout>
@@ -511,7 +511,7 @@ fun();
                         <Col lg={4} xl={3} className='mb-lg-0 mb-4'>
                             <div className="card-base card-dark card-left">
                                 <h2 className="h3 mb-20 font-semi-bold">Farms</h2>
-                                <h5 className='text-gray text-normal mb-30'>Stake tokens to earn rewards in ELEM. <br /><Link to="/" className="btn-link-white">See how it works.</Link></h5>
+                                <h5 className='text-gray text-normal mb-30'>Stake tokens to earn rewards in ELEM. <br /><a href="https://x.com/ElementDeFi" target='blank' className="btn-link-white">See how it works.</a></h5>
 
                                 <h6 className='text-gray-D2'>Total Value Locked (TVL)</h6>
 
@@ -739,11 +739,11 @@ fun();
                                                     TVL
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                         <div className="table-group-th">Total Rewards</div>
@@ -753,11 +753,11 @@ fun();
                                                     APR
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -911,11 +911,11 @@ fun();
                                                     TVL
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                         <div className="table-group-th">Total Rewards</div>
@@ -925,11 +925,11 @@ fun();
                                                     APR
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -1059,7 +1059,7 @@ fun();
                             
                             </div>
                             <div className="pagination-footer d-flex align-items-center justify-content-between">
-                                <p>showing 1-1 from 1</p>
+                                {singlefarm === true ? <p>showing 0 from 1</p> : <p>showing 1-1 from 1</p>}
 
                                 <div className="d-flex align-items-center">
                                     <Button variant='arrow'>

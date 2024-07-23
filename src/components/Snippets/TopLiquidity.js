@@ -23,6 +23,8 @@ import { PancakeFactoryV2ABI, PancakeFactoryV2Address, PancakeRouterV2ABI, Panca
 import { assert2Reserve, assert1Reserve } from '../formula';
 import { getLiqlistFirebase } from '../../firebasefunctions';
 import { ethers } from 'ethers';
+import ButtonLoad from 'react-bootstrap-button-loader';
+
 // import AlgodClient from 'algosdk/dist/types/src/client/v2/algod/algod';
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
 const myAlgoWallet = new MyAlgoConnect();
@@ -727,6 +729,7 @@ const TopLiquidity = () => {
     const[samount2,setsAmount2] = useState("");
     const[rstate,setrstate]= useState([]);
     const[liqList, setLiqList]=useState([]);
+    const [loader, setLoader]=useState(false);
     let appID_global = 57691024;
 
     let currentPosts;
@@ -1278,7 +1281,9 @@ let tvl = s1 + s2;
   };
 
   const fun = async() => {
-    let liqlist1 = [];
+    try{
+      setLoader(true);
+      let liqlist1 = [];
     let liquidityList = await getLiqlistFirebase();
     const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, provider);
     const routerContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, provider);
@@ -1291,9 +1296,14 @@ let tvl = s1 + s2;
         reserve2: ethers.utils.formatUnits(reserve22, x.decimals2),
         dateNew:  convertEpochToTimeAgo(x.date)});
     }));
-    
+    setLoader(false);
     setLiqList(liqlist1);
     console.log(liqlist1);
+    } catch(e) {
+      setLoader(false);
+      console.log("error:", e);
+    }
+    
   }
 
   const convertEpochToTimeAgo = (epoch) => {
@@ -1320,8 +1330,8 @@ let tvl = s1 + s2;
 
     return (
         <div className='mb-5'>
-            <h2 className="h3 mb-40">Top Liquidity Pairs</h2>
-           
+           <h3 className="h3 mb-40" style={{color: '#e8e3e3'}}>Top Liquidity Pairs</h3>
+
                 <Modal show={handleLiquidiyopen} centered={true} size="lg" onHide={handlelclose}>
             <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
                 <Modal.Body className='modal-liquidity-body'>
@@ -1432,7 +1442,7 @@ let tvl = s1 + s2;
   {liqList === null || liqList === "" || liqList === undefined || liqList.length == 0 ? (
     <div className="table-group-body text-gray-AA">
       <br/>
-      <Button className='btn w-50 mb-20 text-none btn-grad' style={{ width: 'auto', marginLeft: "25%" }} onClick={fun}>VIEW</Button>
+      <ButtonLoad loading={loader} className='btn w-50 mb-20 text-none btn-grad' style={{ width: 'auto', marginLeft: "25%" }} onClick={fun}>VIEW</ButtonLoad>
     </div>
   ) : (
     liqList.map((x, index) => (
@@ -1460,7 +1470,20 @@ let tvl = s1 + s2;
 
 
             <div className="pagination-footer d-flex align-items-center justify-content-between">
-                <p>showing 1-{parseFloat(postsPerPage/4).toFixed(0)} from {parseFloat(b.length/4).toFixed(0)}</p>
+                {/* <p>showing 1-{parseFloat(postsPerPage/4).toFixed(0)} from {parseFloat(b.length/4).toFixed(0)}</p> */}
+                {liqList.length > 0 && (
+                liqList.length === 1 ? (
+                  <p>
+                    showing 1 pair
+                  </p>
+                ) : 
+                (
+                  <p>
+                    showing 1 - {liqList.length} pairs
+                  </p>
+                ))}
+                {/* {liqList.length !== 0 && <p>showing 1-{liqList.length ? liqList.length : 0} {liqList.length === 1 ? 'pair': 'pairs'}</p> } */}
+                
 
                 <div className="d-flex align-items-center">
                     <Button variant='arrow'  >
