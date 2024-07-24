@@ -13,9 +13,10 @@ export const PancakeRouterV2Address = "0xCb14E10785d2eb2768FF67dBDE1b2cd3E9892B9
 export const WSEIAddress = "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd";
 
 
-export const LPStakeAddress = "0x8CF61Ea0297Af18cA8a8D52CBCCCA95118DD78Ac";
+export const LPStakeAddress = "0xC535384047f6c69b872CD905025c6b64525e7aD1";//"0x8CF61Ea0297Af18cA8a8D52CBCCCA95118DD78Ac";
 
 export const FaucetAddress = "0x8281D55Df77680df922727232a5e3Ba1F30E33E4";
+// export const ElemAddress = "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B";
 
 export const  ERC20MockAbi = [
 	{

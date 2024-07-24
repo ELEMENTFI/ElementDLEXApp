@@ -13,7 +13,7 @@ import { ethers } from 'ethers';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react'; 
 import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 import ButtonLoad from 'react-bootstrap-button-loader';
-import { FaucetAddress, FaucetABI, cftokenAddress, cftokenAbi, ERC20MockAbi, ERC20MockAddress } from '../abi';
+import { FaucetAddress, FaucetABI, cftokenAddress, cftokenAbi, ERC20MockAbi, ERC20MockAddress,  ERC20ABI } from '../abi';
 
 const Faucet = () => {
 
@@ -74,19 +74,19 @@ const Faucet = () => {
     const fun = async() => {
         try{
         const erc20Contract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, provider);
-        const erc20Contract2 = new ethers.Contract(cftokenAddress, cftokenAbi, provider);
+        // const erc20Contract2 = new ethers.Contract(cftokenAddress, cftokenAbi, provider);
 
         const eth = ethers.utils.formatUnits(await provider.getBalance(address), 18);
         setEthbal(parseFloat(eth).toFixed(2));
 
         const userusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(address), 18);
         setUsdcbal(parseFloat(userusdc).toFixed(2));
-        const userelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address), 18);
-        setElembal(parseFloat(userelem).toFixed(2));
+        // const userelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address), 18);
+        // setElembal(parseFloat(userelem).toFixed(2));
         const totalusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(FaucetAddress), 18);
         setTotUsdcbal(parseFloat(totalusdc).toFixed(2));
-        const totalelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(FaucetAddress), 18);
-        setTotElembal(parseFloat(totalelem).toFixed(2));
+        // const totalelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(FaucetAddress), 18);
+        // setTotElembal(parseFloat(totalelem).toFixed(2));
 
         console.log("ethbal:", eth);
         } catch(e) {
@@ -144,7 +144,7 @@ const Faucet = () => {
                                                 <div className="table-group-th text-end ml-9">Claim</div>
                                             </div>
                                         </div>
-                                        <div className="table-group-head px-3 d-flex justify-content-space-between">
+                                        {/* <div className="table-group-head px-3 d-flex justify-content-space-between">
                                             <div className="table-group-tr">
                                                 <div className="table-group-td  mr-8">
                                                     <div className="d-flex align-items-center td-cell">
@@ -159,7 +159,7 @@ const Faucet = () => {
                                                     <ButtonLoad loading={loader1} className='w-70 btn-grad' onClick={claimElem}>Claim</ButtonLoad>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="table-group-head px-3 d-flex justify-content-space-between">
                                             <div className="table-group-tr">
                                                 <div className="table-group-td  mr-8">
@@ -194,7 +194,7 @@ const Faucet = () => {
                                         </div>
                                     </div>
                                     <div className="table-group-footer py-3 px-3 pagination-footer d-flex align-items-center justify-content-between">
-                                        <p>Faucet Count 3</p>
+                                        <p>Faucet Count 2</p>
                                     </div>
                                 </div>
                             </div>

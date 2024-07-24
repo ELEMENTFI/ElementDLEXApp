@@ -27,7 +27,7 @@ import {Rewardtau} from "./REWARDTAU";
 
 import { ethers } from 'ethers';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react';
-import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI } from '../abi.js';
+import { LPStakeAddress, LPStakeABI, PancakePairV2ABI, ERC20ABI, cftokenAddress, cftokenAbi } from '../abi.js';
 
 const algosdk = require('algosdk');
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -44,8 +44,8 @@ function FarmPage() {
     const url = "https://bsc-testnet-rpc.publicnode.com";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x5C43a8Cc6e4E6c43257a8a2C327eDDC2bc26C1B8";
-    const elemAddress = "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B"; 
+    const LPpairAddress = "0x0F56aBFb18b8Ad36334e553b8D04da8CFa95CcDd";//"0x5C43a8Cc6e4E6c43257a8a2C327eDDC2bc26C1B8";
+    // const elemAddress = "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B"; 
 
     //window.location.reload();
    // const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingconfigTau.json");
@@ -477,10 +477,11 @@ const elem = async() => {
   }
 
   const fun = async() => {
+    try{
     const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
     const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, provider);
     const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
-    const erc20Contract = new ethers.Contract(elemAddress, ERC20ABI, provider);
+    const erc20Contract = new ethers.Contract(cftokenAddress, cftokenAbi, provider);
 
     const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
     settotalStaked(totalStaked1);
@@ -496,12 +497,15 @@ const elem = async() => {
     setUserStaked(userStaked11);
     setUserReward(rewardAamount22);
 
-    console.log("useeffect:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+    console.log("useeffect farm:", totalStaked1, userStaked11, rewardAamount22, allowance1); 
+    } catch(e) {
+        console.log("error:", e);
+    }
 }
 
 useEffect(() => {
 fun();
-},[address, isConnected]);
+},[address, isConnected, allfarm]);
 
     return (
         <Layout>
@@ -511,7 +515,7 @@ fun();
                         <Col lg={4} xl={3} className='mb-lg-0 mb-4'>
                             <div className="card-base card-dark card-left">
                                 <h2 className="h3 mb-20 font-semi-bold">Farms</h2>
-                                <h5 className='text-gray text-normal mb-30'>Stake tokens to earn rewards in ELEM. <br /><Link to="/" className="btn-link-white">See how it works.</Link></h5>
+                                <h5 className='text-gray text-normal mb-30'>Stake tokens to earn rewards in ELEM. <br /><a href="https://x.com/ElementDeFi" target='blank' className="btn-link-white">See how it works.</a></h5>
 
                                 <h6 className='text-gray-D2'>Total Value Locked (TVL)</h6>
 
@@ -606,7 +610,7 @@ fun();
                                         </div>
                                         <div className="table-group-td text-end">
                                             <p>253% 
-                                            <OverlayTrigger
+                                            {/* <OverlayTrigger
                                                 placement="top"
                                                 overlay={
                                                     <Tooltip id={`tooltip-top`}>
@@ -618,8 +622,9 @@ fun();
                                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                         <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                     </svg>
-                                                </OverlayTrigger>
+                                                </OverlayTrigger> */}
                                             </p>
+                                            <br/>
                                             <p>annualized</p>
                                         </div>
                                    
@@ -739,11 +744,11 @@ fun();
                                                     TVL
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                         <div className="table-group-th">Total Rewards</div>
@@ -753,11 +758,11 @@ fun();
                                                     APR
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -911,11 +916,11 @@ fun();
                                                     TVL
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                         <div className="table-group-th">Total Rewards</div>
@@ -925,11 +930,11 @@ fun();
                                                     APR
                                                 </Dropdown.Toggle>
 
-                                                <Dropdown.Menu>
+                                                {/* <Dropdown.Menu>
                                                     <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                                     <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
+                                                </Dropdown.Menu> */}
                                             </Dropdown>
                                         </div>
                                     </div>
@@ -955,7 +960,7 @@ fun();
                                         </div>
                                         <div className="table-group-td text-end">
                                             <p>253% 
-                                            <OverlayTrigger
+                                            {/* <OverlayTrigger
                                                 placement="top"
                                                 overlay={
                                                     <Tooltip id={`tooltip-top`}>
@@ -967,8 +972,9 @@ fun();
                                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                         <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                     </svg>
-                                                </OverlayTrigger>
+                                                </OverlayTrigger> */}
                                             </p>
+                                            <br/>
                                             <p>annualized</p>
                                         </div>
                                    
@@ -1059,7 +1065,7 @@ fun();
                             
                             </div>
                             <div className="pagination-footer d-flex align-items-center justify-content-between">
-                                <p>showing 1-1 from 1</p>
+                            {singlefarm === true ? <p>showing 0 from 1</p> : <p>showing 1-1 from 1</p>}
 
                                 <div className="d-flex align-items-center">
                                     <Button variant='arrow'>

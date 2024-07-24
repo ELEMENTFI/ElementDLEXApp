@@ -911,7 +911,7 @@ const FilterDropdown2 = ({setassetid2,setMax,setMax1,setMax2,setMax3,setk1,setTo
                 {index:0,image:ethlogo,name:"ETH", contract: "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd", decimals:18},
                 {index:10458941,image:usdclogo,name:"USDC", contract: "0x64544969ed7EBf5f083679233325356EbE738930", decimals:6},
                 // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
-                {index:71116238,image:elemlogo,name:"ELEM", contract: "0x43E8d4d7d6f79A8DE0B37aa261184Dfb5a0A410B", decimals:18},
+                {index:71116238,image:elemlogo,name:"ELEM", contract: "0xBbf7E499A71206E0D4415965f2bEA3C82639b40c", decimals:18},
                 {index:67396430,image:usdtimg,name:"USDT", contract: "0xd77C2afeBf3dC665af07588BF798bd938968c72E", decimals:6}
             ]
             setsimage(s);
