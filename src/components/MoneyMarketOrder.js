@@ -54,7 +54,7 @@ const MoneyMarket = () => {
         let borrowPercent = (totalCF/(totalDeposited1/ 2))*100;
         setTotalBorrowPercent(borrowPercent);
         
-        console.log("allowance:", allowance1, balance1, userDeposit1, userDebt1);
+        console.log("allowance:", allowance1, balance1, userDeposit1, userDebt1, totalDeposited1);
     }
 
     useEffect(() => {

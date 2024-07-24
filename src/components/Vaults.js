@@ -17,7 +17,7 @@ function FarmPage() {
                         <Col lg={4} xl={3} className='mb-lg-0 mb-4'>
                             <div className="card-base card-dark card-left">
                                 <h2 className="h3 mb-20 font-semi-bold">Vaults</h2>
-                                <h5 className='text-gray text-normal mb-30'>Long term supporters can choose to lock ELEM for a determined period for higher rewards and increased multipliers for Launchpad. <br /><Link to="/" className="btn-link-white">See how it works.</Link></h5>
+                                <h5 className='text-gray text-normal mb-30'>Long term supporters can choose to lock ELEM for a determined period for higher rewards and increased multipliers for Launchpad. <br /><a href="https://x.com/ElementDeFi" target='blank' className="btn-link-white">See how it works.</a></h5>
 
                                 <h6 className='text-gray-D2'>Total value locked(TVL)</h6>
                                 <h3 className='mb-30'>$0.00</h3>
