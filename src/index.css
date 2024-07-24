@@ -105,3 +105,34 @@
 .Toastify__progress-bar {
   height: 5px !important; /* Adjust progress bar height */
 }
+
+
+
+
+.table-group-lg {
+  width: 100%;
+  table-layout: fixed;
+  overflow-x: auto;
+}
+
+.table-group-lg thead th,
+.table-group-lg tbody td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.table-group-lg .name-column,
+.table-group-lg .liquidity-column,
+.table-group-lg .volume-column,
+.table-group-lg .pool-column,
+.table-group-lg .creator-column,
+.table-group-lg td {
+  padding: 8px;
+}
+
+.view-button-row {
+  text-align: center;
+  padding: 20px 0;
+}

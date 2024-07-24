@@ -2581,12 +2581,13 @@ useEffect(() => {
     const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, signer);
     let pairAddress = await factoryContract.getPair(token11,token22);
     if (pairAddress === "0x0000000000000000000000000000000000000000"){
-      return [0,0];
+      return [0,0, true];
     } else {
       const pairContract = new ethers.Contract(pairAddress, PancakePairV2ABI, signer);
     let [reserve11, reserve22, ] = await pairContract.getReserves();
-    console.log("reserves:", pairAddress, reserve11, reserve22);
-    return [reserve11, reserve22];
+    let token1address =  await pairContract.token0();
+    console.log("reserves:", pairAddress, reserve11, reserve22, token1address);
+    return [reserve11, reserve22, ((token1address).toLowerCase() === (token11).toLowerCase())];
     }
     
   }
@@ -2598,12 +2599,18 @@ useEffect(() => {
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
       if(token1!== "" && token2 !==""){
         setSwapamount1(e);
-        let [reserve11, reserve22] = await getReserves(token1, token2);
+        let [reserve11, reserve22, state] = await getReserves(token1, token2);
         
         if (reserve11 === 0 || reserve22 === 0){
               console.log("e:",e);
         } else {
-          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+          let swapAmount22;
+              if(state == true){
+                swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+              }
+              else {
+                swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve22, reserve11);
+              }
           let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
           setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
           console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
@@ -2623,12 +2630,18 @@ useEffect(() => {
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
       if(token1!== "" && token2 !==""){
         setSwapamount2(e);
-        let [reserve11, reserve22] = await getReserves(token1, token2);
+        let [reserve11, reserve22, state] = await getReserves(token1, token2);
         
         if (reserve11 === 0 || reserve22 === 0){
 
         } else {
-          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+          let swapAmount11;
+              if(state == true){
+                swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+              }
+              else {
+                swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve11, reserve22);
+              }
           let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
           setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)).toFixed(tokenDecimals1));
           console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));

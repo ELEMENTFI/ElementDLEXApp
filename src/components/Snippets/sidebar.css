@@ -37,3 +37,8 @@
     position: absolute;
     /* Add other styles as needed */
 }
+
+.contentOpen .child-content {
+  width: calc(100% - 1px); /* Adjust the value based on your sidebar width */
+  transition: margin-left 0.3s ease;
+}

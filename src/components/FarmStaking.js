@@ -139,7 +139,7 @@ function FarmStaking(props) {
     const[totalStaked, settotalStaked] = useState("");
     const[userStaked, setUserStaked] = useState("");
     const[totalReward, setTotalReward] = useState("");
-    const[userReward, setUserReward] = useState("");
+    const[userReward, setUserReward] = useState(0.00);
     const[lpbal, setlpbal] = useState("");
     const[elembal, setelembal] = useState("");
     const[loader, setLoader] = useState(false);
@@ -1277,7 +1277,7 @@ console.log("Application's global state:");
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>Current APY
                                                 <div className="ms-2">
-                                                    <OverlayTrigger
+                                                    {/* <OverlayTrigger
                                                         placement="top"
                                                         overlay={
                                                             <Tooltip id={`tooltip-top`}>
@@ -1289,7 +1289,7 @@ console.log("Application's global state:");
                                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                             </svg>
-                                                        </OverlayTrigger>
+                                                        </OverlayTrigger> */}
                                                 </div>
                                                 </div>
                                                 <strong>500.46%</strong>
@@ -1297,7 +1297,7 @@ console.log("Application's global state:");
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>My Staked {farmname}
                                                 <div className="ms-2">
-                                                    <OverlayTrigger
+                                                    {/* <OverlayTrigger
                                                         placement="top"
                                                         overlay={
                                                             <Tooltip id={`tooltip-top`}>
@@ -1309,7 +1309,7 @@ console.log("Application's global state:");
                                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                             </svg>
-                                                        </OverlayTrigger>
+                                                        </OverlayTrigger> */}
                                                 </div>
                                                 </div>
                                                 <strong>{userStaked? parseFloat(userStaked).toFixed(3) : '0.00'} <small className='h7 ms-2'>{farmname}</small></strong>
@@ -1317,7 +1317,7 @@ console.log("Application's global state:");
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>My Earned ELEM 
                                                 <div className="ms-2">
-                                                    <OverlayTrigger
+                                                    {/* <OverlayTrigger
                                                         placement="top"
                                                         overlay={
                                                             <Tooltip id={`tooltip-top`}>
@@ -1329,7 +1329,7 @@ console.log("Application's global state:");
                                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                             </svg>
-                                                        </OverlayTrigger>
+                                                        </OverlayTrigger> */}
                                                 </div>
                                                 </div>
                                                 <strong>{userReward? parseFloat(userReward).toFixed(3) : '0.00'} <small className='h7 ms-2'>ELEM</small></strong>
@@ -1337,7 +1337,7 @@ console.log("Application's global state:");
                                             <div className="balance-card py-md-4 d-flex mb-3 align-items-center justify-content-between">
                                                 <div className='h6 ms-1 py-3 d-flex align-items-center'>ELEM Rewards 
                                                 <div className="ms-2">
-                                                    <OverlayTrigger
+                                                    {/* <OverlayTrigger
                                                         placement="top"
                                                         overlay={
                                                             <Tooltip id={`tooltip-top`}>
@@ -1349,10 +1349,13 @@ console.log("Application's global state:");
                                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                                             </svg>
-                                                        </OverlayTrigger>
+                                                        </OverlayTrigger> */}
                                                 </div>
                                                 </div>
-                                                <ButtonLoad loading={loader2} variant='grad' onClick={claimrewardsei}>Claim Reward</ButtonLoad>
+                                                {userReward > 0 ? 
+                                                <ButtonLoad loading={loader2} variant='grad' onClick={claimrewardsei} >Claim Reward</ButtonLoad> : 
+                                                <ButtonLoad loading={loader2} variant='grad' onClick={claimrewardsei} disabled={true}>Claim Reward</ButtonLoad>
+                                                }
                                             </div>
                                         </Col>
                                     </Row>

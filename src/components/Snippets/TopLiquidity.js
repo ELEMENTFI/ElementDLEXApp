@@ -15,7 +15,7 @@ import moment from 'moment';
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk, { Algod,base64 } from "algosdk";
 import {postusertx,postuserdetail} from '../apicallfunction';
-import { Button, Col, Container, Modal, Row, Breadcrumb } from 'react-bootstrap';
+import { Button, Col, Container, Modal, Row, Breadcrumb, Table } from 'react-bootstrap';
 import { createtxhash ,updatepairhistory,getmethod} from '../apicallfunction';
 import { priceOfCoin1,priceOfCoin2,find_balance,checkassetin,find_balance_escrow,convert1,convert2,readingLocalstate,assetName,decodLocalState } from '../formula';
 import { PancakeFactoryV2ABI, PancakeFactoryV2Address, PancakeRouterV2ABI, PancakeRouterV2Address, ERC20ABI, PancakePairV2ABI } from '../../abi';
@@ -1323,6 +1323,11 @@ let tvl = s1 + s2;
     return 'just now';
 };
 
+const abbreviateAddress = (address1) => {
+  if (!address1) return "-";
+  return `${address1.slice(0, 5)}...${address1.slice(-5)}`;
+};
+
   // useState(() => {
   //   fun();
   // },[liqList.length]);
@@ -1421,7 +1426,7 @@ let tvl = s1 + s2;
            
             <ToastContainer position='bottom-right' draggable = {false} transition={Zoom} autoClose={8000} closeOnClick = {false}/>
 
-            <div className="table-group-outer table-group-lg">
+            {/* <div className="table-group-outer table-group-lg">
   <div className="table-group-head">
     <div className="table-group-tr">
       <div className="table-group-th">NAME</div>
@@ -1449,10 +1454,10 @@ let tvl = s1 + s2;
       <div key={index} className="table-group-body text-gray-AA">
         <div className="table-group-tr">
           <div className="table-group-td name-column">
-            <div className="d-flex align-items-center td-cell">
+            <div className="d-flex align-items-center td-cell"> */}
               {/* <img src={elem} alt='icon' />
               <img src={tau} alt='icon' /> */}
-              <img src={Llogo} alt="icon" style={{width:'35px',height:'35px',borderRadius:'50%'}}/>
+              {/* <img src={Llogo} alt="icon" style={{width:'35px',height:'35px',borderRadius:'50%'}}/>
               <img src={Plogo} style={{width:'35px',height:'35px',borderRadius:'50%', marginLeft: '2px'}} alt="icon" />
               <span>{x?.name}</span>
             </div>
@@ -1466,7 +1471,56 @@ let tvl = s1 + s2;
       </div>
     ))
   )}
-</div>
+</div> */}
+
+<table className="table-group-lg table-group-outer">
+    <thead className="table-group-head">
+        <tr className="table-group-tr">
+            <th className="table-group-th">NAME</th>
+            <th className="table-group-th" style={{marginLeft : '21%'}}>
+                <Dropdown>
+                    <Dropdown.Toggle variant="reset" id="dropdown-basic">
+                        LIQUIDITY
+                    </Dropdown.Toggle>
+                </Dropdown>
+            </th>
+            <th className="table-group-th" style={{marginLeft : '35%'}}>VOLUME</th>
+            <th className="table-group-th" style={{marginLeft : '35%'}}>POOL</th>
+            <th className="table-group-th" style={{marginLeft : '30%'}}>CREATOR</th>
+            <th className="table-group-th " style={{marginLeft : '30%'}}>DATE</th>
+        </tr>
+    </thead>
+    <tbody className="table-group-body">
+        {liqList === null || liqList === "" || liqList === undefined || liqList.length == 0 ? (
+            <tr className="text-gray-AA mt-2">
+                <td colSpan="6" style={{ textAlign: 'center' }}>
+                    <ButtonLoad loading={loader} className='btn w-50 mt-10 mb-20 text-none btn-grad' style={{ width: 'auto' }} onClick={fun}>VIEW</ButtonLoad>
+                </td>
+            </tr>
+        ) : (
+            liqList.map((x, index) => (
+                <tr key={index} className="text-gray-AA">
+                    <td className="table-group-td name-column">
+                        <div className="d-flex align-items-center td-cell">
+                            <img src={Llogo} alt="icon" style={{width:'35px',height:'35px',borderRadius:'50%'}}/>
+                            <img src={Plogo} style={{width:'35px',height:'35px',borderRadius:'50%', marginLeft: '2px'}} alt="icon" />
+                            <span>{x?.name}</span>
+                        </div>
+                    </td>
+                    <td className="table-group-td liquidity-column" style={{ padding: '10px' }}>{parseFloat(x?.liquidity).toFixed(4)}</td>
+                    <td className="table-group-td volume-column">{parseFloat(x?.reserve1).toFixed(4)} {x?.name1} <br/> {parseFloat(x?.reserve2).toFixed(4)} {x?.name2}</td>
+                    <td className="table-group-td pool-column" >
+                        <a href={`https://testnet.bscscan.com/address/${x?.lpaddress}?chain=atlantic-2`} target="_blank">{abbreviateAddress(x?.lpaddress)}</a>
+                    </td>
+                    <td className="table-group-td creator-column">
+                        <a href={`https://testnet.bscscan.com/address/${x?.creator}?chain=atlantic-2`} target="_blank">{abbreviateAddress(x?.creator)}</a>
+                    </td>
+                    <td className="table-group-td">{x?.dateNew}</td>
+                </tr>
+            ))
+        )}
+    </tbody>
+</table>
 
 
             <div className="pagination-footer d-flex align-items-center justify-content-between">
