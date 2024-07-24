@@ -152,7 +152,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
             {index:0,image:seilogo,name:"SEI", contract: "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA", decimals:18},
             {index:10458941,image:usdclogo,name:"USDC", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:6},
             // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
-            {index:71116238,image:elemlogo,name:"ELEM", contract: "0xaB7eEc703836a34105c62595c346b23D4964A2a9", decimals:18},
+            {index:71116238,image:elemlogo,name:"ELEM", contract: "0x2653Dd71f714261a3c61EAad1e5ED86C445B59DF", decimals:18},
             {index:67396430,image:usdtimg,name:"USDT", contract: "0xc5A7cc3395fDba9719179a37525c58773d7EBEeE", decimals:6}
             // {index:470842789,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/14923.png",name:"Defly Token"},
             // {index:27878396,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/10820.png",name:"Yieldly"},

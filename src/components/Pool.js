@@ -2581,12 +2581,13 @@ useEffect(() => {
     const factoryContract = new ethers.Contract(PancakeFactoryV2Address, PancakeFactoryV2ABI, signer);
     let pairAddress = await factoryContract.getPair(token11,token22);
     if (pairAddress === "0x0000000000000000000000000000000000000000"){
-      return 0,0;
+      return [0,0, true];
     } else {
       const pairContract = new ethers.Contract(pairAddress, PancakePairV2ABI, signer);
     let [reserve11, reserve22, ] = await pairContract.getReserves();
-    console.log("reserves:", pairAddress, reserve11, reserve22);
-    return [reserve11, reserve22];
+    let token1address =  await pairContract.token0();
+    console.log("reserves:", pairAddress, reserve11, reserve22, token1address);
+    return [reserve11, reserve22, ((token1address).toLowerCase() === (token11).toLowerCase())];
     }
     
   }
@@ -2598,12 +2599,18 @@ useEffect(() => {
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
       if(token1!== "" && token2 !==""){
         setSwapamount1(e);
-        let [reserve11, reserve22] = await getReserves(token1, token2);
+        let [reserve11, reserve22, state] = await getReserves(token1, token2);
         
         if (reserve11 === 0 || reserve22 === 0){
               console.log("e:",e);
         } else {
-          let swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+          let swapAmount22;
+              if(state == true){
+                swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve11, reserve22);
+              }
+              else {
+                swapAmount22 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals1), reserve22, reserve11);
+              }
           let swapbuff = ethers.utils.formatUnits(swapAmount22._hex, 0);
           setSwapamount2(parseFloat(swapbuff/(10**tokenDecimals2)).toFixed(tokenDecimals2));
           console.log("SwapAmount:", e, swapAmount22, swapbuff, parseFloat(swapbuff/(10**tokenDecimals2)));
@@ -2623,12 +2630,18 @@ useEffect(() => {
       const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
       if(token1!== "" && token2 !==""){
         setSwapamount2(e);
-        let [reserve11, reserve22] = await getReserves(token1, token2);
+        let [reserve11, reserve22, state] = await getReserves(token1, token2);
         
         if (reserve11 === 0 || reserve22 === 0){
 
         } else {
-          let swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+          let swapAmount11;
+              if(state == true){
+                swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve22, reserve11);
+              }
+              else {
+                swapAmount11 = await swapContract.quote(ethers.utils.parseUnits((e).toString(), tokenDecimals2), reserve11, reserve22);
+              }
           let swapbuff = ethers.utils.formatUnits(swapAmount11._hex, 0);
           setSwapamount1(parseFloat(swapbuff/(10**tokenDecimals1)).toFixed(tokenDecimals1));
           console.log("SwapAmount:", e, swapAmount11, swapbuff, parseFloat(swapbuff/(10**tokenDecimals1)));
@@ -2975,12 +2988,12 @@ const fun1 = async () => {
     if(rstate?.tokenAddress1 !== WSEIAddress){
       let allowance1 = ethers.utils.formatUnits( await erc20Contract.allowance(address, PancakeRouterV2Address), 0);
       setAllowanceLiq1(allowance1);
-      console.log("allow",allowance1);
+      console.log("allow add",allowance1);
     }
     if(rstate?.tokenAddress2 !== WSEIAddress){
       let allowance2 = ethers.utils.formatUnits( await erc20Contract2.allowance(address, PancakeRouterV2Address), 0);
       setAllowanceLiq2(allowance2);
-      console.log("allow2",allowance2);
+      console.log("allow2 add",allowance2);
     }
     let allowancePair1 = ethers.utils.formatUnits(await pairContract.allowance(address, PancakeRouterV2Address), 18);
     setAllowancePair(allowancePair1)
@@ -2989,7 +3002,7 @@ const fun1 = async () => {
     let [amount0, amount1] = await routerContract.getLiquidityValue(rstate?.pair, liqbal1);
     setliquidityval1(ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1));
     setliquidityval2(ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2));
-    console.log("remove Liquidity:", ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1), ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2), allowancePair1);
+    console.log("add Liquidity:", ethers.utils.formatUnits(amount0,rstate?.tokenDecimals1), ethers.utils.formatUnits(amount1,rstate?.tokenDecimals2), allowancePair1);
     }
   }
 
@@ -3498,9 +3511,9 @@ const fun1 = async () => {
                                     </p>
 
                                     {/* <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>mint1call(appID_global,samount1,samount2,rstate?.asset1Name,rstate?.asset2Name)}>ADD LIQUIDITY</Button> */}
-                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.decimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
+                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.tokenDecimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</ButtonLoad>
-                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.decimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
+                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.tokenDecimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</ButtonLoad>
                                         </>):(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</ButtonLoad>
