@@ -686,7 +686,7 @@ check_fees:
 const TopLiquidity = () => {
     let history=useHistory();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [dt,setdt] = useState([]);
@@ -1290,10 +1290,17 @@ let tvl = s1 + s2;
     await Promise.all(liquidityList.map(async(x,i) => {
       const pairContract = new ethers.Contract(x.lpaddress, PancakePairV2ABI, provider);
       const liquiditySupply = ethers.utils.formatUnits(await pairContract.totalSupply(), 18);
-      let [reserve11, reserve22, ] = await pairContract.getReserves();
+      let [reserve11, reserve22, ] = [0,0,];
+      let token0 = await pairContract.token0();
+      if((x?.token1).toLowerCase() != (token0).toLowerCase()){
+        [reserve22, reserve11, ] = await pairContract.getReserves();
+      } else {
+        [reserve11, reserve22, ] = await pairContract.getReserves();
+      }
+      console.log(parseInt(reserve11._hex), parseInt(reserve22._hex));
       liqlist1.push({...x, liquidity:liquiditySupply, volume: 10, 
-        reserve1: ethers.utils.formatUnits(reserve11, x.decimals1), 
-        reserve2: ethers.utils.formatUnits(reserve22, x.decimals2),
+        reserve1: ethers.utils.formatUnits(reserve11, x?.decimals1), 
+        reserve2: ethers.utils.formatUnits(reserve22, x?.decimals2),
         dateNew:  convertEpochToTimeAgo(x.date)});
     }));
     setLoader(false);
@@ -1464,8 +1471,8 @@ const abbreviateAddress = (address1) => {
           </div>
           <div className="table-group-td liquidity-column">{parseFloat(x?.liquidity).toFixed(4)}</div>
           <div className="table-group-td volume-column">{parseFloat(x?.reserve1).toFixed(4)} {x?.name1} <br/> {parseFloat(x?.reserve2).toFixed(4)} {x?.name2}</div>
-          <div className="table-group-td pool-column"><a href={`https://seitrace.com/address/${x?.lpaddress}?chain=atlantic-2`} target="_blank">{x?.lpaddress}</a></div>
-          <div className="table-group-td creator-column"><a href={`https://seitrace.com/address/${x?.creator}?chain=atlantic-2`} target="_blank">{x?.creator}</a></div>
+          <div className="table-group-td pool-column"><a href={`https://seitrace.com/address/${x?.lpaddress}`} target="_blank">{x?.lpaddress}</a></div>
+          <div className="table-group-td creator-column"><a href={`https://seitrace.com/address/${x?.creator}`} target="_blank">{x?.creator}</a></div>
           <div className="table-group-td">{x?.dateNew}</div>
         </div>
       </div>
@@ -1510,10 +1517,10 @@ const abbreviateAddress = (address1) => {
                     <td className="table-group-td liquidity-column" style={{ padding: '10px' }}>{parseFloat(x?.liquidity).toFixed(4)}</td>
                     <td className="table-group-td volume-column">{parseFloat(x?.reserve1).toFixed(4)} {x?.name1} <br/> {parseFloat(x?.reserve2).toFixed(4)} {x?.name2}</td>
                     <td className="table-group-td pool-column" >
-                        <a href={`https://testnet.bscscan.com/address/${x?.lpaddress}?chain=atlantic-2`} target="_blank">{abbreviateAddress(x?.lpaddress)}</a>
+                        <a href={`https://sepolia.basescan.org/address/${x?.lpaddress}`} target="_blank">{abbreviateAddress(x?.lpaddress)}</a>
                     </td>
                     <td className="table-group-td creator-column">
-                        <a href={`https://testnet.bscscan.com/address/${x?.creator}?chain=atlantic-2`} target="_blank">{abbreviateAddress(x?.creator)}</a>
+                        <a href={`https://sepolia.basescan.org/address/${x?.creator}`} target="_blank">{abbreviateAddress(x?.creator)}</a>
                     </td>
                     <td className="table-group-td">{x?.dateNew}</td>
                 </tr>

@@ -41,10 +41,10 @@ function FarmPage() {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const LPpairAddress = "0x37070aDc61C7e69FeCe27252c980Ae459428269d";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
     // const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
 
     //window.location.reload();
@@ -103,7 +103,7 @@ function FarmPage() {
 const elemalgopair = async() => {
    localStorage.setItem("ASSETFARM","");
    localStorage.setItem("ASSETFARM","elemalgo");
-   localStorage.setItem('farm', 'SEI/ELEM');
+   localStorage.setItem('farm', 'ETH/ELEM');
     localStorage.setItem('image1', Icon1);
     localStorage.setItem('image2', Icon2);
     localStorage.setItem('tvl', totalStaked);
@@ -484,11 +484,13 @@ const elem = async() => {
 
     const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
     settotalStaked(totalStaked1);
+    
     const [userStaked1, rewardAamount1] = await stakingContract.userInfo(address);
     const allowance1 = ethers.utils.formatUnits(await pairContract.allowance(address, LPStakeAddress), 0);
     setAllowance(allowance1);
     const lpbal1 = ethers.utils.formatUnits(await pairContract.balanceOf(address), 18);
     setlpbal(lpbal1);
+    
     const elembal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(LPStakeAddress), 18);
     setTotalReward(elembal1);
     const userStaked11 =  ethers.utils.formatUnits(userStaked1, 18);
@@ -586,14 +588,14 @@ fun();
                                 <div className="table-group-body">
                                
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'ETH/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                  
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius:"50%"}}/>
                                                 <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius:"50%", marginLeft:"5px"}}/>
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <span style={{color:"white"}}>ETH/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
@@ -937,13 +939,13 @@ fun();
                                 </div>
                                 <div className="table-group-body">
                                 <Link  to={{
-                  pathname: 'FarmStaking', query:{farm: 'SEI/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
+                  pathname: 'FarmStaking', query:{farm: 'ETH/ELEM',image1:Icon1,image2:Icon2,tvl:totalstakeelemalgo}}}   onClick={elemalgopair}>
                                     <div className="table-group-tr">
                                         <div className="table-group-td">
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' style={{height: "35px", width: "35px", borderRadius: "50%"}}/>
                                                 <img src={Icon2} alt='icon' style={{height: "37px", width: "37px", borderRadius: "50%", marginLeft:"5px"}}/>
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <span style={{color:"white"}}>ETH/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>{totalStaked ? parseFloat(totalStaked).toFixed(2) : '0.00'}</div>
@@ -1117,7 +1119,7 @@ fun();
                                             <div className="d-flex align-items-center td-cell">
                                                 <img src={Icon1} alt='icon' />
                                                 <img src={Icon2} alt='icon' />
-                                                <span style={{color:"white"}}>SEI/ELEM</span>
+                                                <span style={{color:"white"}}>ETH/ELEM</span>
                                             </div>
                                         </div>
                                         <div className="table-group-td" style={{color:"white"}}>$60,419.94</div>

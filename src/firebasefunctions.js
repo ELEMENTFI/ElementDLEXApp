@@ -21,7 +21,7 @@ export const getAccountsFirebase = async (contractValue) => {
 
 export const getLiqlistFirebase = async (contractValue) => {
     try {
-        const querySnapshot = await getDocs(collection(db, "liquiditylist"));
+        const querySnapshot = await getDocs(collection(db, "liquiditylistsepolia"));
         const documents = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
@@ -52,7 +52,7 @@ export const createLiqlistFirebase = async(name,name1,name2,creator,token1,token
     };
 
     try {
-        const docRef = await addDoc(collection(db, "liquiditylist"), newEvent);
+        const docRef = await addDoc(collection(db, "liquiditylistsepolia"), newEvent);
         console.log("Event created with ID: ", docRef.id);
 
     } catch (error) {

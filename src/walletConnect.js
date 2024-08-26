@@ -17,25 +17,25 @@ const metadata = {
     icons: ['https://testnet.divinedimension.io/static/media/logo-icon.cdce6297c02ec9b165cd0f543ffb50ef.svg']
   }
   const testnet = {
-    chainId: 1328,
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
-    rpcUrl: 'https://seitrace.com'
+    chainId: 84532,
+    name: 'Base Sepolia Testnet',
+    currency: 'ETH',
+    explorerUrl: 'https://sepolia.basescan.org/',
+    rpcUrl: 'https://sepolia.base.org/'
   }
 
   createWeb3Modal({
     ethersConfig: defaultConfig({ 
       metadata,
-      defaultChainId: 1328,
+      defaultChainId: 84532,
       enableEIP6963: true,
       enableInjected: true,
       enableCoinbase: true,
-      rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+      rpcUrl: 'https://sepolia.base.org/'
     }),
     chains: [testnet],
     projectId
-  })
+  });
 
 // Create a context
 const Web3Context = createContext();
@@ -57,7 +57,7 @@ export const Web3Provider = ({ children }) => {
 //       try {
 //         // const provider = ethers.getDefaultProvider(Network_Name, {
 //         //   etherscan: API_KEY});
-//         const provider = ethers.getDefaultProvider('https://evm-rpc-testnet.sei-apis.com');
+//         const provider = ethers.getDefaultProvider('https://sepolia.base.org/');
 
 //         // const dime = await getTokenBalance(address, DIME_Token_Address, DIME_Token_ABI);
 //         const eth = await provider.getBalance(address);
@@ -103,13 +103,13 @@ export const Web3Provider = ({ children }) => {
 };
 
 export const config = {
-    chainId: 1328,
-    chainIdHex: '0x530',
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
-    rpcUrl: 'https://seitrace.com'
-  }
+  chainId: 84532,
+  chainIdHex: '0x14a34',
+  name: 'Base Sepolia Testnet',
+  currency: 'ETH',
+  explorerUrl: 'https://sepolia.basescan.org/',
+  rpcUrl: 'https://sepolia.base.org/'
+}
 
 export const ConnectWallet = async () => {
     const { open } = useWeb3Modal();

@@ -9,21 +9,21 @@ const metadata = {
     icons: ['https://testnet.divinedimension.io/static/media/logo-icon.cdce6297c02ec9b165cd0f543ffb50ef.svg']
   }
   const testnet = {
-    chainId: 1328,
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://evm-rpc-testnet.sei-apis.com',
-    rpcUrl: 'https://seitrace.com'
+    chainId: 84532,
+    name: 'Base Sepolia Testnet',
+    currency: 'ETH',
+    explorerUrl: 'https://sepolia.basescan.org/',
+    rpcUrl: 'https://sepolia.base.org/'
   }
 
   createWeb3Modal({
     ethersConfig: defaultConfig({ 
       metadata,
-      defaultChainId: 1328,
+      defaultChainId: 84532,
       enableEIP6963: true,
       enableInjected: true,
       enableCoinbase: true,
-      rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+      rpcUrl: 'https://sepolia.base.org/'
     }),
     chains: [testnet],
     projectId
@@ -35,12 +35,12 @@ const metadata = {
   };
 
   export const config = {
-    chainId: 1328,
-    chainIdHex: '0x530',
-    name: 'Sei Testnet',
-    currency: 'SEI',
-    explorerUrl: 'https://seitrace.com/',
-    rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+    chainId: 84532,
+    chainIdHex: '0x14a34',
+    name: 'Base Sepolia Testnet',
+    currency: 'ETH',
+    explorerUrl: 'https://sepolia.basescan.org/',
+    rpcUrl: 'https://sepolia.base.org/'
   }
   
   export const ChangeNetwork = async (walletProvider) => {

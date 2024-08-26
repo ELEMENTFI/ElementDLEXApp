@@ -582,7 +582,7 @@ await connectWalletLaunchpad(addresses[0], "Connected wallet");
 
                                 { showButton ? 
                                 isConnected ? 
-                                <>{chainId === 1328 ? <button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>{ address? <>{(address).substring(0, 4)}...{(address).substring((address).length -4, (address).length)}</> :" Connect Wallet"}</button> : 
+                                <>{chainId === 84532 ? <button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>{ address? <>{(address).substring(0, 4)}...{(address).substring((address).length -4, (address).length)}</> :" Connect Wallet"}</button> : 
                                 <button className='btn me-0 btn-grad' onClick={()=>changeNetwork()}>Wrong Chain</button>}</> :
                                 <><button className='btn me-0 btn-grad' onClick={()=>connectWalletSei()}>Connect wallet</button></> 
                                 

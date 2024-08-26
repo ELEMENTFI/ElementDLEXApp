@@ -31,10 +31,10 @@ function FarmStaking(props) {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const LPpairAddress = "0x37070aDc61C7e69FeCe27252c980Ae459428269d"//"0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
  
   const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingFarmTauconfig.json");
   const location = useLocation();
@@ -1090,6 +1090,7 @@ console.log("Application's global state:");
             const pairContract = new ethers.Contract(LPpairAddress, PancakePairV2ABI, provider);
     
             const totalStaked1 = ethers.utils.formatUnits(await pairContract.balanceOf(LPStakeAddress), 18);
+            console.log("useeffect stake:", totalStaked1);
             settotalStaked(totalStaked1);
             const [userStaked1, rewardAamount1] = await stakingContract.userInfo(address);
             const allowance1 = ethers.utils.formatUnits(await pairContract.allowance(address, LPStakeAddress), 0);
@@ -1114,7 +1115,7 @@ console.log("Application's global state:");
       const toastDiv = (txId,type) =>
         (
             <div>
-              <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://sepolia.basescan.org/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in  Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
         </svg></a></p> 
             </div>

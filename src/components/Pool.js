@@ -713,7 +713,7 @@ function PoolPage() {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ swapamount1, setSwapamount1 ] = useState("");
@@ -2438,6 +2438,7 @@ const approvePair = async() => {
   const addLiquiditysei = async(amount1, amount2, token11, token22, decimals1, decimals2, name1, name2, state) => {
       try{
         setLoader1(true);
+        console.log(amount1, amount2, token11, token22, decimals1, decimals2, name1, name2, state);
         const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
         const signer =  ethersProvider.getSigner();
         const swapContract = new ethers.Contract(PancakeRouterV2Address, PancakeRouterV2ABI, signer);
@@ -2463,13 +2464,13 @@ const approvePair = async() => {
     console.log("check", amountInWei, amountInWei2);
 
         let tx;
-        if(name1 === "ETH" || name1 === "WSEI" || name1 === "SEI"){
+        if(name1 === "ETH" || name1 === "WETH" || name1 === "SEI"){
 
-          tx = await swapContract.addLiquidityETH(token22, amountInWei2, 0, 0, address, epochPlus10Minutes, {value: amountInWei, gasLimit:3000000});
+          tx = await swapContract.addLiquidityETH(token22, amountInWei2, 0, 0, address, epochPlus10Minutes, {value: amountInWei});
 
-        } else if (name2 === "ETH" || name2 === "WSEI" || name2 === "SEI") {
+        } else if (name2 === "ETH" || name2 === "WETH" || name2 === "SEI") {
 
-          tx = await swapContract.addLiquidityETH(token11, amountInWei, 0, 0, address, epochPlus10Minutes, {value: amountInWei2, gasLimit:3000000});
+          tx = await swapContract.addLiquidityETH(token11, amountInWei, 0, 0, address, epochPlus10Minutes, {value: amountInWei2});
 
         } else {
 
@@ -2521,11 +2522,11 @@ const approvePair = async() => {
       console.log("eth:",ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), remLiquidity); 
       let tx;
       
-      if(rstate?.asset1Name === "WSEI"){
+      if(rstate?.asset1Name === "WETH"){
 
         tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress2, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
-      } else if (rstate?.asset2Name === "WSEI") {
+      } else if (rstate?.asset2Name === "WETH") {
 
         tx = await swapContract.removeLiquidityETH(rstate?.tokenAddress1, ethers.utils.parseUnits(((Math.floor((remLiquidity * decimalLimit)/decimalLimit))).toString(),0), 0, 0, address, epochPlus10Minutes);
 
@@ -2714,7 +2715,7 @@ useEffect(() => {
         setAllowance1(allowance1);
         tokenbal1 = ethers.utils.formatUnits(await erc20Contract.balanceOf(address),0);
         setTokenbal1(tokenbal1);
-        console.log("allow",allowance1);
+        console.log("allow",allowance1, tokenbal1);
       }
       if(token2 !== WSEIAddress && token2 !== ""){
         const erc20Contract2 = new ethers.Contract(token2, ERC20ABI, provider);
@@ -2724,7 +2725,7 @@ useEffect(() => {
         setTokenbal2(tokenbal2);
         console.log("allow2",allowance2, eth);
       }
-      console.log("allow3",tokenbal1,tokenbal2,ethbal);
+      console.log("allow3",tokenbal1,(tokenbal2/10 ** tokenDecimals2), tokenDecimals2,ethbal);
       // let balance1 = ethers.utils.formatUnits( await erc20Contract.balanceOf(address), 0); 
       // setbusdBalance(balance1);
     } catch(e) {
@@ -3071,7 +3072,7 @@ const fun1 = async () => {
   const toastDiv = (txId,type) =>
     (
         <div>
-          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://sepolia.basescan.org/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Base sepolia Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
     </svg></a></p> 
         </div>
@@ -3282,7 +3283,7 @@ const fun1 = async () => {
                                             
                                             {/* <FilterDropdown2 setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)}/> */}
                                             {/* <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}}/> */}
-                                            <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}/>
+                                            <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}/>
 
                                             </div>
                                         </div>
@@ -3309,9 +3310,9 @@ const fun1 = async () => {
                                             <Button className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>mint(appID_global)}>CREATE LIQUIDITY</Button>
                                         </>)
                                         } */}
-                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WSEI" && tokenName1 !== "SEI"))?(<>
+                                        { (allowance1 < (swapamount1*(10**tokenDecimals1)) && (tokenName1 !== "ETH" && tokenName1 !== "WETH" && tokenName1 !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(token1)}>APPROVE {`${tokenName1}`}</ButtonLoad>
-                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WSEI" && tokenName2 !== "SEI"))?(<>
+                                        </>):(allowance2 < (swapamount2*(10**tokenDecimals2)) && (tokenName2 !== "ETH" && tokenName2 !== "WETH" && tokenName2 !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(token2)}>APPROVE {`${tokenName2}`}</ButtonLoad>
                                         </>):(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>addLiquiditysei(swapamount1, swapamount2, token1, token2, tokenDecimals1, tokenDecimals2, tokenName1, tokenName2, true)}>CREATE LIQUIDITY</ButtonLoad>
@@ -3432,13 +3433,13 @@ const fun1 = async () => {
                                     <div className="balance-card mb-20 d-flex align-items-center justify-content-between">
                                         <label className='h6'>{rstate?.asset1Name}</label>
 
-                                        <h6  >{liquidityval11 > 0 ? parseFloat(liquidityval11/(1e18)).toFixed(3) :"0.00"}</h6>
+                                        <h6  >{liquidityval11 > 0 ? parseFloat(liquidityval11/(10 ** rstate?.tokenDecimals1)).toFixed(3) :"0.00"}</h6>
                                     </div>
 
                                     <div className="balance-card mb-30 d-flex align-items-center justify-content-between">
                                         <label className='h6'>{rstate?.asset2Name}</label>
 
-                                        <h6 >{liquidityval22 > 0 ? parseFloat(liquidityval22/(1e18)).toFixed(3) :"0.00"} 
+                                        <h6 >{liquidityval22 > 0 ? parseFloat(liquidityval22/(10 ** rstate?.tokenDecimals2)).toFixed(3) :"0.00"} 
                                         {/* <small className='d-block text-gray'>~$0.16</small> */}
                                         </h6>
                                     </div>
@@ -3466,8 +3467,8 @@ const fun1 = async () => {
                             <Row className='justify-content-center'>
                                 <Col md={9} lg={8}>
                                     <div className="mb-2">
-                                        <label className='d-flex align-items-center justify-content-between'>From {(rstate?.asset1Name === "WSEI" || rstate?.asset1Name === "SEI" || rstate?.asset1Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset1Name}</small> : <small>Balance: { !(liquidbal1) ?'0.0' : parseFloat(liquidbal1).toFixed(4) }  {rstate?.asset1Name}</small>}</label>
-                                        {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WSEI")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
+                                        <label className='d-flex align-items-center justify-content-between'>From {(rstate?.asset1Name === "WETH" || rstate?.asset1Name === "SEI" || rstate?.asset1Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset1Name}</small> : <small>Balance: { !(liquidbal1) ?'0.0' : parseFloat(liquidbal1).toFixed(4) }  {rstate?.asset1Name}</small>}</label>
+                                        {/* {(rstate?.asset1Name == "ETH")||(rstate?.asset1Name == "SEI")||(rstate?.asset1Name == "WETH")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(rstate?.tokenBal1)?parseFloat(rstate?.tokenBal1).toFixed(3):'0.0' } </small></>) } */}
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                           
                                             <input type='number' className='m-0 form-control p-0 border-0 text-white'  value={liqamount1 ? liqamount1 : ""} onChange={e => handleLiqamount1(e.target.value)}  placeholder="0.0" autoComplete='off'/>
@@ -3485,7 +3486,7 @@ const fun1 = async () => {
                                     </div>
 
                                     <div className="mb-20">
-                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WSEI" || rstate?.asset2Name === "SEI" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(liquidbal2) ?'0.0' : parseFloat(liquidbal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
+                                        <label className='d-flex align-items-center justify-content-between'>T0 {(rstate?.asset2Name === "WETH" || rstate?.asset2Name === "SEI" || rstate?.asset2Name === "ETH") ? <small>Balance: { !(ethbal) ?'0.0' : parseFloat(ethbal/1e18).toFixed(4) }  {rstate?.asset2Name}</small> : <small>Balance: { !(liquidbal2) ?'0.0' : parseFloat(liquidbal2).toFixed(4) }  {rstate?.asset2Name}</small>}</label>
 
                                         <div className="balance-card d-flex align-items-center justify-content-between">
                                          
@@ -3511,9 +3512,9 @@ const fun1 = async () => {
                                     </p>
 
                                     {/* <Button className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>mint1call(appID_global,samount1,samount2,rstate?.asset1Name,rstate?.asset2Name)}>ADD LIQUIDITY</Button> */}
-                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.tokenDecimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WSEI" && rstate?.asset1Name !== "SEI"))?(<>
+                                    { (allowanceLiq1 < (liqamount1*(10**(rstate?.tokenDecimals1))) && (rstate?.asset1Name !== "ETH" && rstate?.asset1Name !== "WETH" && rstate?.asset1Name !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei1(rstate?.tokenAddress1)}>APPROVE {`${rstate?.asset1Name}`}</ButtonLoad>
-                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.tokenDecimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WSEI" && rstate?.asset2Name !== "SEI"))?(<>
+                                        </>):(allowanceLiq2 < (liqamount2*(10**(rstate?.tokenDecimals2))) && (rstate?.asset2Name !== "ETH" && rstate?.asset2Name !== "WETH" && rstate?.asset2Name !== "SEI"))?(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl'  onClick={()=>approveSei2(rstate?.tokenAddress2)}>APPROVE {`${rstate?.asset2Name}`}</ButtonLoad>
                                         </>):(<>
                                             <ButtonLoad loading={loader1} className='btn w-100 mb-20 text-none btn-grad btn-xl' onClick={()=>addLiquiditysei(liqamount1, liqamount2, rstate?.tokenAddress1, rstate?.tokenAddress2, rstate?.tokenDecimals1, rstate?.tokenDecimals2, rstate?.asset1Name, rstate?.asset2Name, false)}>ADD LIQUIDITY</ButtonLoad>

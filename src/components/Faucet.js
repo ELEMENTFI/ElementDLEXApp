@@ -6,21 +6,21 @@ import Icon1 from '../assets/images/icon1.png';
 import Icon2 from '../assets/images/icon2.png';
 import tauLogo from '../assets/images/tau-original.png';
 import usdcLogo from '../assets/images/usdc-logo.png';
-import seilogo from '../assets/images/sei-logo.png';
+import seilogo from '../assets/images/Ethereum-icon.svg';
 import colorLogo from '../assets/images/element logo.png';
 import BG from '../assets/images/bg-v2-new.png';
 import { ethers } from 'ethers';
 import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/react'; 
 import { ToastContainer, Toast, Zoom, Bounce, toast} from 'react-toastify';
 import ButtonLoad from 'react-bootstrap-button-loader';
-import { FaucetAddress, FaucetABI, cftokenAddress, cftokenAbi, ERC20MockAbi, ERC20MockAddress, ElemAddress, ERC20ABI } from '../abi';
+import { FaucetAddress, FaucetABI, cftokenAddress, cftokenAbi, ERC20MockAbi, ERC20MockAddress, ElemAddress, ERC20ABI, USDCAddress } from '../abi';
 
 const Faucet = () => {
 
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ethbal, setEthbal] = useState(0.00);
@@ -73,17 +73,17 @@ const Faucet = () => {
 
     const fun = async() => {
         try{
-        const erc20Contract = new ethers.Contract(ERC20MockAddress, ERC20MockAbi, provider);
+        const erc20Contract = new ethers.Contract(USDCAddress, ERC20ABI, provider);
         // const erc20Contract2 = new ethers.Contract(ElemAddress, ERC20ABI, provider);
 
         const eth = ethers.utils.formatUnits(await provider.getBalance(address), 18);
         setEthbal(parseFloat(eth).toFixed(2));
 
-        const userusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(address), 18);
+        const userusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(address), 6);
         setUsdcbal(parseFloat(userusdc).toFixed(2));
         // const userelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(address), 18);
         // setElembal(parseFloat(userelem).toFixed(2));
-        const totalusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(FaucetAddress), 18);
+        const totalusdc = ethers.utils.formatUnits(await erc20Contract.balanceOf(FaucetAddress), 6);
         setTotUsdcbal(parseFloat(totalusdc).toFixed(2));
         // const totalelem = ethers.utils.formatUnits(await erc20Contract2.balanceOf(FaucetAddress), 18);
         // setTotElembal(parseFloat(totalelem).toFixed(2));
@@ -104,7 +104,7 @@ const Faucet = () => {
     const toastDiv = (txId,type) =>
         (
             <div>
-              <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://sepolia.basescan.org/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Base sepolia Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
         </svg></a></p> 
             </div>
@@ -183,12 +183,12 @@ const Faucet = () => {
                                                         <img src={seilogo} alt='icon' />
                                                     </div>
                                                 </div>
-                                                <div className="table-group-td text-uppercase  mr-11" style={{ color: "white" }}>SEI</div>
+                                                <div className="table-group-td text-uppercase  mr-11" style={{ color: "white" }}>ETH</div>
                                                 <div className="table-group-td text-uppercase  mr-9" style={{ color: "white" }}> - </div>
                                                 <div className="table-group-td  mr-8" style={{ color: "white" }}> - </div>
                                                 <div className="table-group-td  mr-8" style={{ color: "white" }}>{ethbal ? ethbal : '0.00'} </div>
                                                 <div className="table-group-td text-end ml-10" style={{ color: "white" }}>
-                                                <a href='https://atlantic-2.app.sei.io/faucet/' target='blank' style={{textDecoration: 'none'}}><Button className='w-70 btn-grad'>Claim</Button></a>
+                                                <a href='https://faucet.triangleplatform.com/base/sepolia' target='blank' style={{textDecoration: 'none'}}><Button className='w-70 btn-grad'>Claim</Button></a>
                                                 </div>
                                             </div>
                                         </div>

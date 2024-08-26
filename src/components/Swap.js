@@ -26,7 +26,7 @@ import { useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers5/re
 import { PancakeFactoryV2Address, PancakeFactoryV2ABI, PancakeRouterV2Address, PancakeRouterV2ABI, PancakePairV2ABI, ERC20ABI, WSEIAddress } from '../abi';
 import { ethers } from 'ethers';
 import usdcLogo from '../assets/images/usdc-logo.png';
-import seilogo from '../assets/images/sei-logo.png';
+import seilogo from '../assets/images/Ethereum-icon.svg';
 
 const myAlgoWallet = new MyAlgoConnect();
 const algodClient = new algosdk.Algodv2('', 'https://api.testnet.algoexplorer.io', '');
@@ -695,7 +695,7 @@ function SwapPage(props) {
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const [ swapamount1, setSwapamount1 ] = useState("");
@@ -704,7 +704,7 @@ function SwapPage(props) {
     const [allowance, setAllowance] = useState("");
     const [ token1, setToken1 ] = useState(WSEIAddress);
     const [ token2, setToken2 ] = useState("");
-    const [ tokenName1, setTokenName1 ] = useState("WSEI");
+    const [ tokenName1, setTokenName1 ] = useState("WETH");
     const [ tokenName2, setTokenName2 ] = useState("");
     const [ tokenDecimals1, setTokenDecimals1 ] = useState(18);
     const [ tokenDecimals2, setTokenDecimals2 ] = useState(18);
@@ -730,7 +730,7 @@ function SwapPage(props) {
     const [AssetId1,setAssetId1] = useState("");
     const [AssetId2,setAssetId2] = useState("");
 console.log("Assetid1",AssetId1,AssetId2)
-    const[tk1,sett1] = useState("WSEI");
+    const[tk1,sett1] = useState("WETH");
     const[id1Token,setTokenId1] = useState("");
     const[id2Token,setTokenId2] = useState("");
     const[tk2,sett2] = useState("");
@@ -1701,9 +1701,13 @@ const approveSei = async() => {
             // Convert the deposit amount to wei
         const decimalLimit = Math.pow(10, tokenDecimals1);
         const decimalLimit2 = Math.pow(10, tokenDecimals2); 
-        const amountInWei = ethers.utils.parseUnits((Math.floor(swapamount1 * decimalLimit) / decimalLimit).toString(), tokenDecimals1);
-        const amountInWei2 = ethers.utils.parseUnits((Math.floor(swapamount2 * decimalLimit2) / decimalLimit2).toString(), tokenDecimals2);
-        const amountInWei2Slipped = ethers.utils.parseUnits((Math.floor((swapamount2 - swapamount2 * (slippage / 100)) * decimalLimit) / decimalLimit).toString(), tokenDecimals2);
+        const formattedSwapAmount1 = (Math.floor(parseFloat(swapamount1) * decimalLimit) / decimalLimit).toFixed(tokenDecimals1);
+        const formattedSwapAmount2 = (Math.floor(parseFloat(swapamount2) * decimalLimit2) / decimalLimit2).toFixed(tokenDecimals2);
+        const formattedSwapAmount2Slipped = (Math.floor((parseFloat(swapamount2) - parseFloat(swapamount2) * (slippage / 100)) * decimalLimit2) / decimalLimit2).toFixed(tokenDecimals2);
+        const amountInWei = ethers.utils.parseUnits(formattedSwapAmount1, tokenDecimals1);
+        const amountInWei2 = ethers.utils.parseUnits(formattedSwapAmount2, tokenDecimals2);
+        console.log("chack", amountInWei2);
+        const amountInWei2Slipped = ethers.utils.parseUnits(formattedSwapAmount2Slipped, tokenDecimals2);
         console.log("chack", amountInWei2, amountInWei2Slipped);
 
         let tx;
@@ -1802,7 +1806,7 @@ const approveSei = async() => {
 const toastDiv = (txId,type) =>
   (
       <div>
-        <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://seitrace.com/tx/${txId}?chain=atlantic-2`} target="_blank" rel="noreferrer"><br/>View in Sei Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <p style={{color:'#FFFFFF'}}> {type} &nbsp;<a style={{color:'#AA14F0'}} href={`https://sepolia.basescan.org/tx/${txId}`} target="_blank" rel="noreferrer"><br/>View in Base sepolia Explorer <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M11.7176 3.97604L1.69366 14L0.046875 12.3532L10.0697 2.32926H1.23596V0H14.0469V12.8109H11.7176V3.97604Z" fill='#AA14F0'/>
   </svg></a></p> 
       </div>
@@ -1925,7 +1929,7 @@ const toastDiv = (txId,type) =>
   <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId1)=>(setAssetId1(AssetId1))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals1(tokendecimals)}}></FilterDropdown>
   </div>
     {/* {(tk1 == "ETH")||(tk1 == "Algo")?(<><small>Balance:{ balanceid1 > 0 ? parseFloat(balanceid1/1000000).toFixed(2) : '0.0'}</small></>):(<><small>Balance:{(id1Token=== NaN||id1Token ===undefined||id1Token===null)?'0.0': parseFloat(id1Token/1000000).toFixed(2) } </small></>) } */}
-    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WSEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1)?'0.0': parseFloat(tokenbal1/(10 ** tokenDecimals1)).toFixed(4) } </small></>) }
 
     </>
 ):(<>
@@ -1962,7 +1966,7 @@ const toastDiv = (txId,type) =>
          
         </Button>
         </div>
-    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WSEI")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
+    {(tk1 == "ETH")||(tk1 == "SEI")||(tk1 == "WETH")||(tk1 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/(10 ** 18)).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal1 || tokenbal1 === 0)?'0.0':parseFloat(tokenbal1/(10**tokenDecimals1)).toFixed(4) } </small></>) }
 
 </>)}                                        
   </div>
@@ -1978,7 +1982,7 @@ const toastDiv = (txId,type) =>
 
 <div className="mb-2">
     <label className='d-flex align-items-center justify-content-between'>To 
-    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WSEI")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WETH")||(tk2 == "Algo") ? (<><small >Price:${pc1 > 0 ? parseFloat(pc1).toFixed(2) : (pr2 > 0)?pr2:'0.0'}  {tk2.toUpperCase()}</small></>):
       (tk2 == "USDC")?(<><small>Price:${pc2 > 0 ? parseFloat(pc2).toFixed(2) :  (pr2 > 0)?pr2:'0.0'} {tk1.toUpperCase()}</small></>):(<></>) }
 
 
@@ -1995,7 +1999,7 @@ const toastDiv = (txId,type) =>
   <FilterDropdown2 assetid2 = {AssetId2} setassetid2={(AssetId2)=>(setAssetId2(AssetId2))} ass={ass} setassets={(ass)=>setAssets(ass)} setassetsn={(assn)=>setAssetsn(assn)} assn = {assn} setMax ={(value)=>sets1(value)} setMax1 ={(value)=>sets2(value)} setMax2 ={(value)=>setoswapopt(value)} setMax3 ={(value)=>setesc(value)} setk1 ={(k1)=>sett2(k1)} setToken2Id={(ti2)=>{setTokenId2(ti2)}} setclicklogo2={(l2)=>{setlogo2(l2)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname2)=>{setTokenName2(tokenname2)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}/>
   </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WSEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WETH")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
                                     
                                     
  </>
@@ -2005,7 +2009,7 @@ const toastDiv = (txId,type) =>
  <input type='number' id="sf" className='m-0 form-control p-0 border-0 text-white' placeholder='0.0'  autoComplete='off' value={swapamount2? swapamount2 : ""} onChange={(e) => handleSwapamount2(e.target.value)} disabled={true} />
  <FilterDropdown assetid1 = {AssetId1} setassetid1={(AssetId2)=>(setAssetId1(AssetId2))}  ass={ass1} setassets={(ass1)=>setAssets1(ass1)} setassetsn={(assn1)=>setAssetsn1(assn1)} assn = {assn1} setk = {(t1)=>sett1(t1)} setToken1Id={(ti1)=>{setTokenId1(ti1)}} setclicklogo1={(l1)=>{setlogo1(l1)}} settoken1={(token11)=>{setToken1(token11)}} settoken2={(token22)=>{setToken2(token22)}} settokenname={(tokenname1)=>{setTokenName1(tokenname1)}} settokendecimals={(tokendecimals)=>{setTokenDecimals2(tokendecimals)}}></FilterDropdown>
   </div>
-    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WSEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
+    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WETH")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals2)).toFixed(4) } </small></>) }
 
     </>)} </>
 ):(<>
@@ -2029,7 +2033,7 @@ const toastDiv = (txId,type) =>
         </Button>
         </div>
                                     {/* {(tk2 == "TAU")?(<><small>Balance:{parseFloat(balanceid2).toFixed(2)}</small></>):(<> */}
-                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WSEI")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small></>) }
+                                    {(tk2 == "ETH")||(tk2 == "SEI")||(tk2 == "WETH")||(tk2 == "Algo")?(<><small>Balance:{ ethbal > 0 ? parseFloat(ethbal/1e18).toFixed(4) : '0.0'}</small></>):(<><small>Balance:{(!tokenbal2 || tokenbal2 === 0)?'0.0': parseFloat(tokenbal2/(10**tokenDecimals1)).toFixed(4) } </small></>) }
                                     
 </>)}
                                     {/* </>) } */}
@@ -2118,7 +2122,7 @@ const toastDiv = (txId,type) =>
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "SEI"}</span>
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>):(<>
                                       {logovalue2 ? (<>
                                           {/* <svg width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns={logovalue1}>
@@ -2187,7 +2191,7 @@ const toastDiv = (txId,type) =>
                                         </>)}
                                         {/* <img width="31" height="30" viewBox="0 0 31 30" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROQNyD7j5bC5DMh1kN613JbHgcczZBwncxFrSp-5EhdVCrg3vEHayr5WtEo1JCSyyJUAs&usqp=CAU"/> */}
 
-                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "SEI"}</span>
+                                        <span style={{"color":"white"}}>{ass1 ? ass1 : "ETH"}</span>
                                     </>)}
                                    
                                     </Breadcrumb.Item>

@@ -52,21 +52,21 @@ const metadata = {
   icons: ['https://avatars.mywebsite.com/']
 }
 const testnet = {
-  chainId: 1328,
-  name: 'Sei Testnet',
-  currency: 'SEI',
-  explorerUrl: 'https://seitrace.com',
-  rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+  chainId: 84532,
+  name: 'Base Sepolia Testnet',
+  currency: 'ETH',
+  explorerUrl: 'https://sepolia.basescan.org/',
+  rpcUrl: 'https://sepolia.base.org/'
 }
 
 createWeb3Modal({
   ethersConfig: defaultConfig({ 
     metadata,
-    defaultChainId: 1328,
+    defaultChainId: 84532,
     enableEIP6963: true,
     enableInjected: true,
     enableCoinbase: true,
-    rpcUrl: 'https://evm-rpc-testnet.sei-apis.com'
+    rpcUrl: 'https://sepolia.base.org/'
   }),
   chains: [testnet],
   projectId

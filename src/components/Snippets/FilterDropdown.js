@@ -10,7 +10,7 @@ import taulogo from '../../assets/images/tau-original.png';
 import elemlogo from '../../assets/images/element logo.png';
 import usdtimg from '../../assets/images/usdt_trans.png';
 import ethlogo from '../../assets/images/Ethereum-icon.svg'
-import seilogo from '../../assets/images/sei-logo.png';
+import seilogo from '../../assets/images/Ethereum-icon.svg';
 import questionlogo from '../../assets/images/question_logo1.png'
 import warninglogo from '../../assets/images/warning_logo1.png'
 import {ERC20ABI} from '../../abi';
@@ -50,7 +50,7 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
     const { walletProvider } = useWeb3ModalProvider();
     const { address, chainId, isConnected } = useWeb3ModalAccount();
 
-    const url = "https://evm-rpc-testnet.sei-apis.com";
+    const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
     const handleClose = () => setShow(false);
@@ -149,10 +149,10 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
         // console.log(seemore.assets)
         let s =[];
         s=[
-            {index:0,image:seilogo,name:"SEI", contract: "0x3921eA6Cf927BE80211Bb57f19830700285b0AdA", decimals:18},
-            {index:10458941,image:usdclogo,name:"USDC", contract: "0x3f6e2955C365ba36cC5D5d74a3edc4CD470ad2C4", decimals:6},
+            {index:0,image:seilogo,name:"ETH", contract: "0x4200000000000000000000000000000000000006", decimals:18},
+            {index:10458941,image:usdclogo,name:"USDC", contract: "0xec866E08F3dC291A9Ea1f64AC1dfC94E41AA1e29", decimals:6},
             // {index:71682000,image:taulogo,name:"TAU", contract: "0x6620506B175a286F3ad3056C112d650D9579D157", decimals:18},
-            {index:71116238,image:elemlogo,name:"ELEM", contract: "0x2653Dd71f714261a3c61EAad1e5ED86C445B59DF", decimals:18},
+            {index:71116238,image:elemlogo,name:"ELEM", contract: "0xD9527D6dDbccf9Abbe7423b1939fc9085CEA2032", decimals:18},
             {index:67396430,image:usdtimg,name:"USDT", contract: "0xc5A7cc3395fDba9719179a37525c58773d7EBEeE", decimals:6}
             // {index:470842789,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/14923.png",name:"Defly Token"},
             // {index:27878396,image:"https://s2.coinmarketcap.com/static/img/coins/64x64/10820.png",name:"Yieldly"},
@@ -230,8 +230,8 @@ const FilterDropdown = ({setk,setToken1Id,setclicklogo1,ass,assn,setassets,setas
             <img  width="31" height="30" src={assn === "unknown" ? questionlogo : assn}/>
            {ass}
            </>):(<>
-            <img  width="31" height="30" src={seilogo} onClick={setk("SEI")}/>
-           SEI
+            <img  width="31" height="30" src={seilogo} onClick={setk("ETH")}/>
+            ETH
            </>)}
         </Button>
 
