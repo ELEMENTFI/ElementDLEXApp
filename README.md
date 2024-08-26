@@ -1,2 +1,2 @@
 # ElementDLEXApp
-ElementDLEX App Page UI
+ElementDLEX Base sepolia App Page UI
