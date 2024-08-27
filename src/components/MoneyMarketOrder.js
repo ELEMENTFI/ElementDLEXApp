@@ -113,6 +113,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader(false);
             console.error(e);
+            toast.error(e?.reason);
         }
        
     }
@@ -135,13 +136,14 @@ const MoneyMarket = () => {
             const epochTimeSeconds = Math.floor(currentTimeMillis / 1000);
             let tx = await routerContract.deposit(USDCAddress, ELEMAddress, amountInWei, (epochTimeSeconds+600));
             await tx.wait();
-            toast.success(toastDiv(tx.hash, `Deposit Successful`));
+            toast.success(toastDiv(tx.hash, `Deposited Successfully`));
             setDepositAmount("");
             await fun();
             setLoader(false);
         }catch(e){
             setLoader(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
 
@@ -163,13 +165,14 @@ const MoneyMarket = () => {
             const epochTimeSeconds = Math.floor(currentTimeMillis / 1000);
             let tx = await routerContract.withdraw(USDCAddress, ELEMAddress, amountInWei, (epochTimeSeconds+600));
             await tx.wait();
-            toast.success(toastDiv(tx.hash, `Withdrawn Succesfully`));
+            toast.success(toastDiv(tx.hash, `Withdrawn Successfully`));
             setWithdrawAmount("");
             await fun();
             setLoader1(false);
         }catch(e){
             setLoader1(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
 

@@ -34,7 +34,7 @@ function FarmStaking(props) {
     const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x37070aDc61C7e69FeCe27252c980Ae459428269d"//"0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const LPpairAddress = "0x8c4356840C04A998e78448f3FFa460b3eE4ad78c"//"0x8b95c6bD6f37A35fB7945D1084465ECfC35064Af";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
  
   const configfile =localStorage.getItem("ASSETFARM") === "elem"?require("../stakingconfig.json"):localStorage.getItem("ASSETFARM") === "elemalgo"?  require("../stakingelemalgoconfig.json"):require("../stakingFarmTauconfig.json");
   const location = useLocation();
@@ -1027,6 +1027,7 @@ console.log("Application's global state:");
         } catch (e) {
             setLoader(false);
             console.error("Error in approve:",e);
+            toast.error(e?.reason);
         }
       }
     
@@ -1045,6 +1046,7 @@ console.log("Application's global state:");
         } catch (e) {
             setLoader(false);
             console.error("Error in stake:",e);
+            toast.error(e?.reason);
         }
       }
 
@@ -1054,7 +1056,7 @@ console.log("Application's global state:");
             const ethersProvider =  new ethers.providers.Web3Provider(walletProvider)
             const signer =  ethersProvider.getSigner();
             const stakingContract = new ethers.Contract(LPStakeAddress, LPStakeABI, signer);
-            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18), {gasLimit: 3000000});
+            let tx = await stakingContract.withdraw(ethers.utils.parseUnits((unstakeAmount).toString(), 18));
             await tx.wait();
             toast.success(toastDiv(tx.hash, `Unstaked Successfully`));
             setUnstakeAmount("");
@@ -1063,6 +1065,7 @@ console.log("Application's global state:");
         } catch (e) {
             setLoader1(false);
             console.error("Error in stake:",e);
+            toast.error(e?.reason);
         }
       }
 
@@ -1080,6 +1083,7 @@ console.log("Application's global state:");
         } catch (e) {
             setLoader2(false);
             console.error("Error in stake:",e);
+            toast.error(e?.reason);
         }
       }
     

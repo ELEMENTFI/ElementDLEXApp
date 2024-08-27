@@ -2378,12 +2378,13 @@ function SetValue2(Amountin){
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000).toString(), 18));
       
       await tx.wait();
-      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
+      toast.success(toastDiv(tx.hash, `Approved Successfully`));
       await fun();
       setLoader1(false);
   }catch(e){
       setLoader1(false);
       console.error(e);
+      toast.error(e?.reason);
   }
  
 }
@@ -2401,12 +2402,13 @@ const approveSei2 = async(token22) => {
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000).toString(), 18));
       
       await tx.wait();
-      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
+      toast.success(toastDiv(tx.hash, `Approved Successfully`));
       await fun();
       setLoader1(false);
   }catch(e){
       setLoader1(false);
       console.error(e);
+      toast.error(e?.reason);
   }
  
 }
@@ -2424,12 +2426,13 @@ const approvePair = async() => {
       tx = await pairContract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((1000000000000).toString(), 18));
       
       await tx.wait();
-      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
+      toast.success(toastDiv(tx.hash, `Approved Successfully`));
       await fun3();
       setLoader2(false);
   }catch(e){
       setLoader2(false);
       console.error(e);
+      toast.error(e?.reason);
   }
  
 }
@@ -2479,7 +2482,7 @@ const approvePair = async() => {
         }
         
         await tx.wait();
-        toast.success(toastDiv(tx.hash, `Transaction Success`));
+        toast.success(toastDiv(tx.hash, `Transaction Successful`));
         let pairAddress1 = await factoryContract.getPair(token11,token22);
         if (pairAddress === "0x0000000000000000000000000000000000000000"){
                   // Get the current time in milliseconds
@@ -2507,6 +2510,7 @@ const approvePair = async() => {
     }catch(e){
         setLoader1(false);
         console.error(e);
+        toast.error(e?.reason);
     }
   }
 
@@ -2537,13 +2541,14 @@ const approvePair = async() => {
       }
       
       await tx.wait();
-      toast.success(toastDiv(tx.hash, `Remove Liquidity Successful`));
+      toast.success(toastDiv(tx.hash, `Removed Liquidity Successfully`));
       setRemLiquidity("");
       await fun();
       setLoader2(false);
   }catch(e){
       setLoader2(false);
       console.error(e);
+      toast.error(e?.reason);
   }
   handleRemove();
 }

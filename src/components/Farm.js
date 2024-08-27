@@ -44,7 +44,7 @@ function FarmPage() {
     const url = "https://sepolia.base.org/";
     const provider = new ethers.providers.JsonRpcProvider(url);
 
-    const LPpairAddress = "0x37070aDc61C7e69FeCe27252c980Ae459428269d";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
+    const LPpairAddress = "0x8c4356840C04A998e78448f3FFa460b3eE4ad78c";//"0x86c111d557b862d3B193d8A7922b12c83f1060F9";
     // const elemAddress = "0xaB7eEc703836a34105c62595c346b23D4964A2a9"; 
 
     //window.location.reload();

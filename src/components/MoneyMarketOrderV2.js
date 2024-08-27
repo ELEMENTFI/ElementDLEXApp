@@ -30,6 +30,7 @@ const MoneyMarket = () => {
     const [liquidateAmount, setLiquidateAmount] = useState("");
     const [busdBalance, setbusdBalance] = useState(0);
     const [busdDecimals, setbusdDecimals] = useState(6);
+    const [interestAmount, setInterestAmount] = useState(0);
     const [depositAmount, setDepositAmount] = useState();
     const [userDeposit, setUserDeposit] = useState("");
     const [userDebt, setUserDebt] = useState("");
@@ -87,6 +88,11 @@ const MoneyMarket = () => {
         let UserDetails = await pairContract.users(address);
         console.log("details of user:", UserDetails);
 
+        const borrowedTime = ethers.utils.formatUnits( await pairContract.borrowedTime(address),0);
+        const borrowDuration = Math.floor(Date.now() / 1000) - borrowedTime;
+        const interestAmount1 = ethers.utils.formatUnits(await routerContract.interestCalculation(address, ELEMAddress, pairAddress, borrowDuration),0);
+        setInterestAmount(interestAmount1);
+
         const token0 =  await pairContract.token0();
         console.log(token0);
         let totalDeposited1 = 0;
@@ -141,6 +147,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader1(false);
             console.error(e);
+            toast.error(e?.reason);
         }
        
     }
@@ -163,13 +170,14 @@ const MoneyMarket = () => {
             const epochTimeSeconds = Math.floor(currentTimeMillis / 1000);
             let tx = await routerContract.borrow(USDCAddress, ELEMAddress, amountInWei, (epochTimeSeconds+600));
             await tx.wait();
-            toast.success(toastDiv(tx.hash, `Borrow Succesful`));
+            toast.success(toastDiv(tx.hash, `Borrowed Succesfully`));
             setborrowAmount("");
             await fun();
             setLoader(false);
         }catch(e){
             setLoader(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
 
@@ -205,7 +213,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader1(false);
             console.error(e);
-            toast.error(e.reason);
+            toast.error(e?.reason);
         }
     }
 
@@ -224,6 +232,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader2(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
     
@@ -263,7 +272,7 @@ const MoneyMarket = () => {
                                     <img src={elementLogo} alt="elementLogo" style={{"height": "65px", "width": "65px"}} />
                                     <div className='ps-3'>
                                         <div className="h4 mb-2">Borrow ELEM</div>
-                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">ELEM</div></span> 
+                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">USDC</div></span> 
                                         {/* <span className='d-flex align-items-center'>Oracle: <div className="h6 mb-0">Chainink</div></span> */}
                                         </p>
                                     </div>
@@ -344,9 +353,10 @@ const MoneyMarket = () => {
                                                     <span className='mx-3'>from</span>
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>Wallet</Button>&nbsp;&nbsp;&nbsp;
-                                                    <Button variant={repayToken === "ELEM" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("ELEM")}}>ELEM</Button>&nbsp;&nbsp;&nbsp;
+                                                    {/* <Button variant={repayToken === "ELEM" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("ELEM")}}>ELEM</Button>&nbsp;&nbsp;&nbsp; */}
                                                     {/* <Button variant={repayToken === "USDC" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("USDC")}}>USDC</Button> */}
 
+                                                    <span className='ms-auto'>Interest {interestAmount? parseFloat(interestAmount/1e18).toFixed(2) : "0.00"} ELEM</span>
                                                     <span className='ms-auto'>Debt {userDebt? parseFloat(userDebt/1e18).toFixed(2) : "0.00"} ELEM</span>
                                                 </div>
 
@@ -354,7 +364,7 @@ const MoneyMarket = () => {
                                                 <div className="d-flex mb-3">
                                                     <input type="number" className="form-control form-dark" placeholder="0.0" value={repayAmount} onChange={(e)=>{setrepayAmount(e.target.value)}}/>
                                                 </div>
-
+                                                
                                                 {
                                                 repayToken === "ELEM" &&
                                                 <>{ (allowance2/1e18) >= repayAmount ?

@@ -43,11 +43,12 @@ const Faucet = () => {
         const erc20Contract = new ethers.Contract(FaucetAddress, FaucetABI, signer);
         let tx = await erc20Contract.dispense("USDC");
         tx.wait();
-        toast.success(toastDiv(tx.hash, 'Successfully claimed'));
+        toast.success(toastDiv(tx.hash, 'Claimed Successfully'));
         await fun();
         } catch(e) {
             console.log("error:", e);
             setLoader(false);
+            toast.error(e?.reason);
         } finally {
             setLoader(false);
         }
@@ -61,11 +62,12 @@ const Faucet = () => {
         const erc20Contract = new ethers.Contract(FaucetAddress, FaucetABI, signer);
         let tx = await erc20Contract.dispense("ELEM");
         tx.wait();
-        toast.success(toastDiv(tx.hash, 'Successfully claimed'));
+        toast.success(toastDiv(tx.hash, 'Claimed Successfully'));
         await fun();
         } catch(e) {
             console.log("error:", e);
             setLoader1(false);
+            toast.error(e?.reason);
         } finally {
             setLoader1(false);
         }
