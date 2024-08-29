@@ -33,6 +33,7 @@ const MoneyMarket = () => {
     const [totalDeposited, setTotalDeposited] = useState("");
     const [totalELEM, setTotalELEM] = useState("");
     const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
+    const [elemUsdcPrice, setelemUsdcPrice] = useState(0.00);
     const [loader, setLoader] = useState(false);
     const [loader1, setLoader1] = useState(false);
 
@@ -61,7 +62,7 @@ const MoneyMarket = () => {
         if( (token0).toLowerCase() == (USDCAddress).toLowerCase() ){
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken0(), 0);
             setTotalDeposited(totalDeposited1);
-            totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken0(), 0);
+            totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken1(), 0);
             setTotalELEM(totalBorrowed);
             let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited0, 0);
             setUserDeposit(userDeposit1);
@@ -70,15 +71,17 @@ const MoneyMarket = () => {
         } else {
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken1(), 0);
             setTotalDeposited(totalDeposited1);
-            totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken1(), 0);
+            totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken0(), 0);
             setTotalELEM(totalBorrowed);
             let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited1, 0);
             setUserDeposit(userDeposit1);
             let userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed0, 0);
             setUserDebt(userDebt1);
         }
+        const usdcPrice = parseFloat(ethers.utils.formatUnits(await pairContract.averageAssetPrice(), 6));
+        setelemUsdcPrice(usdcPrice);
 
-        let borrowPercent = (totalBorrowed/(totalDeposited1/ 2))*100;
+        let borrowPercent = ((totalBorrowed/1e18)/((totalDeposited1/10 ** busdDecimals)/ 2))*100;
         setTotalBorrowPercent(borrowPercent);
         
         console.log("allowance:", allowance1, balance1, totalDeposited1);
@@ -304,7 +307,7 @@ const MoneyMarket = () => {
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Available</span>
-                                        <strong>{totalDeposited ? parseFloat((totalDeposited - (2 * totalELEM))/10 ** busdDecimals).toFixed(2) : "0.00"} USDC</strong>
+                                        <strong>{totalDeposited ? parseFloat(((totalDeposited /10 ** busdDecimals) - (2 * (totalELEM/1e18) * elemUsdcPrice))).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Borrowed</span>

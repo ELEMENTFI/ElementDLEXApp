@@ -37,6 +37,9 @@ const MoneyMarket = () => {
     const [totalDeposited, setTotalDeposited] = useState("");
     const [totalELEM, setTotalELEM] = useState("");
     const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
+    const [usdcElemPrice, setusdcElemPrice] = useState(0.00);
+    const [elemUsdcPrice, setelemUsdcPrice] = useState(0.00);
+    const [elemBorrowCap, setElemBorrowCap] = useState(0.00);
     const [repayToken, setRepayToken] = useState("ELEM");
     const [loader, setLoader] = useState(false);
     const [loader1, setLoader1] = useState(false);
@@ -92,35 +95,48 @@ const MoneyMarket = () => {
         const borrowDuration = Math.floor(Date.now() / 1000) - borrowedTime;
         const interestAmount1 = ethers.utils.formatUnits(await routerContract.interestCalculation(address, ELEMAddress, pairAddress, borrowDuration),0);
         setInterestAmount(interestAmount1);
-
+        
         const token0 =  await pairContract.token0();
         console.log(token0);
         let totalDeposited1 = 0;
         let totalBorrowed = 0;
+        let userDeposit1 =0;
+        let userDebt1 = 0;
         if( (token0).toLowerCase() == (USDCAddress).toLowerCase() ){
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken0(), 0);
             setTotalDeposited(totalDeposited1);
             totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken1(), 0);
             setTotalELEM(totalBorrowed);
-            let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited0, 0);
+            userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited0, 0);
             setUserDeposit(userDeposit1);
-            let userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed1, 0);
+            userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed1, 0);
             setUserDebt(userDebt1);
         } else {
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken1(), 0);
             setTotalDeposited(totalDeposited1);
             totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken0(), 0);
             setTotalELEM(totalBorrowed);
-            let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited1, 0);
+            userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited1, 0);
             setUserDeposit(userDeposit1);
-            let userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed0, 0);
+            userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed0, 0);
             setUserDebt(userDebt1);
         }
+
+        
+        const usdcPrice = parseFloat(ethers.utils.formatUnits(await pairContract.averageAssetPrice(), 6));
+        const usdcInElem = parseFloat(1 / usdcPrice);
+        const borrowCap = parseFloat(((userDeposit1/1e6) * (usdcInElem)) / 2) - parseFloat(userDebt1/1e18);
+        console.log("USDC Price:", usdcPrice);
+        console.log("USDC in Element:", usdcInElem);
+        console.log("Borrow Cap:", borrowCap);
+        setelemUsdcPrice(usdcPrice);
+        setusdcElemPrice(usdcInElem);
+        setElemBorrowCap(borrowCap);
 
         let borrowPercent = ((totalBorrowed/1e18)/((totalDeposited1/10 ** busdDecimals)/ 2))*100;
         setTotalBorrowPercent(borrowPercent);
         
-        console.log("allowance:", allowance2, balance1, totalDeposited1, borrowPercent);
+        console.log("useEffect:", allowance2, balance1, totalDeposited1, borrowPercent, borrowCap);
     }
 
     const approve = async() => {
@@ -330,11 +346,11 @@ const MoneyMarket = () => {
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>wallet</Button>
 
-                                                    <span className='ms-auto'>Max {userDeposit ? ((((userDeposit)/(10 ** busdDecimals))/2) - (userDebt/1e18)).toFixed(2) : "0.00"}</span>
+                                                    <span className='ms-auto'>Max {elemBorrowCap ? parseFloat(elemBorrowCap).toFixed(4) : "0.00"}</span>
                                                 </div>
 
                                                 <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={borrowAmount} onChange={(e)=>{setborrowAmount(e.target.value)}}/>
-                                                {borrowAmount > (((userDeposit/(10 ** busdDecimals))/2) - (userDebt/1e18)) ? 
+                                                {borrowAmount > parseFloat(elemBorrowCap) ? 
                                                     <Button variant='grad' className='w-100' disabled>Insufficient Collateral</Button> :
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={borrow}>Borrow Elem</ButtonLoad>}
                                                 
@@ -427,7 +443,7 @@ const MoneyMarket = () => {
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Available</span>
-                                        <strong>{totalDeposited ? parseFloat(((totalDeposited /10 ** busdDecimals) - (2 * (totalELEM/1e18)))).toFixed(2) : "0.00"} USDC</strong>
+                                        <strong>{totalDeposited ? parseFloat(((totalDeposited /10 ** busdDecimals) - (2 * (totalELEM/1e18) * elemUsdcPrice))).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Borrowed</span>
