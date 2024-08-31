@@ -30,12 +30,16 @@ const MoneyMarket = () => {
     const [liquidateAmount, setLiquidateAmount] = useState("");
     const [busdBalance, setbusdBalance] = useState(0);
     const [busdDecimals, setbusdDecimals] = useState(6);
+    const [interestAmount, setInterestAmount] = useState(0);
     const [depositAmount, setDepositAmount] = useState();
     const [userDeposit, setUserDeposit] = useState("");
     const [userDebt, setUserDebt] = useState("");
     const [totalDeposited, setTotalDeposited] = useState("");
     const [totalELEM, setTotalELEM] = useState("");
     const [totalBorrowPercent, setTotalBorrowPercent] = useState("");
+    const [usdcElemPrice, setusdcElemPrice] = useState(0.00);
+    const [elemUsdcPrice, setelemUsdcPrice] = useState(0.00);
+    const [elemBorrowCap, setElemBorrowCap] = useState(0.00);
     const [repayToken, setRepayToken] = useState("ELEM");
     const [loader, setLoader] = useState(false);
     const [loader1, setLoader1] = useState(false);
@@ -87,34 +91,52 @@ const MoneyMarket = () => {
         let UserDetails = await pairContract.users(address);
         console.log("details of user:", UserDetails);
 
+        const borrowedTime = ethers.utils.formatUnits( await pairContract.borrowedTime(address),0);
+        const borrowDuration = Math.floor(Date.now() / 1000) - borrowedTime;
+        const interestAmount1 = ethers.utils.formatUnits(await routerContract.interestCalculation(address, ELEMAddress, pairAddress, borrowDuration),0);
+        setInterestAmount(interestAmount1);
+        
         const token0 =  await pairContract.token0();
         console.log(token0);
         let totalDeposited1 = 0;
         let totalBorrowed = 0;
+        let userDeposit1 =0;
+        let userDebt1 = 0;
         if( (token0).toLowerCase() == (USDCAddress).toLowerCase() ){
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken0(), 0);
             setTotalDeposited(totalDeposited1);
             totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken1(), 0);
             setTotalELEM(totalBorrowed);
-            let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited0, 0);
+            userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited0, 0);
             setUserDeposit(userDeposit1);
-            let userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed1, 0);
+            userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed1, 0);
             setUserDebt(userDebt1);
         } else {
             totalDeposited1 = ethers.utils.formatUnits( await pairContract.totalDepositedToken1(), 0);
             setTotalDeposited(totalDeposited1);
             totalBorrowed = ethers.utils.formatUnits( await pairContract.totalBorrowedToken0(), 0);
             setTotalELEM(totalBorrowed);
-            let userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited1, 0);
+            userDeposit1 = ethers.utils.formatUnits( UserDetails?.deposited1, 0);
             setUserDeposit(userDeposit1);
-            let userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed0, 0);
+            userDebt1 = ethers.utils.formatUnits( UserDetails?.borrowed0, 0);
             setUserDebt(userDebt1);
         }
+
+        
+        const usdcPrice = parseFloat(ethers.utils.formatUnits(await pairContract.averageAssetPrice(), 6));
+        const usdcInElem = parseFloat(1 / usdcPrice);
+        const borrowCap = parseFloat(((userDeposit1/1e6) * (usdcInElem)) / 2) - parseFloat(userDebt1/1e18);
+        console.log("USDC Price:", usdcPrice);
+        console.log("USDC in Element:", usdcInElem);
+        console.log("Borrow Cap:", borrowCap);
+        setelemUsdcPrice(usdcPrice);
+        setusdcElemPrice(usdcInElem);
+        setElemBorrowCap(borrowCap);
 
         let borrowPercent = ((totalBorrowed/1e18)/((totalDeposited1/10 ** busdDecimals)/ 2))*100;
         setTotalBorrowPercent(borrowPercent);
         
-        console.log("allowance:", allowance2, balance1, totalDeposited1, borrowPercent);
+        console.log("useEffect:", allowance2, balance1, totalDeposited1, borrowPercent, borrowCap);
     }
 
     const approve = async() => {
@@ -141,6 +163,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader1(false);
             console.error(e);
+            toast.error(e?.reason);
         }
        
     }
@@ -163,13 +186,14 @@ const MoneyMarket = () => {
             const epochTimeSeconds = Math.floor(currentTimeMillis / 1000);
             let tx = await routerContract.borrow(USDCAddress, ELEMAddress, amountInWei, (epochTimeSeconds+600));
             await tx.wait();
-            toast.success(toastDiv(tx.hash, `Borrow Succesful`));
+            toast.success(toastDiv(tx.hash, `Borrowed Succesfully`));
             setborrowAmount("");
             await fun();
             setLoader(false);
         }catch(e){
             setLoader(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
 
@@ -205,7 +229,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader1(false);
             console.error(e);
-            toast.error(e.reason);
+            toast.error(e?.reason);
         }
     }
 
@@ -224,6 +248,7 @@ const MoneyMarket = () => {
         }catch(e){
             setLoader2(false);
             console.error(e);
+            toast.error(e?.reason);
         }
     }
     
@@ -263,7 +288,7 @@ const MoneyMarket = () => {
                                     <img src={elementLogo} alt="elementLogo" style={{"height": "65px", "width": "65px"}} />
                                     <div className='ps-3'>
                                         <div className="h4 mb-2">Borrow ELEM</div>
-                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">ELEM</div></span> 
+                                        <p className='d-flex flex-wrap'><span className='d-flex align-items-center me-5'>Collateral: <div className="h6 mb-0">USDC</div></span> 
                                         {/* <span className='d-flex align-items-center'>Oracle: <div className="h6 mb-0">Chainink</div></span> */}
                                         </p>
                                     </div>
@@ -321,11 +346,11 @@ const MoneyMarket = () => {
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>wallet</Button>
 
-                                                    <span className='ms-auto'>Max {userDeposit ? ((((userDeposit)/(10 ** busdDecimals))/2) - (userDebt/1e18)).toFixed(2) : "0.00"}</span>
+                                                    <span className='ms-auto'>Max {elemBorrowCap ? parseFloat(elemBorrowCap).toFixed(4) : "0.00"}</span>
                                                 </div>
 
                                                 <input type="number" className='form-control mb-3 form-dark' placeholder='0.0' value={borrowAmount} onChange={(e)=>{setborrowAmount(e.target.value)}}/>
-                                                {borrowAmount > (((userDeposit/(10 ** busdDecimals))/2) - (userDebt/1e18)) ? 
+                                                {borrowAmount > parseFloat(elemBorrowCap) ? 
                                                     <Button variant='grad' className='w-100' disabled>Insufficient Collateral</Button> :
                                                     <ButtonLoad loading={loader} variant='grad' className='w-100' onClick={borrow}>Borrow Elem</ButtonLoad>}
                                                 
@@ -344,9 +369,10 @@ const MoneyMarket = () => {
                                                     <span className='mx-3'>from</span>
 
                                                     <Button variant='outline-danger' className='btn-sm my-2'>Wallet</Button>&nbsp;&nbsp;&nbsp;
-                                                    <Button variant={repayToken === "ELEM" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("ELEM")}}>ELEM</Button>&nbsp;&nbsp;&nbsp;
+                                                    {/* <Button variant={repayToken === "ELEM" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("ELEM")}}>ELEM</Button>&nbsp;&nbsp;&nbsp; */}
                                                     {/* <Button variant={repayToken === "USDC" ?'success' : 'outline-success'} className='btn-sm my-2' onClick={()=>{setRepayToken("USDC")}}>USDC</Button> */}
 
+                                                    <span className='ms-auto'>Interest {interestAmount? parseFloat(interestAmount/1e18).toFixed(2) : "0.00"} ELEM</span>
                                                     <span className='ms-auto'>Debt {userDebt? parseFloat(userDebt/1e18).toFixed(2) : "0.00"} ELEM</span>
                                                 </div>
 
@@ -354,7 +380,7 @@ const MoneyMarket = () => {
                                                 <div className="d-flex mb-3">
                                                     <input type="number" className="form-control form-dark" placeholder="0.0" value={repayAmount} onChange={(e)=>{setrepayAmount(e.target.value)}}/>
                                                 </div>
-
+                                                
                                                 {
                                                 repayToken === "ELEM" &&
                                                 <>{ (allowance2/1e18) >= repayAmount ?
@@ -417,7 +443,7 @@ const MoneyMarket = () => {
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Available</span>
-                                        <strong>{totalDeposited ? parseFloat(((totalDeposited /10 ** busdDecimals) - (2 * (totalELEM/1e18)))).toFixed(2) : "0.00"} USDC</strong>
+                                        <strong>{totalDeposited ? parseFloat(((totalDeposited /10 ** busdDecimals) - (2 * (totalELEM/1e18) * elemUsdcPrice))).toFixed(2) : "0.00"} USDC</strong>
                                     </div>
                                     <div className="f16 d-flex align-items-center justify-content-between mb-2">
                                         <span>Borrowed</span>

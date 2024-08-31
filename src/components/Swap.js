@@ -1678,12 +1678,13 @@ const approveSei = async() => {
           tx = await erc20Contract.approve(PancakeRouterV2Address, ethers.utils.parseUnits((swapamount1).toString(), 18));
       
       await tx.wait();
-      toast.success(toastDiv(tx.hash, `Approved Succesfuly`));
+      toast.success(toastDiv(tx.hash, `Approved Successfully`));
       await fun();
       setLoader(false);
   }catch(e){
       setLoader(false);
       console.error(e);
+      toast.error(e?.reason);
   }
  
 }
@@ -1720,7 +1721,7 @@ const approveSei = async() => {
         }
         
         await tx.wait();
-        toast.success(toastDiv(tx.hash, `Transaction Success`));
+        toast.success(toastDiv(tx.hash, `Transaction Successful`));
         setSwapamount1("");
         setSwapamount2("");
         setLoader(false);
@@ -1729,6 +1730,7 @@ const approveSei = async() => {
     }catch(e){
         setLoader(false);
         console.error(e);
+        toast.error(e?.reason);
     }
   }
 
